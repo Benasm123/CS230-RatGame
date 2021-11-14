@@ -36,11 +36,6 @@ public class Level {
     private Canvas GameBoard;
 
     public void initialize(){
-        readLevelFile("src/Levels/Level1.txt");
-
-        GraphicsContext gc = GameBoard.getGraphicsContext2D();
-
-        spawnTiles(gc);
     }
 
 
@@ -103,6 +98,10 @@ public class Level {
         } catch (FileNotFoundException e){
             e.printStackTrace();
         }
+
+//        GraphicsContext gc = GameBoard.getGraphicsContext2D();
+
+        spawnTiles(GameBoard.getGraphicsContext2D());
     }
 
     public void saveLevel(){
