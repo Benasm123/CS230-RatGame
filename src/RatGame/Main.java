@@ -11,7 +11,7 @@ public class Main extends Application {
     // The dimensions of the window
     private static final int WINDOW_WIDTH = 1200;
     private static final int WINDOW_HEIGHT = 800;
-
+    //
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("FXML/mainMenu.fxml"));
