@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Level {
@@ -40,7 +41,7 @@ public class Level {
 
 
     public void switchToMainMenu(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("FXML/mainMenu.fxml"));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
@@ -64,15 +65,17 @@ public class Level {
     AnchorPane GameScreen;
 
     public void snapBackLevel(){
-        if (GameBoard.getTranslateX() > 0){
-            GameBoard.setTranslateX(0.0);
-        } else if (GameBoard.getTranslateX() < GameScreen.getWidth() - GameBoard.getWidth()){
-            GameBoard.setTranslateX(GameScreen.getWidth() - GameBoard.getWidth());
-        }
-        if (GameBoard.getTranslateY() > 0){
-            GameBoard.setTranslateY(0.0);
-        } else if (GameBoard.getTranslateY() < GameScreen.getHeight() - GameBoard.getHeight()){
-            GameBoard.setTranslateY(GameScreen.getHeight() - GameBoard.getHeight());
+        if (GameBoard.getWidth() > GameScreen.getWidth() && GameBoard.getHeight() > GameScreen.getHeight()) {
+            if (GameBoard.getTranslateX() > 0) {
+                GameBoard.setTranslateX(0.0);
+            } else if (GameBoard.getTranslateX() < GameScreen.getWidth() - GameBoard.getWidth()) {
+                GameBoard.setTranslateX(GameScreen.getWidth() - GameBoard.getWidth());
+            }
+            if (GameBoard.getTranslateY() > 0) {
+                GameBoard.setTranslateY(0.0);
+            } else if (GameBoard.getTranslateY() < GameScreen.getHeight() - GameBoard.getHeight()) {
+                GameBoard.setTranslateY(GameScreen.getHeight() - GameBoard.getHeight());
+            }
         }
     }
 
