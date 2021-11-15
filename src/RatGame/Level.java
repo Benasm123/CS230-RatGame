@@ -57,13 +57,13 @@ public class Level {
     public void onDragLevel(MouseEvent event){
         GameBoard.setTranslateX(GameBoard.getTranslateX() + (event.getX() - lastMouseX));
         GameBoard.setTranslateY(GameBoard.getTranslateY() + (event.getY() - lastMouseY));
+    snapBackLevel();
     }
 
     @FXML
     AnchorPane GameScreen;
 
-    public void snapBackLevel(MouseEvent event){
-        System.out.println(GameBoard.getTranslateX() + " " + GameBoard.getTranslateY());
+    public void snapBackLevel(){
         if (GameBoard.getTranslateX() > 0){
             GameBoard.setTranslateX(0.0);
         } else if (GameBoard.getTranslateX() < GameScreen.getWidth() - GameBoard.getWidth()){
