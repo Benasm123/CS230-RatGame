@@ -141,6 +141,7 @@ public class Level {
         spawnTiles(GameBoard.getGraphicsContext2D());
     }
 
+    // Used to save levels for loading next time
     public void saveLevel(){
         File levelSaveFile = new File("");
     }
