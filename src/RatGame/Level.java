@@ -59,13 +59,13 @@ public class Level {
         System.out.println(GameBoard.getTranslateX() + " " + GameBoard.getTranslateY());
         GameBoard.setTranslateX(GameBoard.getTranslateX() + (event.getX() - lastMouseX));
         GameBoard.setTranslateY(GameBoard.getTranslateY() + (event.getY() - lastMouseY));
-    snapBackLevel();
+        clampToGameScreen();
     }
 
     @FXML
     AnchorPane GameScreen;
 
-    public void snapBackLevel(){
+    public void clampToGameScreen(){
         if (GameBoard.getWidth() > GameScreen.getWidth() && GameBoard.getHeight() > GameScreen.getHeight()) {
             if (GameBoard.getTranslateX() > 0) {
                 GameBoard.setTranslateX(0.0);
@@ -141,6 +141,7 @@ public class Level {
         spawnTiles(GameBoard.getGraphicsContext2D());
     }
 
+    // Used to save levels for loading next time
     public void saveLevel(){
         File levelSaveFile = new File("");
     }
