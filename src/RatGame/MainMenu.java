@@ -33,6 +33,9 @@ public class MainMenu {
 
     String[] words = {"Hello", "Hi", "Bye", "Woah"};
 
+    /**
+     * gives a message everytime the game started
+     */
     public void updateMessage() {
         Random rand = new Random();
 
