@@ -13,7 +13,7 @@
             <Pane>
                <children>
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c9e0f5" height="100000.0" stroke="BLACK" strokeType="INSIDE" width="100000.0" />
-                  <Canvas fx:id="GameBoard" height="500.0" onMouseDragged="#onDragLevel" onMousePressed="#getMousePosOnClicked" onMouseReleased="#snapBackLevel" width="500.0" />
+                  <Canvas fx:id="GameBoard" height="500.0" onMouseDragged="#onDragLevel" onMousePressed="#getMousePosOnClicked" onMouseReleased="#clampToGameScreen" width="500.0" />
                </children>
             </Pane>
          </children></AnchorPane>
