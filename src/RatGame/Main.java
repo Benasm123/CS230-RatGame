@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-// Testing commit!
+
 public class Main extends Application {
     // The dimensions of the window
     private static final int WINDOW_WIDTH = 1200;
