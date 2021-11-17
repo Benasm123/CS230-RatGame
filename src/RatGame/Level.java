@@ -4,14 +4,17 @@ import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -61,13 +64,17 @@ public class Level {
     @FXML
     private Canvas GameBoard;
 
+    @FXML
+    private StackPane levelPane;
+
     float testX = 1.0f;
     float testY = 1.0f;
 
     float testXVel = 5.0f;
     float testYVel = 0.0f;
 
-    Image testImg = new Image("Assets/TunnelVertical.png");
+    ImageView testImg;
+    Image testIm = new Image("Assets/Male.png");
 
     int lastX = (int)testX;
     int lastY = (int)testX;
@@ -97,10 +104,23 @@ public class Level {
         return paths.get(rand.nextInt(paths.size()));
     }
 
+    public void setRotate(){
+        if (testXVel < 0) {
+            testImg.setRotate(90.0);
+        } else if (testXVel > 0) {
+            testImg.setRotate(270);
+        } else if (testYVel > 0) {
+            testImg.setRotate(0);
+        } else {
+            testImg.setRotate(180);
+        }
+    }
+
     public void testMove(float deltaTime){
         testX += testXVel * deltaTime;
         testY += testYVel * deltaTime;
-        System.out.println((int) testXVel + " " + testYVel);
+        testImg.setTranslateX(testX*50);
+        testImg.setTranslateY(testY*50);
         if (testXVel < 0){
             if ((int)testX+1 != lastX) {
                 testX = (int)testX+1;
@@ -120,6 +140,7 @@ public class Level {
                 testYVel = vel.getValue();
                 lastX = (int) testX;
                 lastY = (int) testY;
+                testImg.setRotate(180.0);
             }
         } else {
             if ((int)testX != lastX || (int)testY != lastY) {
@@ -135,6 +156,13 @@ public class Level {
     }
 
     public void initialize(){
+        testImg = new ImageView();
+        testImg.setImage(testIm);
+        testImg.setFitHeight(50.0);
+        testImg.setFitWidth(50.0);
+        testImg.setViewport(new Rectangle2D(-14, -4, 50, 50));
+        levelPane.getChildren().add(testImg);
+
         firstLoop = true;
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -157,8 +185,9 @@ public class Level {
     public void update(float deltaTime){
         GraphicsContext gc = GameBoard.getGraphicsContext2D();
         spawnTiles(gc);
+        setRotate();
         testMove(deltaTime);
-        gc.drawImage(testImg, testX * TILE_HEIGHT, testY * TILE_WIDTH);
+        //gc.drawImage(testImg.getImage(), testX * TILE_HEIGHT, testY * TILE_WIDTH);
     }
 
     public void pauseLoop(){
@@ -191,8 +220,8 @@ public class Level {
      * @param event The mouse event is stored here.
      */
     public void onDragLevel(MouseEvent event){
-        GameBoard.setTranslateX(GameBoard.getTranslateX() + (event.getX() - lastMouseX));
-        GameBoard.setTranslateY(GameBoard.getTranslateY() + (event.getY() - lastMouseY));
+        levelPane.setTranslateX(levelPane.getTranslateX() + (event.getX() - lastMouseX));
+        levelPane.setTranslateY(levelPane.getTranslateY() + (event.getY() - lastMouseY));
         clampToGameScreen();
     }
 
