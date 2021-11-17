@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -50,7 +51,12 @@
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Female Sex Change" GridPane.rowIndex="5" GridPane.valignment="TOP" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Steralization" GridPane.rowIndex="6" GridPane.valignment="TOP" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Something" GridPane.rowIndex="7" GridPane.valignment="TOP" />
-                  <Button fx:id="ExitButton" mnemonicParsing="false" onAction="#switchToMainMenu" text="Exit" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
+                  <Button fx:id="levelSaveButton" mnemonicParsing="false" onAction="#saveLevel" text="Save" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </Button>
+                  <Button fx:id="ExitButton" mnemonicParsing="false" onAction="#switchToMainMenu" text="Exit" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
                   <Circle fill="DODGERBLUE" radius="10.0" stroke="BLACK" strokeType="INSIDE" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                   <Circle fill="DODGERBLUE" layoutX="40.0" layoutY="144.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                   <Circle fill="DODGERBLUE" layoutX="20.0" layoutY="55.0" radius="10.0" stroke="BLACK" strokeType="INSIDE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
