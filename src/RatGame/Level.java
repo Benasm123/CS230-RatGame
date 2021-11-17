@@ -20,6 +20,8 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Level {
+    String levelName;
+
     private static final int GRID_HEIGHT = 50;
     private static final int GRID_WIDTH = 50;
 
@@ -56,7 +58,6 @@ public class Level {
     }
 
     public void onDragLevel(MouseEvent event){
-        System.out.println(GameBoard.getTranslateX() + " " + GameBoard.getTranslateY());
         GameBoard.setTranslateX(GameBoard.getTranslateX() + (event.getX() - lastMouseX));
         GameBoard.setTranslateY(GameBoard.getTranslateY() + (event.getY() - lastMouseY));
         clampToGameScreen();
@@ -65,6 +66,11 @@ public class Level {
     @FXML
     AnchorPane GameScreen;
 
+    /**
+     * Prevents player from dragging the level off the screen.
+     * If level is bigger than screen the level will always be on screen and cannot be dragged off-screen.
+     * If level is smaller than the level can be dragged around on the screen freely but not off-screen.
+     */
     public void clampToGameScreen(){
         if (GameBoard.getWidth() > GameScreen.getWidth() && GameBoard.getHeight() > GameScreen.getHeight()) {
             if (GameBoard.getTranslateX() > 0) {
@@ -113,10 +119,17 @@ public class Level {
         }
     }
 
+    // TODO create a createLevel method and separate readLevelFile and parseLevel and spawnTiles.
+    /**
+     * Reads in a file and parses the data for the level.
+     * @param src A path to the level wanting to be read.
+     */
     public void readLevelFile(String src){
         try {
             File levelFile = new File(src);
             Scanner fileReader = new Scanner(levelFile);
+            levelName = src.substring(11);
+            System.out.println(levelName);
             String levelDimensions = fileReader.nextLine();
             String[] levelDimensionsSplit = levelDimensions.split(" ");
             levelWidth = Integer.parseInt(levelDimensionsSplit[0]);
@@ -141,9 +154,9 @@ public class Level {
         spawnTiles(GameBoard.getGraphicsContext2D());
     }
 
-    // Used to save levels for loading next time
-    public void saveLevel(){
-        File levelSaveFile = new File("");
+    // TODO Create a save/load class which will hold all these methods for saving player and level.
+    public void saveLevel(Level level){
+        File levelSaveFile = new File("Saves/" + levelName);
     }
 
     public void spawnTiles(GraphicsContext gc){
