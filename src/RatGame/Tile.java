@@ -2,18 +2,15 @@ package RatGame;
 
 import javafx.scene.image.Image;
 
-public class Tile <E> {
+public class Tile {
 
-    private float posX, posY;
-    private int tileHeight, tileWidth;
+    private float posX;
+    private float posY;
+    private int tileHeight;
+    private int tileWidth;
     private TileType type;
-    private E e; // the element contained in the linked list
-    private Tile<E> next; // the next element of the linked list
+    private Image texture;
 
-    Image grassTile = new Image("Assets/Grass.png");
-    Image pathTile = new Image("Assets/Path.png");
-    Image tunnelTile = new Image("Assets/Tunnel.png");
-    Image tunnelVertTile = new Image("Assets/TunnelVertical.png");
 
     public Tile(float posX, float posY, int tileHeight, int tileWidth, TileType type) {
         this.posX = posX;
@@ -21,22 +18,6 @@ public class Tile <E> {
         this.tileHeight = tileHeight;
         this.tileWidth = tileWidth;
         this.type = type;
-    }
-
-    public void add() {
-
-    }
-
-    public void remove() {
-
-    }
-
-    public void find() {
-
-    }
-
-    public void draw() {
-
     }
 
     public TileType getType() {
