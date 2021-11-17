@@ -1,5 +1,6 @@
 package RatGame;
 
+import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,15 +13,29 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Scanner;
 
+import static java.time.LocalTime.now;
+
 public class Level {
+    long pauseStart;
+    long playStart;
+
+    long lastFrameTime;
+
+    boolean isPaused;
+    boolean firstLoop;
+
     private String levelName;
     private int levelHeight;
     private int levelWidth;
@@ -46,8 +61,108 @@ public class Level {
     @FXML
     private Canvas GameBoard;
 
+    float testX = 1.0f;
+    float testY = 1.0f;
+
+    float testXVel = 5.0f;
+    float testYVel = 0.0f;
+
+    Image testImg = new Image("Assets/TunnelVertical.png");
+
+    int lastX = (int)testX;
+    int lastY = (int)testX;
+
+    private Pair<Integer, Integer> checkPaths(int x, int y, int lastX, int lastY){
+        ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
+
+//        System.out.println(levelGrid[x+1][y]);
+        if (levelGrid[x+1][y] != 'G' && x + 1 != lastX) {
+            paths.add(new Pair<>(5, 0));
+        }
+        if (levelGrid[x-1][y] != 'G' && x - 1 != lastX) {
+            paths.add(new Pair<>(-5, 0));
+        }
+        if (levelGrid[x][y+1] != 'G' && y + 1 != lastY) {
+            paths.add(new Pair<>(0, 5));
+        }
+        if (levelGrid[x][y-1] != 'G' && y - 1 != lastY) {
+            paths.add(new Pair<>(0, -5));
+        }
+
+        if (paths.size() == 0) {
+
+            return new Pair<>((lastX - x)*5, (lastY - y)*5);
+        }
+        Random rand = new Random();
+        return paths.get(rand.nextInt(paths.size()));
+    }
+
+    public void testMove(float deltaTime){
+        testX += testXVel * deltaTime;
+        testY += testYVel * deltaTime;
+        System.out.println((int) testXVel + " " + testYVel);
+        if (testXVel < 0){
+            if ((int)testX+1 != lastX) {
+                testX = (int)testX+1;
+                testY = (int)testY;
+                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
+                testXVel = vel.getKey();
+                testYVel = vel.getValue();
+                lastX = (int) testX;
+                lastY = (int) testY;
+            }
+        } else if (testYVel < 0) {
+            if ((int)testY+1 != lastY) {
+                testX = (int)testX;
+                testY = (int)testY+1;
+                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
+                testXVel = vel.getKey();
+                testYVel = vel.getValue();
+                lastX = (int) testX;
+                lastY = (int) testY;
+            }
+        } else {
+            if ((int)testX != lastX || (int)testY != lastY) {
+                testX = (int)testX;
+                testY = (int)testY;
+                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
+                testXVel = vel.getKey();
+                testYVel = vel.getValue();
+                lastX = (int) testX;
+                lastY = (int) testY;
+            }
+        }
+    }
 
     public void initialize(){
+        firstLoop = true;
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (firstLoop){
+                    firstLoop = false;
+                    lastFrameTime = now;
+                }
+                if (!isPaused){
+                    float deltaTime = (float) ((now - lastFrameTime) / 1e9);
+                    update(deltaTime);
+                    lastFrameTime = now;
+                }
+            }
+        };
+        timer.start();
+
+    }
+
+    public void update(float deltaTime){
+        GraphicsContext gc = GameBoard.getGraphicsContext2D();
+        spawnTiles(gc);
+        testMove(deltaTime);
+        gc.drawImage(testImg, testX * TILE_HEIGHT, testY * TILE_WIDTH);
+    }
+
+    public void pauseLoop(){
+        isPaused = !isPaused;
     }
 
     /**
@@ -154,11 +269,11 @@ public class Level {
             GameBoard.setHeight(TILE_HEIGHT * levelHeight);
             GameBoard.setWidth(TILE_WIDTH * levelWidth);
 
-            levelGrid = new char[levelHeight][levelWidth];
+            levelGrid = new char[levelWidth][levelHeight];
             for (int row = 0; row < levelHeight; row++) {
                 String rowLayout = fileReader.nextLine();
                 for (int col = 0; col < levelWidth; col++) {
-                    levelGrid[row][col] = rowLayout.charAt(col);
+                    levelGrid[col][row] = rowLayout.charAt(col);
                 }
             }
         } catch (FileNotFoundException e){
@@ -185,13 +300,13 @@ public class Level {
             fileWriter.write(levelHeight + " " + levelWidth + "\n");
             for (int row = 0; row < levelHeight; row++) {
                 for (int col = 0; col < levelWidth; col++) {
-                    if (levelGrid[row][col] == 'G'){
+                    if (levelGrid[col][row] == 'G'){
                         fileWriter.write("G");
-                    } else if (levelGrid[row][col] == 'P'){
+                    } else if (levelGrid[col][row] == 'P'){
                         fileWriter.write("P");
-                    } else if (levelGrid[row][col] == 'T'){
+                    } else if (levelGrid[col][row] == 'T'){
                         fileWriter.write("T");
-                    } else if (levelGrid[row][col] == 'V'){
+                    } else if (levelGrid[col][row] == 'V'){
                         fileWriter.write("V");
                     } else {
                         System.out.print("Hmm there shouldn't be any other tile????");
@@ -214,13 +329,13 @@ public class Level {
     private void spawnTiles(GraphicsContext gc){
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
-                if (levelGrid[row][col] == 'G'){
+                if (levelGrid[col][row] == 'G'){
                     gc.drawImage(grassTile, col * TILE_HEIGHT, row * TILE_WIDTH);
-                } else if (levelGrid[row][col] == 'P'){
+                } else if (levelGrid[col][row] == 'P'){
                     gc.drawImage(pathTile, col * TILE_HEIGHT, row * TILE_WIDTH);
-                } else if (levelGrid[row][col] == 'T'){
+                } else if (levelGrid[col][row] == 'T'){
                     gc.drawImage(tunnelTile, col * TILE_HEIGHT, row * TILE_WIDTH);
-                } else if (levelGrid[row][col] == 'V'){
+                } else if (levelGrid[col][row] == 'V'){
                     gc.drawImage(tunnelVertTile, col * TILE_HEIGHT, row * TILE_WIDTH);
                 } else {
                     System.out.print("Hmm there shouldn't be any other tile????");
