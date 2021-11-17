@@ -1,4 +1,4 @@
-package RatGame.FXML;
+package RatGame;
 
 public abstract class Item {
 
