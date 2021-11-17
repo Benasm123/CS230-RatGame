@@ -25,10 +25,16 @@ public class Level {
     private static final int GRID_HEIGHT = 50;
     private static final int GRID_WIDTH = 50;
 
-    int levelHeight;
-    int levelWidth;
+    private int levelHeight;
+    private int levelWidth;
 
     char[][] levelGrid;
+
+    private double lastMouseX;
+    private double lastMouseY;
+
+    @FXML
+    private AnchorPane GameScreen;
 
     Image grassTile = new Image("Assets/Grass.png");
     Image pathTile = new Image("Assets/Path.png");
@@ -49,9 +55,6 @@ public class Level {
         scene.setRoot(root);
     }
 
-    private double lastMouseX;
-    private double lastMouseY;
-
     public void getMousePosOnClicked(MouseEvent event){
         lastMouseX = event.getX();
         lastMouseY = event.getY();
@@ -63,8 +66,6 @@ public class Level {
         clampToGameScreen();
     }
 
-    @FXML
-    AnchorPane GameScreen;
 
     /**
      * Prevents player from dragging the level off the screen.
@@ -155,8 +156,19 @@ public class Level {
     }
 
     // TODO Create a save/load class which will hold all these methods for saving player and level.
-    public void saveLevel(Level level){
-        File levelSaveFile = new File("Saves/" + levelName);
+    // TODO Once we have a player class store all saves for each player in the player folder instead.
+    // TODO If a level save is already active for a player we need to only let the player resume.
+    public void saveLevel(ActionEvent event){
+        try {
+            File levelSaveFile = new File("src/Saves/" + levelName);
+            if (levelSaveFile.createNewFile()){
+                System.out.println("File Created Successfully!");
+            } else {
+                System.out.println("Error creating file!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void spawnTiles(GraphicsContext gc){
