@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
@@ -179,6 +180,26 @@ public class Level {
             } else {
                 System.out.println("Error creating file!");
             }
+
+            FileWriter fileWriter = new FileWriter("src/Saves/" + levelName);
+            fileWriter.write(levelHeight + " " + levelWidth + "\n");
+            for (int row = 0; row < levelHeight; row++) {
+                for (int col = 0; col < levelWidth; col++) {
+                    if (levelGrid[row][col] == 'G'){
+                        fileWriter.write("G");
+                    } else if (levelGrid[row][col] == 'P'){
+                        fileWriter.write("P");
+                    } else if (levelGrid[row][col] == 'T'){
+                        fileWriter.write("T");
+                    } else if (levelGrid[row][col] == 'V'){
+                        fileWriter.write("V");
+                    } else {
+                        System.out.print("Hmm there shouldn't be any other tile????");
+                    }
+                }
+                fileWriter.write("\n");
+            }
+            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -203,7 +224,6 @@ public class Level {
                     gc.drawImage(tunnelVertTile, col * TILE_HEIGHT, row * TILE_WIDTH);
                 } else {
                     System.out.print("Hmm there shouldn't be any other tile????");
-                    assert true;
                 }
             }
         }
