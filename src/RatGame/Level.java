@@ -233,49 +233,49 @@ public class Level {
      * If level is smaller than the level can be dragged around on the screen freely but not off-screen.
      */
     public void clampToGameScreen(){
-        if (GameBoard.getWidth() > GameScreen.getWidth() && GameBoard.getHeight() > GameScreen.getHeight()) {
-            if (GameBoard.getTranslateX() > 0) {
-                GameBoard.setTranslateX(0.0);
-            } else if (GameBoard.getTranslateX() < GameScreen.getWidth() - GameBoard.getWidth()) {
-                GameBoard.setTranslateX(GameScreen.getWidth() - GameBoard.getWidth());
+        if (levelPane.getWidth() > GameScreen.getWidth() && levelPane.getHeight() > GameScreen.getHeight()) {
+            if (levelPane.getTranslateX() > 0) {
+                levelPane.setTranslateX(0.0);
+            } else if (levelPane.getTranslateX() < levelPane.getWidth() - levelPane.getWidth()) {
+                levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
             }
-            if (GameBoard.getTranslateY() > 0) {
-                GameBoard.setTranslateY(0.0);
-            } else if (GameBoard.getTranslateY() < GameScreen.getHeight() - GameBoard.getHeight()) {
-                GameBoard.setTranslateY(GameScreen.getHeight() - GameBoard.getHeight());
+            if (levelPane.getTranslateY() > 0) {
+                levelPane.setTranslateY(0.0);
+            } else if (levelPane.getTranslateY() < levelPane.getHeight() - levelPane.getHeight()) {
+                levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
-        } else if (GameBoard.getWidth() > GameScreen.getWidth()){
-            if (GameBoard.getTranslateX() > 0){
-                GameBoard.setTranslateX(0.0);
-            } else if (GameBoard.getTranslateX() < GameScreen.getWidth() - GameBoard.getWidth() ){
-                GameBoard.setTranslateX(GameScreen.getWidth() - GameBoard.getWidth());
+        } else if (levelPane.getWidth() > GameScreen.getWidth()){
+            if (levelPane.getTranslateX() > 0){
+                levelPane.setTranslateX(0.0);
+            } else if (levelPane.getTranslateX() < GameScreen.getWidth() - levelPane.getWidth() ){
+                levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
             }
-            if (GameBoard.getTranslateY() < 0){
-                GameBoard.setTranslateY(0.0);
-            } else if (GameBoard.getTranslateY() > GameScreen.getHeight() - GameBoard.getHeight() ){
-                GameBoard.setTranslateY(GameScreen.getHeight() - GameBoard.getHeight());
+            if (levelPane.getTranslateY() < 0){
+                levelPane.setTranslateY(0.0);
+            } else if (levelPane.getTranslateY() > GameScreen.getHeight() - levelPane.getHeight() ){
+                levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
-        } else if (GameBoard.getHeight() > GameScreen.getHeight()){
-            if (GameBoard.getTranslateX() < 0){
-                GameBoard.setTranslateX(0.0);
-            } else if (GameBoard.getTranslateX() > GameScreen.getWidth() - GameBoard.getWidth() ){
-                GameBoard.setTranslateX(GameScreen.getWidth() - GameBoard.getWidth());
+        } else if (levelPane.getHeight() > GameScreen.getHeight()){
+            if (levelPane.getTranslateX() < 0){
+                levelPane.setTranslateX(0.0);
+            } else if (levelPane.getTranslateX() > GameScreen.getWidth() - levelPane.getWidth() ){
+                levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
             }
-            if (GameBoard.getTranslateY() > 0){
-                GameBoard.setTranslateY(0.0);
-            } else if (GameBoard.getTranslateY() < GameScreen.getHeight() - GameBoard.getHeight() ){
-                GameBoard.setTranslateY(GameScreen.getHeight() - GameBoard.getHeight());
+            if (levelPane.getTranslateY() > 0){
+                levelPane.setTranslateY(0.0);
+            } else if (levelPane.getTranslateY() < GameScreen.getHeight() - levelPane.getHeight() ){
+                levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
         } else {
-            if (GameBoard.getTranslateY() < 0){
-                GameBoard.setTranslateY(0.0);
-            } else if (GameBoard.getTranslateY() + GameBoard.getHeight() > GameScreen.getHeight()){
-                GameBoard.setTranslateY(GameScreen.getHeight() - GameBoard.getHeight());
+            if (levelPane.getTranslateY() < 0){
+                levelPane.setTranslateY(0.0);
+            } else if (levelPane.getTranslateY() + levelPane.getHeight() > GameScreen.getHeight()){
+                levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
-            if (GameBoard.getTranslateX() < 0) {
-                GameBoard.setTranslateX(0.0);
-            } else if (GameBoard.getTranslateX() + GameBoard.getWidth() > GameScreen.getWidth()){
-                GameBoard.setTranslateX(GameScreen.getWidth() - GameBoard.getWidth());
+            if (levelPane.getTranslateX() < 0) {
+                levelPane.setTranslateX(0.0);
+            } else if (levelPane.getTranslateX() + levelPane.getWidth() > GameScreen.getWidth()){
+                levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
             }
         }
     }
