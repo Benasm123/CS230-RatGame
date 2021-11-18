@@ -192,6 +192,7 @@ public class Level {
 
     public void pauseLoop(){
         isPaused = !isPaused;
+        firstLoop = true;
     }
 
     /**
