@@ -31,6 +31,9 @@ public class Rat {
     private int[] maleRats;
     private int[] femaleRats;
 
+    // TODO: Constructor
+    // TODO: Move function and rotate function
+    // TODO: Add an update function.
 //    public Rat(type, xPos, yPos, isDeathRat){
 //        this.xPos = xPos
 //        }
