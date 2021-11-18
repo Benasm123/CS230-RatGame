@@ -16,7 +16,6 @@ public class LevelSelect {
 
     @FXML
     VBox LevelButtons;
-
     public void initialize(){
         String[] allLevels = new File("src/Levels/").list();
 
