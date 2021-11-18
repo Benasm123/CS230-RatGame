@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Random;
 
+// TODO: Add functionality to settings
+// TODO: Add player profile selection and changing
 public class MainMenu {
     public void initialize(){
         updateMessage();

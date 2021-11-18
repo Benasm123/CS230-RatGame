@@ -15,7 +15,7 @@ import java.util.Random;
 public class Rat {
     private static final int WINDOW_WIDTH = 40;
     private static final int WINDOW_HEIGHT = 10;
-    
+
     Image maleRat = new Image("Assets/Male.png");
     Image femaleRat = new Image("Assets/Female.png");
     Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -31,6 +31,28 @@ public class Rat {
     private int[] maleRats;
     private int[] femaleRats;
 
+    // TODO: Constructor
+    // TODO: Move function and rotate function
+    // TODO: Add an update function.
+//    public Rat(type, xPos, yPos, isDeathRat){
+//        this.xPos = xPos
+//        }
+
+//    public void move(float deltaTime){
+//        posX = velX * deltaTime;
+//        posY = velY * deltaTime;
+//    }
+//
+//    float rotation;
+//
+//    public float getRotation() {
+//        return rotation;
+//    }
+//
+//    public void update(float deltaTime){
+//        this.move(deltaTime);
+//        this.rotate();
+//    }
 
     public void draw(){
         GraphicsContext gc = canvas.getGraphicsContext2D();
