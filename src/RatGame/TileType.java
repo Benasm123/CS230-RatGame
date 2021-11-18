@@ -1,16 +1,18 @@
 package RatGame;
 
-public enum TileType {
-    Grass ("Assets/Grass.png", false),
-    Path("Assets/Path.png",true),
-    Tunnel("Assets/Tunnel.png",false),
-    VerticalTunnel ("Assets/TunnelVertical.png",false);
+import javafx.scene.image.Image;
 
-    String tileName;
+public enum TileType {
+    Grass (new Image("Assets/Grass.png"), false),
+    Path(new Image("Assets/Path.png"),true),
+    Tunnel(new Image("Assets/Tunnel.png"),false),
+    VerticalTunnel (new Image("Assets/TunnelVertical.png"),false);
+
+    Image texture;
     boolean isTraversable;
 
-    TileType (String tileName, boolean isTraversable) {
-        this.tileName = tileName;
+    TileType (Image texture, boolean isTraversable) {
+        this.texture = texture;
         this.isTraversable = isTraversable;
     }
 }

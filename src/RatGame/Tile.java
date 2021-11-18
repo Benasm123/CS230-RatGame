@@ -1,7 +1,5 @@
 package RatGame;
 
-import javafx.scene.image.Image;
-
 public class Tile {
 
     private float posX;
@@ -9,8 +7,6 @@ public class Tile {
     private int tileHeight;
     private int tileWidth;
     private TileType type;
-    private Image texture;
-
 
     public Tile(float posX, float posY, int tileHeight, int tileWidth, TileType type) {
         this.posX = posX;
@@ -18,6 +14,7 @@ public class Tile {
         this.tileHeight = tileHeight;
         this.tileWidth = tileWidth;
         this.type = type;
+
     }
 
     public TileType getType() {
