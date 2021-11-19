@@ -86,6 +86,7 @@ public class Rat {
         return paths.get(rand.nextInt(paths.size()));
     }
 
+    // Added Level grid as a parameter here and in checkPaths so that i can pass it in to the update method so you have access to the level.
     // This need to be tidied up, lots of repeated code and a pain to work with, i know this is how ive done it but it was
     // for testing purposes.
     public void move(float deltaTime, char[][] levelGrid){
