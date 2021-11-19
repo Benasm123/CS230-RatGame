@@ -63,7 +63,7 @@ public class Rat {
     // I know i did but i wouldn't return a pair here, you can directly edit the velocity at the end, and saves memory,
     // so when you do everything instead of returning just directly set the xVel and yVel, tidies it up too,
     // and maybe change the name to something like setDirection, just to be more clear it edits it
-    private Pair<Integer, Integer> checkPaths(int x, int y, int lastX, int lastY){
+    private Pair<Integer, Integer> checkPaths(char[][] levelGrid, int x, int y, int lastX, int lastY){
         ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
 
         if (levelGrid[x+1][y] != 'G' && x + 1 != lastX) {
@@ -88,7 +88,7 @@ public class Rat {
 
     // This need to be tidied up, lots of repeated code and a pain to work with, i know this is how ive done it but it was
     // for testing purposes.
-    public void move(float deltaTime){
+    public void move(float deltaTime, char[][] levelGrid){
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
         img.setTranslateX(xPos*50);
@@ -97,7 +97,7 @@ public class Rat {
             if ((int)xPos+1 != lastX) {
                 xPos = (int)xPos+1;
                 yPos = (int)yPos;
-                Pair<Integer, Integer> vel = checkPaths((int)xPos, (int)yPos, lastX, lastY);
+                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
                 xVel = vel.getKey();
                 yVel = vel.getValue();
                 lastX = (int) xPos;
@@ -107,7 +107,7 @@ public class Rat {
             if ((int)yPos+1 != lastY) {
                 xPos = (int)xPos;
                 yPos = (int)yPos+1;
-                Pair<Integer, Integer> vel = checkPaths((int)xPos, (int)yPos, lastX, lastY);
+                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
                 xVel = vel.getKey();
                 yVel = vel.getValue();
                 lastX = (int) xPos;
@@ -118,7 +118,7 @@ public class Rat {
             if ((int)xPos != lastX || (int)yPos != lastY) {
                 xPos = (int)xPos;
                 yPos = (int)yPos;
-                Pair<Integer, Integer> vel = checkPaths((int)xPos, (int)yPos, lastX, lastY);
+                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
                 xVel = vel.getKey();
                 yVel = vel.getValue();
                 lastX = (int) xPos;
@@ -150,8 +150,8 @@ public class Rat {
     }
 
     // Commented out move as right now this is trying ot check a null array.
-    public void update(float deltaTime){
-//        this.move(deltaTime);
+    public void update(float deltaTime, char[][] levelGrid){
+        this.move(deltaTime, levelGrid);
         this.setRotation(img);
    }
 

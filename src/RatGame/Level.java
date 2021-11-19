@@ -205,7 +205,7 @@ public class Level {
         GraphicsContext gc = GameBoard.getGraphicsContext2D();
         spawnTiles(gc);
         for (Rat rat:rats){
-            rat.update(deltaTime);
+            rat.update(deltaTime, levelGrid);
         }
 //        setRotate();
 //        testMove(deltaTime);
