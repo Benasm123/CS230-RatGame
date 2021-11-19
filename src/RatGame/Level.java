@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -26,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
-
-import static java.time.LocalTime.now;
 
 public class Level {
     long pauseStart;
@@ -67,6 +66,9 @@ public class Level {
 
     @FXML
     private StackPane levelPane;
+
+    @FXML
+    private Text fpsCount;
 
     float testX = 1.0f;
     float testY = 1.0f;
@@ -183,17 +185,24 @@ public class Level {
 
     }
 
+
+
     public void update(float deltaTime){
         GraphicsContext gc = GameBoard.getGraphicsContext2D();
         spawnTiles(gc);
         setRotate();
         testMove(deltaTime);
+        updateFPSCount(deltaTime);
         //gc.drawImage(testImg.getImage(), testX * TILE_HEIGHT, testY * TILE_WIDTH);
     }
 
     public void pauseLoop(){
         isPaused = !isPaused;
         firstLoop = true;
+    }
+
+    public void updateFPSCount(float deltaTime){
+        fpsCount.setText("FPS: " + (int)(1/deltaTime));
     }
 
     /**

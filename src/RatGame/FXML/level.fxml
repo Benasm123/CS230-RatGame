@@ -19,6 +19,11 @@
                         <Canvas fx:id="GameBoard" height="500.0" width="500.0" />
                      </children>
                   </StackPane>
+                  <Text fx:id="fpsCount" layoutX="50.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="fps: ">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Text>
                </children>
             </Pane>
          </children></AnchorPane>
