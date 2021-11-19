@@ -1,8 +1,10 @@
 package RatGame;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class PlayerProfile
 {
@@ -84,5 +86,21 @@ public class PlayerProfile
 		{
 			System.out.println("Failed to delete the file.");
 		}
+	}
+	public void load(String save)
+	{
+		try {
+		      File myObj = new File(save + ".txt");
+		      Scanner in = new Scanner(myObj);
+		      
+		      name = in.nextLine();
+		      score = Integer.parseInt(in.nextLine());
+		      level = Integer.parseInt(in.nextLine());
+		      
+		      in.close();
+		    } catch (FileNotFoundException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		    }
 	}
 }
