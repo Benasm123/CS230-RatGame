@@ -7,6 +7,9 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.Random;
 
+// General notes: Careful with magic numbers, and make sure almost all variables are private and if we need to use them create getters
+// and setters.
+
 public class Rat {
     // I think better to call this texture, as Rat.rat isnt going to be clear as what this variable acutally holds.
     Image rat;
@@ -42,16 +45,22 @@ public class Rat {
         // This looks good, but again id just refactor the rat variable to texture
         // Also it would be a lot better if instead of a string for type you had an enum (like in the Tile class) that way typos wont be a common bug.
         // Then id have ratType.DeathRat or RatType.BabyRat or RatType.AdultRat... and so on
+        img = new ImageView();
         if(isDeathRat==true){
             rat = new Image("Assets/Death.png");
+            img.setImage(rat);
         }else if(type.equalsIgnoreCase("male")){
             rat = new Image("Assets/Male.png");
+            img.setImage(rat);
         }else if(type.equalsIgnoreCase("female")){
             rat = new Image("Assets/Female.png");
+            img.setImage(rat);
         }
+        img.setTranslateX(xPos*50);
+        img.setTranslateY(yPos*50);
     }
 
-    // I know i wouldnt return a pair here, you can directly edit the velocity at the end, and saves memory,
+    // I know i did but i wouldn't return a pair here, you can directly edit the velocity at the end, and saves memory,
     // so when you do everything instead of returning just directly set the xVel and yVel, tidies it up too,
     // and maybe change the name to something like setDirection, just to be more clear it edits it
     private Pair<Integer, Integer> checkPaths(int x, int y, int lastX, int lastY){
@@ -139,10 +148,10 @@ public class Rat {
     public void setRotation(ImageView img){
         img.setRotate(getRotation());
     }
-    
 
+    // Commented out move as right now this is trying ot check a null array.
     public void update(float deltaTime){
-        this.move(deltaTime);
+//        this.move(deltaTime);
         this.setRotation(img);
    }
 
