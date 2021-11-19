@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Rat {
+    // I think better to call this texture, as Rat.rat isnt going to be clear as what this variable acutally holds.
     Image rat;
     ImageView img;
 
@@ -17,12 +18,16 @@ public class Rat {
     private float xVel=5.0f;
     private float yVel=0.0f;
 
+    // rat doesnt care about what other rats exist, only itself. Dont think as this class as all the rats, but each individual rat.
+    // So each instance will only ever care about itself and no other rat (Other than when they need to interact, but well manage that in the level class).
     private int[] maleRats;
     private int[] femaleRats;
 
     private boolean isDeathRat;
+    // rat class doesnt need to store the level grid, youll have it passed where you need it
     private char[][] levelGrid;
 
+    // You want to set this in the constructor as you want hte lastX/Y to be set on where the rat spawns, but if you do it here it will always initialize to 0.
     int lastX = (int)xPos;
     int lastY = (int)yPos;
 
@@ -33,6 +38,10 @@ public class Rat {
         this.xPos = xPos;
         this.yPos = yPos;
         this.isDeathRat = isDeathRat;
+        // You can just put isDeathRat, as its a bool it will return either true or false already == true is redundant and messy imo.
+        // This looks good, but again id just refactor the rat variable to texture
+        // Also it would be a lot better if instead of a string for type you had an enum (like in the Tile class) that way typos wont be a common bug.
+        // Then id have ratType.DeathRat or RatType.BabyRat or RatType.AdultRat... and so on
         if(isDeathRat==true){
             rat = new Image("Assets/Death.png");
         }else if(type.equalsIgnoreCase("male")){
@@ -42,6 +51,9 @@ public class Rat {
         }
     }
 
+    // I know i wouldnt return a pair here, you can directly edit the velocity at the end, and saves memory,
+    // so when you do everything instead of returning just directly set the xVel and yVel, tidies it up too,
+    // and maybe change the name to something like setDirection, just to be more clear it edits it
     private Pair<Integer, Integer> checkPaths(int x, int y, int lastX, int lastY){
         ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
 
@@ -65,6 +77,8 @@ public class Rat {
         return paths.get(rand.nextInt(paths.size()));
     }
 
+    // This need to be tidied up, lots of repeated code and a pain to work with, i know this is how ive done it but it was
+    // for testing purposes.
     public void move(float deltaTime){
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
@@ -105,6 +119,7 @@ public class Rat {
 
     }
 
+    // this can setRotation as well, as this always refers to the current instance of rat you can just set rotation to the return value and not return anything.
     public float getRotation() {
         if (xVel < 0) {
             rotation = 90.0f;
@@ -118,9 +133,13 @@ public class Rat {
         return rotation;
     }
 
+    // yeah here this is redundant you can just copy the code above and set rotation instead of return and set getRotation to just return this.rotation or however java does that.
+    // Oh also just noticed your changing the rotation of the img directly, i would use this to set the variable you have called rotation. Because we might need rotation later for more
+    // uses and then when we need to actually draw the image well set the rotation of the rat there.
     public void setRotation(ImageView img){
         img.setRotate(getRotation());
     }
+    
 
     public void update(float deltaTime){
         this.move(deltaTime);
