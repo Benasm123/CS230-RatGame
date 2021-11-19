@@ -443,10 +443,6 @@ public class Level {
                 }
             }
         }
-        for (ImageView img : toAdd){
-            System.out.println(img.getTranslateX());
-        }
-        levelPane.getChildren().addAll(toAdd);
     }
 
     // TODO Once we have a tiles class we will need to use those instead of hard coding to draw.#
