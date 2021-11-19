@@ -74,113 +74,14 @@ public class Level {
     @FXML
     private Text fpsCount;
 
-//    float testX = 1.0f;
-//    float testY = 1.0f;
-//
-//    float testXVel = 5.0f;
-//    float testYVel = 0.0f;
-//
-//    ImageView testImg;
-//    Image testIm = new Image("Assets/Male.png");
-//
-//    int lastX = (int)testX;
-//    int lastY = (int)testX;
-//
-//    private Pair<Integer, Integer> checkPaths(int x, int y, int lastX, int lastY){
-//        ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
-//
-////        System.out.println(levelGrid[x+1][y]);
-//        if (levelGrid[x+1][y] != 'G' && x + 1 != lastX) {
-//            paths.add(new Pair<>(5, 0));
-//        }
-//        if (levelGrid[x-1][y] != 'G' && x - 1 != lastX) {
-//            paths.add(new Pair<>(-5, 0));
-//        }
-//        if (levelGrid[x][y+1] != 'G' && y + 1 != lastY) {
-//            paths.add(new Pair<>(0, 5));
-//        }
-//        if (levelGrid[x][y-1] != 'G' && y - 1 != lastY) {
-//            paths.add(new Pair<>(0, -5));
-//        }
-//
-//        if (paths.size() == 0) {
-//
-//            return new Pair<>((lastX - x)*5, (lastY - y)*5);
-//        }
-//        Random rand = new Random();
-//        return paths.get(rand.nextInt(paths.size()));
-//    }
-//
-//    public void setRotate(){
-//        if (testXVel < 0) {
-//            testImg.setRotate(90.0);
-//        } else if (testXVel > 0) {
-//            testImg.setRotate(270);
-//        } else if (testYVel > 0) {
-//            testImg.setRotate(0);
-//        } else {
-//            testImg.setRotate(180);
-//        }
-//    }
-//
-//    public void testMove(float deltaTime){
-//        testX += testXVel * deltaTime;
-//        testY += testYVel * deltaTime;
-//        testImg.setTranslateX(testX*50);
-//        testImg.setTranslateY(testY*50);
-//        if (testXVel < 0){
-//            if ((int)testX+1 != lastX) {
-//                testX = (int)testX+1;
-//                testY = (int)testY;
-//                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
-//                testXVel = vel.getKey();
-//                testYVel = vel.getValue();
-//                lastX = (int) testX;
-//                lastY = (int) testY;
-//            }
-//        } else if (testYVel < 0) {
-//            if ((int)testY+1 != lastY) {
-//                testX = (int)testX;
-//                testY = (int)testY+1;
-//                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
-//                testXVel = vel.getKey();
-//                testYVel = vel.getValue();
-//                lastX = (int) testX;
-//                lastY = (int) testY;
-//                testImg.setRotate(180.0);
-//            }
-//        } else {
-//            if ((int)testX != lastX || (int)testY != lastY) {
-//                testX = (int)testX;
-//                testY = (int)testY;
-//                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
-//                testXVel = vel.getKey();
-//                testYVel = vel.getValue();
-//                lastX = (int) testX;
-//                lastY = (int) testY;
-//            }
-//        }
-//    }
-
-
-    ArrayList<ImageView> toAdd = new ArrayList<>();
-
+    // TODO: This need to be added to the rat class.
     public void drawRat(Rat rat){
         rat.img.setFitHeight(50.0);
         rat.img.setFitWidth(50.0);
         rat.img.setViewport(new Rectangle2D(-14, -4, 50, 50));
-        toAdd.add(rat.img);
     }
 
     public void initialize(){
-//        testImg = new ImageView();
-//        testImg.setImage(testIm);
-//        testImg.setFitHeight(50.0);
-//        testImg.setFitWidth(50.0);
-//        testImg.setViewport(new Rectangle2D(-14, -4, 50, 50));
-//        levelPane.getChildren().add(testImg);
-
-
         firstLoop = true;
         gameLoop = new AnimationTimer() {
             @Override
@@ -207,9 +108,6 @@ public class Level {
         for (Rat rat:rats){
             rat.update(deltaTime, levelGrid);
         }
-//        setRotate();
-//        testMove(deltaTime);
-        //gc.drawImage(testImg.getImage(), testX * TILE_HEIGHT, testY * TILE_WIDTH);
     }
 
     public void pauseLoop(){
@@ -222,9 +120,9 @@ public class Level {
     }
 
     /**
-     * Switch scene to the main menu.
+     * Return from the level to the main menu.
      * @param event The action that triggered this.
-     * @throws IOException If file does not exist will throw exception.
+     * @throws IOException If the FXML file does not exist will throw exception.
      */
     public void exitPressed(ActionEvent event) throws IOException {
         gameLoop.stop();
