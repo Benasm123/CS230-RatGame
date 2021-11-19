@@ -74,4 +74,15 @@ public class PlayerProfile
 			e.printStackTrace();
 		}
 	}
+	public void deleteSave(String save)
+	{
+		File myObj = new File(save + ".txt");
+		if (myObj.delete())
+		{
+			System.out.println("Save deleted");
+		} else
+		{
+			System.out.println("Failed to delete the file.");
+		}
+	}
 }
