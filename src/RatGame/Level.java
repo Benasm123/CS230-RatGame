@@ -174,11 +174,12 @@ public class Level {
                     firstLoop = false;
                     lastFrameTime = now;
                 }
+                float deltaTime = (float) ((now - lastFrameTime) / 1e9);
+                updateFPSCount(deltaTime);
                 if (!isPaused){
-                    float deltaTime = (float) ((now - lastFrameTime) / 1e9);
                     update(deltaTime);
-                    lastFrameTime = now;
                 }
+                lastFrameTime = now;
             }
         };
         gameLoop.start();
@@ -192,7 +193,6 @@ public class Level {
         spawnTiles(gc);
         setRotate();
         testMove(deltaTime);
-        updateFPSCount(deltaTime);
         //gc.drawImage(testImg.getImage(), testX * TILE_HEIGHT, testY * TILE_WIDTH);
     }
 
