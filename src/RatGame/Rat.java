@@ -1,80 +1,131 @@
 package RatGame;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.image.ImageView;
+import javafx.util.Pair;
+
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Rat {
-    private static final int WINDOW_WIDTH = 40;
-    private static final int WINDOW_HEIGHT = 10;
+    Image rat;
+    ImageView img;
 
-    Image maleRat = new Image("Assets/Male.png");
-    Image femaleRat = new Image("Assets/Female.png");
-    Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
+    private float xPos;
+    private float yPos;
 
-    Random rnd = new Random();
-
-    private int x = rnd.nextInt(2);//male rat number
-    private int y = rnd.nextInt(2);//female rat number
-
-    private int ratX = 1;
-    private int ratY = 1;
+    private float xVel=5.0f;
+    private float yVel=0.0f;
 
     private int[] maleRats;
     private int[] femaleRats;
 
-    // TODO: Constructor
-    // TODO: Move function and rotate function
-    // TODO: Add an update function.
-//    public Rat(type, xPos, yPos, isDeathRat){
-//        this.xPos = xPos
-//        }
+    private boolean isDeathRat;
+    private char[][] levelGrid;
 
-//    public void move(float deltaTime){
-//        posX = velX * deltaTime;
-//        posY = velY * deltaTime;
-//    }
-//
-//    float rotation;
-//
-//    public float getRotation() {
-//        return rotation;
-//    }
-//
-//    public void update(float deltaTime){
-//        this.move(deltaTime);
-//        this.rotate();
-//    }
+    int lastX = (int)xPos;
+    int lastY = (int)yPos;
 
-    public void draw(){
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+    float rotation;
 
-        for(int i=0 ;i<WINDOW_WIDTH; i+=5){
-            if(i <= x){
-                gc.drawImage(maleRat, ratX,ratY * WINDOW_HEIGHT);
-                gc.drawImage(femaleRat, ratX,ratY * WINDOW_WIDTH);
+    // TODO: Move function
+    public Rat(String type, int xPos, int yPos, boolean isDeathRat){
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.isDeathRat = isDeathRat;
+        if(isDeathRat==true){
+            rat = new Image("Assets/Death.png");
+        }else if(type.equalsIgnoreCase("male")){
+            rat = new Image("Assets/Male.png");
+        }else if(type.equalsIgnoreCase("female")){
+            rat = new Image("Assets/Female.png");
+        }
+    }
+
+    private Pair<Integer, Integer> checkPaths(int x, int y, int lastX, int lastY){
+        ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
+
+        if (levelGrid[x+1][y] != 'G' && x + 1 != lastX) {
+            paths.add(new Pair<>(5, 0));
+        }
+        if (levelGrid[x-1][y] != 'G' && x - 1 != lastX) {
+            paths.add(new Pair<>(-5, 0));
+        }
+        if (levelGrid[x][y+1] != 'G' && y + 1 != lastY) {
+            paths.add(new Pair<>(0, 5));
+        }
+        if (levelGrid[x][y-1] != 'G' && y - 1 != lastY) {
+            paths.add(new Pair<>(0, -5));
+        }
+
+        if (paths.size() == 0) {
+            return new Pair<>((lastX - x)*5, (lastY - y)*5);
+        }
+        Random rand = new Random();
+        return paths.get(rand.nextInt(paths.size()));
+    }
+
+    public void move(float deltaTime){
+        xPos += xVel * deltaTime;
+        yPos += yVel * deltaTime;
+        img.setTranslateX(xPos*50);
+        img.setTranslateY(yPos*50);
+        if (xVel < 0){
+            if ((int)xPos+1 != lastX) {
+                xPos = (int)xPos+1;
+                yPos = (int)yPos;
+                Pair<Integer, Integer> vel = checkPaths((int)xPos, (int)yPos, lastX, lastY);
+                xVel = vel.getKey();
+                yVel = vel.getValue();
+                lastX = (int) xPos;
+                lastY = (int) yPos;
+            }
+        }else if (yVel < 0) {
+            if ((int)yPos+1 != lastY) {
+                xPos = (int)xPos;
+                yPos = (int)yPos+1;
+                Pair<Integer, Integer> vel = checkPaths((int)xPos, (int)yPos, lastX, lastY);
+                xVel = vel.getKey();
+                yVel = vel.getValue();
+                lastX = (int) xPos;
+                lastY = (int) yPos;
+                img.setRotate(180.0);
+            }
+        }else {
+            if ((int)xPos != lastX || (int)yPos != lastY) {
+                xPos = (int)xPos;
+                yPos = (int)yPos;
+                Pair<Integer, Integer> vel = checkPaths((int)xPos, (int)yPos, lastX, lastY);
+                xVel = vel.getKey();
+                yVel = vel.getValue();
+                lastX = (int) xPos;
+                lastY = (int) yPos;
             }
         }
+
     }
-    public void tick() {
 
-        ratX = ratX + 1;
-        draw();
-
-        if (ratX > 11) {
-            for(int i=11; i>0 ; i--)
-            ratX = ratX - 1;
-            draw();
+    public float getRotation() {
+        if (xVel < 0) {
+            rotation = 90.0f;
+        } else if (xVel > 0) {
+            rotation = 270.0f;
+        } else if (yVel > 0) {
+            rotation = 0.0f ;
+        } else {
+            rotation = 180.0f;
         }
-        // We then redraw the whole canvas.
-
+        return rotation;
     }
+
+    public void setRotation(ImageView img){
+        img.setRotate(getRotation());
+    }
+
+    public void update(float deltaTime){
+        this.move(deltaTime);
+        this.setRotation(img);
+   }
+
+
 }
