@@ -154,6 +154,7 @@ public class Level {
             }
         }
     }
+    AnimationTimer timer;
 
     public void initialize(){
         testImg = new ImageView();
@@ -164,7 +165,7 @@ public class Level {
         levelPane.getChildren().add(testImg);
 
         firstLoop = true;
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (firstLoop){
@@ -200,7 +201,9 @@ public class Level {
      * @param event The action that triggered this.
      * @throws IOException If file does not exist will throw exception.
      */
-    public void switchToMainMenu(ActionEvent event) throws IOException {
+    public void exitPressed(ActionEvent event) throws IOException {
+        timer.stop();
+
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
