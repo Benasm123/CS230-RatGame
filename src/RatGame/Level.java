@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
@@ -50,6 +49,8 @@ public class Level {
 
     private double lastMouseX;
     private double lastMouseY;
+
+    AnimationTimer gameLoop;
 
     // TODO Remove, these should be stored in the tiles
     Image grassTile = new Image("Assets/Grass.png");
@@ -154,7 +155,6 @@ public class Level {
             }
         }
     }
-    AnimationTimer timer;
 
     public void initialize(){
         testImg = new ImageView();
@@ -165,7 +165,7 @@ public class Level {
         levelPane.getChildren().add(testImg);
 
         firstLoop = true;
-        timer = new AnimationTimer() {
+        gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (firstLoop){
@@ -179,7 +179,7 @@ public class Level {
                 }
             }
         };
-        timer.start();
+        gameLoop.start();
 
     }
 
@@ -202,7 +202,7 @@ public class Level {
      * @throws IOException If file does not exist will throw exception.
      */
     public void exitPressed(ActionEvent event) throws IOException {
-        timer.stop();
+        gameLoop.stop();
 
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
