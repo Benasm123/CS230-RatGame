@@ -16,7 +16,7 @@
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c9e0f5" height="100000.0" stroke="BLACK" strokeType="INSIDE" width="100000.0" />
                   <StackPane fx:id="levelPane" alignment="TOP_LEFT" onMouseDragged="#onDragLevel" onMousePressed="#getMousePosOnClicked" onMouseReleased="#clampToGameScreen">
                      <children>
-                        <Canvas fx:id="GameBoard" height="500.0" onMouseDragged="#onDragLevel" onMousePressed="#getMousePosOnClicked" onMouseReleased="#clampToGameScreen" width="500.0" />
+                        <Canvas fx:id="GameBoard" height="500.0" width="500.0" />
                      </children>
                   </StackPane>
                </children>

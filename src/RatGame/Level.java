@@ -236,12 +236,12 @@ public class Level {
         if (levelPane.getWidth() > GameScreen.getWidth() && levelPane.getHeight() > GameScreen.getHeight()) {
             if (levelPane.getTranslateX() > 0) {
                 levelPane.setTranslateX(0.0);
-            } else if (levelPane.getTranslateX() < levelPane.getWidth() - levelPane.getWidth()) {
+            } else if (levelPane.getTranslateX() < GameScreen.getWidth() - levelPane.getWidth()) {
                 levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
             }
             if (levelPane.getTranslateY() > 0) {
                 levelPane.setTranslateY(0.0);
-            } else if (levelPane.getTranslateY() < levelPane.getHeight() - levelPane.getHeight()) {
+            } else if (levelPane.getTranslateY() < GameScreen.getHeight() - levelPane.getHeight()) {
                 levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
         } else if (levelPane.getWidth() > GameScreen.getWidth()){
