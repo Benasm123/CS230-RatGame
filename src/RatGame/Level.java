@@ -17,7 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,7 +24,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Scanner;
 
 public class Level {
@@ -45,6 +43,12 @@ public class Level {
     private static final int TILE_WIDTH = 50;
 
     private char[][] levelGrid;
+    private char[][] ratSpawnGrid;
+
+    private ArrayList<Rat> rats = new ArrayList<>();
+    private int numOfRatsAlive;
+    private int numOfMaleRatsAlive;
+    private int numOfFemaleRatsAlive;
 
     private double lastMouseX;
     private double lastMouseY;
@@ -70,101 +74,112 @@ public class Level {
     @FXML
     private Text fpsCount;
 
-    float testX = 1.0f;
-    float testY = 1.0f;
+//    float testX = 1.0f;
+//    float testY = 1.0f;
+//
+//    float testXVel = 5.0f;
+//    float testYVel = 0.0f;
+//
+//    ImageView testImg;
+//    Image testIm = new Image("Assets/Male.png");
+//
+//    int lastX = (int)testX;
+//    int lastY = (int)testX;
+//
+//    private Pair<Integer, Integer> checkPaths(int x, int y, int lastX, int lastY){
+//        ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
+//
+////        System.out.println(levelGrid[x+1][y]);
+//        if (levelGrid[x+1][y] != 'G' && x + 1 != lastX) {
+//            paths.add(new Pair<>(5, 0));
+//        }
+//        if (levelGrid[x-1][y] != 'G' && x - 1 != lastX) {
+//            paths.add(new Pair<>(-5, 0));
+//        }
+//        if (levelGrid[x][y+1] != 'G' && y + 1 != lastY) {
+//            paths.add(new Pair<>(0, 5));
+//        }
+//        if (levelGrid[x][y-1] != 'G' && y - 1 != lastY) {
+//            paths.add(new Pair<>(0, -5));
+//        }
+//
+//        if (paths.size() == 0) {
+//
+//            return new Pair<>((lastX - x)*5, (lastY - y)*5);
+//        }
+//        Random rand = new Random();
+//        return paths.get(rand.nextInt(paths.size()));
+//    }
+//
+//    public void setRotate(){
+//        if (testXVel < 0) {
+//            testImg.setRotate(90.0);
+//        } else if (testXVel > 0) {
+//            testImg.setRotate(270);
+//        } else if (testYVel > 0) {
+//            testImg.setRotate(0);
+//        } else {
+//            testImg.setRotate(180);
+//        }
+//    }
+//
+//    public void testMove(float deltaTime){
+//        testX += testXVel * deltaTime;
+//        testY += testYVel * deltaTime;
+//        testImg.setTranslateX(testX*50);
+//        testImg.setTranslateY(testY*50);
+//        if (testXVel < 0){
+//            if ((int)testX+1 != lastX) {
+//                testX = (int)testX+1;
+//                testY = (int)testY;
+//                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
+//                testXVel = vel.getKey();
+//                testYVel = vel.getValue();
+//                lastX = (int) testX;
+//                lastY = (int) testY;
+//            }
+//        } else if (testYVel < 0) {
+//            if ((int)testY+1 != lastY) {
+//                testX = (int)testX;
+//                testY = (int)testY+1;
+//                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
+//                testXVel = vel.getKey();
+//                testYVel = vel.getValue();
+//                lastX = (int) testX;
+//                lastY = (int) testY;
+//                testImg.setRotate(180.0);
+//            }
+//        } else {
+//            if ((int)testX != lastX || (int)testY != lastY) {
+//                testX = (int)testX;
+//                testY = (int)testY;
+//                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
+//                testXVel = vel.getKey();
+//                testYVel = vel.getValue();
+//                lastX = (int) testX;
+//                lastY = (int) testY;
+//            }
+//        }
+//    }
 
-    float testXVel = 5.0f;
-    float testYVel = 0.0f;
 
-    ImageView testImg;
-    Image testIm = new Image("Assets/Male.png");
+    ArrayList<ImageView> toAdd = new ArrayList<>();
 
-    int lastX = (int)testX;
-    int lastY = (int)testX;
-
-    private Pair<Integer, Integer> checkPaths(int x, int y, int lastX, int lastY){
-        ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
-
-//        System.out.println(levelGrid[x+1][y]);
-        if (levelGrid[x+1][y] != 'G' && x + 1 != lastX) {
-            paths.add(new Pair<>(5, 0));
-        }
-        if (levelGrid[x-1][y] != 'G' && x - 1 != lastX) {
-            paths.add(new Pair<>(-5, 0));
-        }
-        if (levelGrid[x][y+1] != 'G' && y + 1 != lastY) {
-            paths.add(new Pair<>(0, 5));
-        }
-        if (levelGrid[x][y-1] != 'G' && y - 1 != lastY) {
-            paths.add(new Pair<>(0, -5));
-        }
-
-        if (paths.size() == 0) {
-
-            return new Pair<>((lastX - x)*5, (lastY - y)*5);
-        }
-        Random rand = new Random();
-        return paths.get(rand.nextInt(paths.size()));
-    }
-
-    public void setRotate(){
-        if (testXVel < 0) {
-            testImg.setRotate(90.0);
-        } else if (testXVel > 0) {
-            testImg.setRotate(270);
-        } else if (testYVel > 0) {
-            testImg.setRotate(0);
-        } else {
-            testImg.setRotate(180);
-        }
-    }
-
-    public void testMove(float deltaTime){
-        testX += testXVel * deltaTime;
-        testY += testYVel * deltaTime;
-        testImg.setTranslateX(testX*50);
-        testImg.setTranslateY(testY*50);
-        if (testXVel < 0){
-            if ((int)testX+1 != lastX) {
-                testX = (int)testX+1;
-                testY = (int)testY;
-                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
-                testXVel = vel.getKey();
-                testYVel = vel.getValue();
-                lastX = (int) testX;
-                lastY = (int) testY;
-            }
-        } else if (testYVel < 0) {
-            if ((int)testY+1 != lastY) {
-                testX = (int)testX;
-                testY = (int)testY+1;
-                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
-                testXVel = vel.getKey();
-                testYVel = vel.getValue();
-                lastX = (int) testX;
-                lastY = (int) testY;
-                testImg.setRotate(180.0);
-            }
-        } else {
-            if ((int)testX != lastX || (int)testY != lastY) {
-                testX = (int)testX;
-                testY = (int)testY;
-                Pair<Integer, Integer> vel = checkPaths((int)testX, (int)testY, lastX, lastY);
-                testXVel = vel.getKey();
-                testYVel = vel.getValue();
-                lastX = (int) testX;
-                lastY = (int) testY;
-            }
-        }
+    public void drawRat(Rat rat){
+        rat.img.setFitHeight(50.0);
+        rat.img.setFitWidth(50.0);
+        rat.img.setViewport(new Rectangle2D(-14, -4, 50, 50));
+        toAdd.add(rat.img);
     }
 
     public void initialize(){
-        testImg = new ImageView();
-        testImg.setImage(testIm);
-        testImg.setFitHeight(50.0);
-        testImg.setFitWidth(50.0);
-        testImg.setViewport(new Rectangle2D(-14, -4, 50, 50));
-        levelPane.getChildren().add(testImg);
+//        testImg = new ImageView();
+//        testImg.setImage(testIm);
+//        testImg.setFitHeight(50.0);
+//        testImg.setFitWidth(50.0);
+//        testImg.setViewport(new Rectangle2D(-14, -4, 50, 50));
+//        levelPane.getChildren().add(testImg);
+
 
         firstLoop = true;
         gameLoop = new AnimationTimer() {
@@ -186,13 +201,14 @@ public class Level {
 
     }
 
-
-
     public void update(float deltaTime){
         GraphicsContext gc = GameBoard.getGraphicsContext2D();
         spawnTiles(gc);
-        setRotate();
-        testMove(deltaTime);
+        for (Rat rat:rats){
+            rat.update(deltaTime);
+        }
+//        setRotate();
+//        testMove(deltaTime);
         //gc.drawImage(testImg.getImage(), testX * TILE_HEIGHT, testY * TILE_WIDTH);
     }
 
@@ -292,6 +308,15 @@ public class Level {
         }
     }
 
+    int bombSpawnTime;
+    int gasSpawnTime;
+    int sterilisationSpawnTime;
+    int poisonSpawnTime;
+    int maleSexChangeSpawnTime;
+    int femaleSexChangeSpawnTime;
+    int noEntrySpawnTime;
+    int deathRatSpawnTime;
+
     // TODO create a createLevel method and separate readLevelFile and parseLevel and spawnTiles.
     /**
      * Reads in a file and parses the data for the level.
@@ -299,18 +324,38 @@ public class Level {
      */
     public void readLevelFile(String src){
         try {
+            // Read in file
             File levelFile = new File(src);
             Scanner fileReader = new Scanner(levelFile);
+
+            // Get the level Name from the path
             levelName = src.substring(11);
             System.out.println(levelName);
+
+            // Read level dimensions
             String levelDimensions = fileReader.nextLine();
             String[] levelDimensionsSplit = levelDimensions.split(" ");
             levelWidth = Integer.parseInt(levelDimensionsSplit[0]);
             levelHeight = Integer.parseInt(levelDimensionsSplit[1]);
 
+            // Read The item spawn times
+            String itemSpawnTimes = fileReader.nextLine();
+            String[] itemSpawnTimesSplit = itemSpawnTimes.split(" ");
+
+            bombSpawnTime = Integer.parseInt(itemSpawnTimesSplit[0]);
+            gasSpawnTime = Integer.parseInt(itemSpawnTimesSplit[1]);
+            sterilisationSpawnTime = Integer.parseInt(itemSpawnTimesSplit[2]);
+            poisonSpawnTime = Integer.parseInt(itemSpawnTimesSplit[3]);
+            maleSexChangeSpawnTime = Integer.parseInt(itemSpawnTimesSplit[4]);
+            femaleSexChangeSpawnTime = Integer.parseInt(itemSpawnTimesSplit[5]);
+            noEntrySpawnTime = Integer.parseInt(itemSpawnTimesSplit[6]);
+            deathRatSpawnTime = Integer.parseInt(itemSpawnTimesSplit[7]);
+
+            // Create the 2d array that holds tile positions.
             GameBoard.setHeight(TILE_HEIGHT * levelHeight);
             GameBoard.setWidth(TILE_WIDTH * levelWidth);
 
+            // TODO: Set this as a array of Tiles instead.
             levelGrid = new char[levelWidth][levelHeight];
             for (int row = 0; row < levelHeight; row++) {
                 String rowLayout = fileReader.nextLine();
@@ -318,6 +363,20 @@ public class Level {
                     levelGrid[col][row] = rowLayout.charAt(col);
                 }
             }
+
+            // Ignore the newline between the grids
+            fileReader.nextLine();
+
+            // Read rat positions and store to grid
+            ratSpawnGrid = new char[levelWidth][levelHeight];
+            for (int row = 0; row < levelHeight; row++) {
+                String rowLayout = fileReader.nextLine();
+                for (int col = 0; col < levelWidth; col++) {
+                    ratSpawnGrid[col][row] = rowLayout.charAt(col);
+                }
+            }
+
+
         } catch (FileNotFoundException e){
             e.printStackTrace();
         }
@@ -325,6 +384,7 @@ public class Level {
 //        GraphicsContext gc = GameBoard.getGraphicsContext2D();
 
         spawnTiles(GameBoard.getGraphicsContext2D());
+        spawnRats();
     }
 
     // TODO Once we have a player class store all saves for each player in the player folder instead.
@@ -360,6 +420,33 @@ public class Level {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void spawnRats(){
+        for (int row = 0; row < levelHeight ; row++){
+            for (int col = 0; col < levelWidth ; col++){
+                Rat rat;
+                if (ratSpawnGrid[col][row] == 'F'){
+                    rat = new Rat("female", col, row, false);
+                    levelPane.getChildren().add(rat.img);
+                    rats.add(rat);
+                    numOfFemaleRatsAlive++;
+                    numOfRatsAlive++;
+                    drawRat(rat);
+                } else if (ratSpawnGrid[col][row] == 'M'){
+                    rat = new Rat("male", col, row, false);
+                    levelPane.getChildren().add(rat.img);
+                    rats.add(rat);
+                    numOfMaleRatsAlive++;
+                    numOfRatsAlive++;
+                    drawRat(rat);
+                }
+            }
+        }
+        for (ImageView img : toAdd){
+            System.out.println(img.getTranslateX());
+        }
+        levelPane.getChildren().addAll(toAdd);
     }
 
     // TODO Once we have a tiles class we will need to use those instead of hard coding to draw.#
