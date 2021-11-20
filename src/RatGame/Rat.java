@@ -63,19 +63,19 @@ public class Rat {
     // I know i did but i wouldn't return a pair here, you can directly edit the velocity at the end, and saves memory,
     // so when you do everything instead of returning just directly set the xVel and yVel, tidies it up too,
     // and maybe change the name to something like setDirection, just to be more clear it edits it
-    private Pair<Integer, Integer> checkPaths(char[][] levelGrid, int x, int y, int lastX, int lastY){
+    private Pair<Integer, Integer> checkPaths(Tile[][] levelGrid, int x, int y, int lastX, int lastY){
         ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
 
-        if (levelGrid[x+1][y] != 'G' && x + 1 != lastX) {
+        if (levelGrid[x+1][y].getType().isTraversable && x + 1 != lastX) {
             paths.add(new Pair<>(5, 0));
         }
-        if (levelGrid[x-1][y] != 'G' && x - 1 != lastX) {
+        if (levelGrid[x-1][y].getType().isTraversable && x - 1 != lastX) {
             paths.add(new Pair<>(-5, 0));
         }
-        if (levelGrid[x][y+1] != 'G' && y + 1 != lastY) {
+        if (levelGrid[x][y+1].getType().isTraversable && y + 1 != lastY) {
             paths.add(new Pair<>(0, 5));
         }
-        if (levelGrid[x][y-1] != 'G' && y - 1 != lastY) {
+        if (levelGrid[x][y-1].getType().isTraversable && y - 1 != lastY) {
             paths.add(new Pair<>(0, -5));
         }
 
@@ -89,7 +89,7 @@ public class Rat {
     // Added Level grid as a parameter here and in checkPaths so that i can pass it in to the update method so you have access to the level.
     // This need to be tidied up, lots of repeated code and a pain to work with, i know this is how ive done it but it was
     // for testing purposes.
-    public void move(float deltaTime, char[][] levelGrid){
+    public void move(float deltaTime, Tile[][] levelGrid){
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
         img.setTranslateX(xPos*50);
@@ -151,7 +151,7 @@ public class Rat {
     }
 
     // Commented out move as right now this is trying ot check a null array.
-    public void update(float deltaTime, char[][] levelGrid){
+    public void update(float deltaTime, Tile[][] levelGrid){
         this.move(deltaTime, levelGrid);
         this.setRotation(img);
    }
