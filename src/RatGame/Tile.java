@@ -3,20 +3,18 @@ package RatGame;
 import javafx.scene.image.Image;
 
 public class Tile {
+    private final int tileHeight = 50;
+    private final int tileWidth = 50;
 
     private float posX;
     private float posY;
-    private int tileHeight;
-    private int tileWidth;
     private TileType type;
     private Image texture;
 
 
-    public Tile(float posX, float posY, int tileHeight, int tileWidth, TileType type) {
+    public Tile(float posX, float posY, TileType type) {
         this.posX = posX;
         this.posY = posY;
-        this.tileHeight = tileHeight;
-        this.tileWidth = tileWidth;
         this.type = type;
     }
 
