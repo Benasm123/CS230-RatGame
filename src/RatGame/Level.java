@@ -1,6 +1,7 @@
 package RatGame;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,10 +11,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -22,14 +26,29 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
+
+enum ItemTypes {
+    BOMB(0),
+    GAS(1),
+    STERILISATION(2),
+    POISON(3),
+    MALE_SEX_CHANGE(4),
+    FEMALE_SEX_CHANGE(5),
+    NO_ENTRY_SIGN(6),
+    DEATH_RAT(7);
+    
+    private final int arrayPos;
+    ItemTypes(int arrayPos){
+        this.arrayPos = arrayPos;
+    }
+
+    public int getArrayPos() {
+        return arrayPos;
+    }
+}
 
 public class Level {
-    long pauseStart;
-    long playStart;
-
     long lastFrameTime;
 
     boolean isPaused;
@@ -42,7 +61,9 @@ public class Level {
     private static final int TILE_HEIGHT = 50;
     private static final int TILE_WIDTH = 50;
 
-    private char[][] levelGrid;
+    private static final int SECOND_TO_MILLI = 1000;
+
+    private Tile[][] levelGrid;
     private char[][] ratSpawnGrid;
 
     private ArrayList<Rat> rats = new ArrayList<>();
@@ -50,16 +71,21 @@ public class Level {
     private int numOfMaleRatsAlive;
     private int numOfFemaleRatsAlive;
 
+    private ArrayList<Stack<Item>> items;
+
     private double lastMouseX;
     private double lastMouseY;
 
     AnimationTimer gameLoop;
 
-    // TODO Remove, these should be stored in the tiles
-    Image grassTile = new Image("Assets/Grass.png");
-    Image pathTile = new Image("Assets/Path.png");
-    Image tunnelTile = new Image("Assets/Tunnel.png");
-    Image tunnelVertTile = new Image("Assets/TunnelVertical.png");
+    Timer bombSpawnTimer;
+    Timer gasSpawnTimer;
+    Timer sterilisationSpawnTimer;
+    Timer poisonSpawnTimer;
+    Timer maleSexChangeSpawnTimer;
+    Timer femaleSexChangeSpawnTimer;
+    Timer noEntrySignSpawnTimer;
+    Timer deathRatSpawnTimer;
 
     // All FXML variables.
     @FXML
@@ -73,6 +99,12 @@ public class Level {
 
     @FXML
     private Text fpsCount;
+
+    @FXML
+    private GridPane inventoryGrid;
+
+    @FXML
+    private StackPane levelGameScreen;
 
     // TODO: This need to be added to the rat class.
     public void drawRat(Rat rat){
@@ -100,6 +132,12 @@ public class Level {
         };
         gameLoop.start();
 
+        bombSpawnTimer = new Timer();
+    }
+
+    private void stopGameLoop(){
+        gameLoop.stop();
+
     }
 
     public void update(float deltaTime){
@@ -114,6 +152,8 @@ public class Level {
         isPaused = !isPaused;
         firstLoop = true;
     }
+
+    int numOfBombs = 0;
 
     public void updateFPSCount(float deltaTime){
         fpsCount.setText("FPS: " + (int)(1/deltaTime));
@@ -254,11 +294,24 @@ public class Level {
             GameBoard.setWidth(TILE_WIDTH * levelWidth);
 
             // TODO: Set this as a array of Tiles instead.
-            levelGrid = new char[levelWidth][levelHeight];
+            levelGrid = new Tile[levelWidth][levelHeight];
             for (int row = 0; row < levelHeight; row++) {
                 String rowLayout = fileReader.nextLine();
                 for (int col = 0; col < levelWidth; col++) {
-                    levelGrid[col][row] = rowLayout.charAt(col);
+                    Tile tile = null;
+                    if (rowLayout.charAt(col) == 'G') {
+                        tile = new Tile(row, col, TileType.Grass);
+                    } else if (rowLayout.charAt(col) == 'P') {
+                        tile = new Tile(row, col, TileType.Path);
+                    } else if (rowLayout.charAt(col) == 'T') {
+                        tile = new Tile(row, col, TileType.Tunnel);
+                    } else if (rowLayout.charAt(col) == 'V') {
+                        tile = new Tile(row, col, TileType.VerticalTunnel);
+                    } else {
+                        System.out.println("There seems to be a error in the level file!");
+                    }
+
+                    levelGrid[col][row] = tile;
                 }
             }
 
@@ -279,10 +332,27 @@ public class Level {
             e.printStackTrace();
         }
 
-//        GraphicsContext gc = GameBoard.getGraphicsContext2D();
-
         spawnTiles(GameBoard.getGraphicsContext2D());
         spawnRats();
+
+        TimerTask addBomb = new TimerTask(){
+            public void run(){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        spawnItem(ItemTypes.BOMB);
+                    }
+                });
+            }
+        };
+
+        bombSpawnTimer.scheduleAtFixedRate(addBomb, (long) bombSpawnTime * SECOND_TO_MILLI, (long) bombSpawnTime * SECOND_TO_MILLI);
+
+        items = new ArrayList<>(8);
+        for (int i = 0; i < 8; i++){
+            Stack<Item> itemStack = new Stack<>();
+            items.add(itemStack);
+        }
     }
 
     // TODO Once we have a player class store all saves for each player in the player folder instead.
@@ -300,16 +370,16 @@ public class Level {
             fileWriter.write(levelHeight + " " + levelWidth + "\n");
             for (int row = 0; row < levelHeight; row++) {
                 for (int col = 0; col < levelWidth; col++) {
-                    if (levelGrid[col][row] == 'G'){
+                    if (levelGrid[col][row].getType() == TileType.Grass){
                         fileWriter.write("G");
-                    } else if (levelGrid[col][row] == 'P'){
+                    } else if (levelGrid[col][row].getType() == TileType.Path){
                         fileWriter.write("P");
-                    } else if (levelGrid[col][row] == 'T'){
+                    } else if (levelGrid[col][row].getType() == TileType.Tunnel){
                         fileWriter.write("T");
-                    } else if (levelGrid[col][row] == 'V'){
+                    } else if (levelGrid[col][row].getType() == TileType.VerticalTunnel){
                         fileWriter.write("V");
                     } else {
-                        System.out.print("Hmm there shouldn't be any other tile????");
+                        System.out.print("There seems to be an error on the tile type, We should never see this.");
                     }
                 }
                 fileWriter.write("\n");
@@ -317,6 +387,98 @@ public class Level {
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    int[] itemsInInventory = new int[8];
+
+    public void updateItems(){
+        for (ItemTypes type : ItemTypes.values()){
+            if (items.get(type.getArrayPos()).size() < itemsInInventory[type.getArrayPos()]) {
+                inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class);
+                itemsInInventory[type.getArrayPos()] = 0;
+            }
+            if (items.get(type.getArrayPos()).size() > itemsInInventory[type.getArrayPos()]) {
+                while (items.get(type.getArrayPos()).size() > itemsInInventory[type.getArrayPos()]) {
+                    Item item = items.get(type.getArrayPos()).get(itemsInInventory[type.getArrayPos()]);
+                    ImageView itemIcon = new ImageView();
+                    item.texture = new Image("Assets/Bomb.png");
+                    itemIcon.setImage(item.texture);
+                    itemIcon.setOnDragDetected(this::onBeginDrag);
+                    itemIcon.setOnMouseDragged(this::onItemDrag);
+                    itemIcon.setOnMouseReleased(this::onItemDragFinished);
+                    inventoryGrid.add(itemIcon, itemsInInventory[type.getArrayPos()], type.getArrayPos() + 1);
+                    itemsInInventory[type.getArrayPos()]++;
+                }
+            }
+        }
+    }
+
+    public void removeItem(ItemTypes item){
+        for (Node node : inventoryGrid.getChildren()){
+            if (node.getClass() == ImageView.class){
+                String imgURL = ((ImageView) node).getImage().getUrl();
+                String toCmpURL = "Assets/Bomb.png";
+                String imgFile = imgURL.substring(imgURL.length()-toCmpURL.length());
+                if (imgFile.equals(toCmpURL)){
+                    inventoryGrid.getChildren().remove(node);
+                    return;
+                }
+            }
+        }
+    }
+
+    public void spawnItem(ItemTypes item){
+        if (items.get(item.getArrayPos()).size() < 4) {
+            Item test = new Item() {
+                @Override
+                public void use() {
+                    System.out.println("Item uses!");
+                }
+            };
+            test.texture = new Image("Assets/Bomb.png");
+            items.get(item.getArrayPos()).push(test);
+            updateItems();
+        }
+    }
+
+    ImageView toDrag;
+
+    public void onBeginDrag(MouseEvent event){
+        lastMouseX = event.getSceneX();
+        lastMouseY = event.getSceneY();
+        ImageView target = (ImageView) event.getTarget();
+        toDrag = new ImageView();
+        toDrag.setImage(target.getImage());
+        levelGameScreen.getChildren().add(toDrag);
+        toDrag.setTranslateX(event.getSceneX() - toDrag.getImage().getWidth()/2);
+        toDrag.setTranslateY(event.getSceneY() - toDrag.getImage().getHeight()/2);
+    }
+
+    public void onItemDrag(MouseEvent event){
+        if (toDrag != null) {
+            toDrag.setTranslateX(toDrag.getTranslateX() + (event.getSceneX() - lastMouseX));
+            toDrag.setTranslateY(toDrag.getTranslateY() + (event.getSceneY() - lastMouseY));
+            lastMouseX = event.getSceneX();
+            lastMouseY = event.getSceneY();
+        }
+    }
+
+    public void onItemDragFinished(MouseEvent event){
+        double droppedAbsoluteXPos = (toDrag.getTranslateX() + toDrag.getImage().getWidth()/2);
+        double droppedAbsoluteYPos = (toDrag.getTranslateY() + toDrag.getImage().getHeight()/2);
+        double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/TILE_WIDTH);
+        double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelPane.getTranslateY()))/TILE_HEIGHT);
+        levelGameScreen.getChildren().remove(toDrag);
+        if (droppedGridXPos < levelWidth && droppedGridXPos > 0 && droppedGridYPos < levelHeight && droppedGridYPos > 0 &&
+                droppedGridXPos < GameScreen.getWidth()/TILE_WIDTH &&
+                droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
+                droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
+            if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
+                ItemTypes itemType = ItemTypes.BOMB;
+                items.get(itemType.getArrayPos()).pop().use();
+                updateItems();
+            }
         }
     }
 
@@ -352,17 +514,7 @@ public class Level {
     private void spawnTiles(GraphicsContext gc){
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
-                if (levelGrid[col][row] == 'G'){
-                    gc.drawImage(grassTile, col * TILE_HEIGHT, row * TILE_WIDTH);
-                } else if (levelGrid[col][row] == 'P'){
-                    gc.drawImage(pathTile, col * TILE_HEIGHT, row * TILE_WIDTH);
-                } else if (levelGrid[col][row] == 'T'){
-                    gc.drawImage(tunnelTile, col * TILE_HEIGHT, row * TILE_WIDTH);
-                } else if (levelGrid[col][row] == 'V'){
-                    gc.drawImage(tunnelVertTile, col * TILE_HEIGHT, row * TILE_WIDTH);
-                } else {
-                    System.out.print("Hmm there shouldn't be any other tile????");
-                }
+                gc.drawImage(levelGrid[col][row].getTexture(), col * TILE_HEIGHT, row * TILE_WIDTH);
             }
         }
     }
