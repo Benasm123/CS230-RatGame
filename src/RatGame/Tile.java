@@ -16,10 +16,15 @@ public class Tile {
         this.posX = posX;
         this.posY = posY;
         this.type = type;
+        this.texture = new Image(this.type.tileName);
     }
 
     public TileType getType() {
         return type;
+    }
+
+    public Image getTexture(){
+        return texture;
     }
 
 }
