@@ -78,6 +78,9 @@ public class Level {
 
     AnimationTimer gameLoop;
 
+    long pauseTime;
+    long timeLeftOnTimer;
+
     Timer bombSpawnTimer;
     Timer gasSpawnTimer;
     Timer sterilisationSpawnTimer;
@@ -151,6 +154,26 @@ public class Level {
     public void pauseLoop(){
         isPaused = !isPaused;
         firstLoop = true;
+        pauseTime = new Date().getTime();
+        if (!isPaused){
+            TimerTask addBomb = new TimerTask() {
+                public void run(){
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isPaused){
+                                timeLeftOnTimer = (new Date().getTime()) - pauseTime;
+                                bombSpawnTimer.cancel();
+                            } else {
+                                spawnItem(ItemTypes.BOMB);
+                            }
+                        }
+                    });
+                }
+            };
+            bombSpawnTimer = new Timer();
+            bombSpawnTimer.scheduleAtFixedRate(addBomb, timeLeftOnTimer, (long) bombSpawnTime * SECOND_TO_MILLI);
+        }
     }
 
     int numOfBombs = 0;
@@ -340,7 +363,12 @@ public class Level {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        spawnItem(ItemTypes.BOMB);
+                        if (isPaused){
+                            timeLeftOnTimer = (new Date().getTime()) - pauseTime;
+                            bombSpawnTimer.cancel();
+                        } else {
+                            spawnItem(ItemTypes.BOMB);
+                        }
                     }
                 });
             }
@@ -471,7 +499,6 @@ public class Level {
         double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelPane.getTranslateY()))/TILE_HEIGHT);
         levelGameScreen.getChildren().remove(toDrag);
         if (droppedGridXPos < levelWidth && droppedGridXPos > 0 && droppedGridYPos < levelHeight && droppedGridYPos > 0 &&
-                droppedGridXPos < GameScreen.getWidth()/TILE_WIDTH &&
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
                 droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
