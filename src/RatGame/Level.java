@@ -11,13 +11,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -27,6 +25,16 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+
+// TODO: Use item class and items
+// TODO: Tidy timer and pausing code. Duplicate code right now
+// TODO: Reorganise file
+// TODO: Implement number of rats alive
+// TODO: Create timers for all items
+// TODO: Create a close level method to shutdown all necessary timers and events
+// TODO: Make fps timer take average not current frame
+// TODO: Update saves method so save rat positions and items
+// TODO: Create a setupLevel method and move most code out of read level file
 
 enum ItemTypes {
     BOMB(0),
@@ -175,8 +183,6 @@ public class Level {
             bombSpawnTimer.scheduleAtFixedRate(addBomb, timeLeftOnTimer, (long) bombSpawnTime * SECOND_TO_MILLI);
         }
     }
-
-    int numOfBombs = 0;
 
     public void updateFPSCount(float deltaTime){
         fpsCount.setText("FPS: " + (int)(1/deltaTime));
