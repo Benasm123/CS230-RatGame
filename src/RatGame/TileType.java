@@ -8,11 +8,11 @@ public enum TileType {
     Tunnel(new Image("Assets/Tunnel.png"),false),
     VerticalTunnel (new Image("Assets/TunnelVertical.png"),false);
 
-    Image texture;
+    Image textureName;
     boolean isTraversable;
 
-    TileType (Image texture, boolean isTraversable) {
-        this.texture = texture;
+    TileType (Image textureName, boolean isTraversable) {
+        this.textureName = textureName;
         this.isTraversable = isTraversable;
     }
 }
