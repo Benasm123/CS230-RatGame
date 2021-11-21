@@ -41,7 +41,7 @@ public class LevelSelect {
         scene.setRoot(loader.load());
 
         Level controller = loader.getController();
-        controller.readLevelFile("src/Levels/" + ((Button)event.getSource()).getText());
+        controller.createLevel(((Button)event.getSource()).getText());
     }
 
 }
