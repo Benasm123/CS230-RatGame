@@ -6,7 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class PlayerProfile
+public class PlayerProfile implements Comparable<PlayerProfile>
 {
 	private String name;
 	private int score;
@@ -102,5 +102,16 @@ public class PlayerProfile
 		      System.out.println("An error occurred.");
 		      e.printStackTrace();
 		    }
+	}
+	@Override
+    public int compareTo(PlayerProfile profile) 
+	{
+        return (int)(profile.getScore() - this.score);
+    }
+
+	@Override
+	public String toString()
+	{
+		return name + " -  Score: " + score + " - LV: " + level;
 	}
 }
