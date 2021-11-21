@@ -1,80 +1,160 @@
 package RatGame;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.image.ImageView;
+import javafx.util.Pair;
+
+import java.util.ArrayList;
 import java.util.Random;
 
+// General notes: Careful with magic numbers, and make sure almost all variables are private and if we need to use them create getters
+// and setters.
+
 public class Rat {
-    private static final int WINDOW_WIDTH = 40;
-    private static final int WINDOW_HEIGHT = 10;
+    // I think better to call this texture, as Rat.rat isnt going to be clear as what this variable acutally holds.
+    Image rat;
+    ImageView img;
 
-    Image maleRat = new Image("Assets/Male.png");
-    Image femaleRat = new Image("Assets/Female.png");
-    Canvas canvas = new Canvas(WINDOW_WIDTH, WINDOW_HEIGHT);
+    private float xPos;
+    private float yPos;
 
-    Random rnd = new Random();
+    private float xVel=5.0f;
+    private float yVel=0.0f;
 
-    private int x = rnd.nextInt(2);//male rat number
-    private int y = rnd.nextInt(2);//female rat number
-
-    private int ratX = 1;
-    private int ratY = 1;
-
+    // rat doesnt care about what other rats exist, only itself. Dont think as this class as all the rats, but each individual rat.
+    // So each instance will only ever care about itself and no other rat (Other than when they need to interact, but well manage that in the level class).
     private int[] maleRats;
     private int[] femaleRats;
 
-    // TODO: Constructor
-    // TODO: Move function and rotate function
-    // TODO: Add an update function.
-//    public Rat(type, xPos, yPos, isDeathRat){
-//        this.xPos = xPos
-//        }
+    private boolean isDeathRat;
+    // rat class doesnt need to store the level grid, youll have it passed where you need it
+    private char[][] levelGrid;
 
-//    public void move(float deltaTime){
-//        posX = velX * deltaTime;
-//        posY = velY * deltaTime;
-//    }
-//
-//    float rotation;
-//
-//    public float getRotation() {
-//        return rotation;
-//    }
-//
-//    public void update(float deltaTime){
-//        this.move(deltaTime);
-//        this.rotate();
-//    }
+    // You want to set this in the constructor as you want hte lastX/Y to be set on where the rat spawns, but if you do it here it will always initialize to 0.
+    int lastX = (int)xPos;
+    int lastY = (int)yPos;
 
-    public void draw(){
-        GraphicsContext gc = canvas.getGraphicsContext2D();
+    float rotation;
 
-        for(int i=0 ;i<WINDOW_WIDTH; i+=5){
-            if(i <= x){
-                gc.drawImage(maleRat, ratX,ratY * WINDOW_HEIGHT);
-                gc.drawImage(femaleRat, ratX,ratY * WINDOW_WIDTH);
+    // TODO: Move function
+    public Rat(String type, int xPos, int yPos, boolean isDeathRat){
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.isDeathRat = isDeathRat;
+        // You can just put isDeathRat, as its a bool it will return either true or false already == true is redundant and messy imo.
+        // This looks good, but again id just refactor the rat variable to texture
+        // Also it would be a lot better if instead of a string for type you had an enum (like in the Tile class) that way typos wont be a common bug.
+        // Then id have ratType.DeathRat or RatType.BabyRat or RatType.AdultRat... and so on
+        img = new ImageView();
+        if(isDeathRat==true){
+            rat = new Image("Assets/Death.png");
+            img.setImage(rat);
+        }else if(type.equalsIgnoreCase("male")){
+            rat = new Image("Assets/Male.png");
+            img.setImage(rat);
+        }else if(type.equalsIgnoreCase("female")){
+            rat = new Image("Assets/Female.png");
+            img.setImage(rat);
+        }
+        img.setTranslateX(xPos*50);
+        img.setTranslateY(yPos*50);
+    }
+
+    // I know i did but i wouldn't return a pair here, you can directly edit the velocity at the end, and saves memory,
+    // so when you do everything instead of returning just directly set the xVel and yVel, tidies it up too,
+    // and maybe change the name to something like setDirection, just to be more clear it edits it
+    private Pair<Integer, Integer> checkPaths(Tile[][] levelGrid, int x, int y, int lastX, int lastY){
+        ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
+
+        if (levelGrid[x+1][y].getType().isTraversable && x + 1 != lastX) {
+            paths.add(new Pair<>(5, 0));
+        }
+        if (levelGrid[x-1][y].getType().isTraversable && x - 1 != lastX) {
+            paths.add(new Pair<>(-5, 0));
+        }
+        if (levelGrid[x][y+1].getType().isTraversable && y + 1 != lastY) {
+            paths.add(new Pair<>(0, 5));
+        }
+        if (levelGrid[x][y-1].getType().isTraversable && y - 1 != lastY) {
+            paths.add(new Pair<>(0, -5));
+        }
+
+        if (paths.size() == 0) {
+            return new Pair<>((lastX - x)*5, (lastY - y)*5);
+        }
+        Random rand = new Random();
+        return paths.get(rand.nextInt(paths.size()));
+    }
+
+    // Added Level grid as a parameter here and in checkPaths so that i can pass it in to the update method so you have access to the level.
+    // This need to be tidied up, lots of repeated code and a pain to work with, i know this is how ive done it but it was
+    // for testing purposes.
+    public void move(float deltaTime, Tile[][] levelGrid){
+        xPos += xVel * deltaTime;
+        yPos += yVel * deltaTime;
+        img.setTranslateX(xPos*50);
+        img.setTranslateY(yPos*50);
+        if (xVel < 0){
+            if ((int)xPos+1 != lastX) {
+                xPos = (int)xPos+1;
+                yPos = (int)yPos;
+                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
+                xVel = vel.getKey();
+                yVel = vel.getValue();
+                lastX = (int) xPos;
+                lastY = (int) yPos;
+            }
+        }else if (yVel < 0) {
+            if ((int)yPos+1 != lastY) {
+                xPos = (int)xPos;
+                yPos = (int)yPos+1;
+                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
+                xVel = vel.getKey();
+                yVel = vel.getValue();
+                lastX = (int) xPos;
+                lastY = (int) yPos;
+                img.setRotate(180.0);
+            }
+        }else {
+            if ((int)xPos != lastX || (int)yPos != lastY) {
+                xPos = (int)xPos;
+                yPos = (int)yPos;
+                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
+                xVel = vel.getKey();
+                yVel = vel.getValue();
+                lastX = (int) xPos;
+                lastY = (int) yPos;
             }
         }
+
     }
-    public void tick() {
 
-        ratX = ratX + 1;
-        draw();
-
-        if (ratX > 11) {
-            for(int i=11; i>0 ; i--)
-            ratX = ratX - 1;
-            draw();
+    // this can setRotation as well, as this always refers to the current instance of rat you can just set rotation to the return value and not return anything.
+    public float getRotation() {
+        if (xVel < 0) {
+            rotation = 90.0f;
+        } else if (xVel > 0) {
+            rotation = 270.0f;
+        } else if (yVel > 0) {
+            rotation = 0.0f ;
+        } else {
+            rotation = 180.0f;
         }
-        // We then redraw the whole canvas.
-
+        return rotation;
     }
+
+    // yeah here this is redundant you can just copy the code above and set rotation instead of return and set getRotation to just return this.rotation or however java does that.
+    // Oh also just noticed your changing the rotation of the img directly, i would use this to set the variable you have called rotation. Because we might need rotation later for more
+    // uses and then when we need to actually draw the image well set the rotation of the rat there.
+    public void setRotation(ImageView img){
+        img.setRotate(getRotation());
+    }
+
+    // Commented out move as right now this is trying ot check a null array.
+    public void update(float deltaTime, Tile[][] levelGrid){
+        this.move(deltaTime, levelGrid);
+        this.setRotation(img);
+   }
+
+
 }
