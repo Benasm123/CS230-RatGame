@@ -24,4 +24,21 @@ public class Tile {
     public Image getTexture() {
         return texture;
     }
+
+    @Override
+    public String toString() {
+        if (type.Grass == type){
+            return "G";
+        }
+        else if (type.Path == type) {
+            return "P";
+        }
+        else if (type.Tunnel == type) {
+            return "T";
+        }
+        else if (type.VerticalTunnel == type) {
+            return "V";
+        }
+        else return "";
+    }
 }
