@@ -10,7 +10,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -26,14 +25,6 @@ import java.io.IOException;
 import java.util.*;
 
 // TODO: Use item class and items
-// TODO: Tidy timer and pausing code. Duplicate code right now
-// TODO: Reorganise file
-// TODO: Implement number of rats alive
-// TODO: Create timers for all items
-// TODO: Create a close level method to shutdown all necessary timers and events
-// TODO: Make fps timer take average not current frame
-// TODO: Update saves method so save rat positions and items
-// TODO: Create a setupLevel method and move most code out of read level file
 
 enum ItemTypes {
     BOMB(0),
@@ -44,7 +35,7 @@ enum ItemTypes {
     FEMALE_SEX_CHANGE(5),
     NO_ENTRY_SIGN(6),
     DEATH_RAT(7);
-    
+
     private final int arrayPos;
     ItemTypes(int arrayPos){
         this.arrayPos = arrayPos;
@@ -64,6 +55,7 @@ public class Level {
 
     ArrayDeque<Float> last60deltaTime = new ArrayDeque<>();
     long lastFrameTime;
+    float timeSinceFPSRefreshed;
 
     boolean isPaused;
     boolean firstLoop;
@@ -73,8 +65,6 @@ public class Level {
     private int levelWidth;
 
     GraphicsContext levelGraphicsContext;
-
-    private static final int SECOND_TO_MILLI = 1000;
 
     private Tile[][] levelGrid;
     ArrayList<ImageView> tunnels;
@@ -93,23 +83,9 @@ public class Level {
 
     long pauseTime;
 
-    int bombSpawnTime;
-    int gasSpawnTime;
-    int sterilisationSpawnTime;
-    int poisonSpawnTime;
-    int maleSexChangeSpawnTime;
-    int femaleSexChangeSpawnTime;
-    int noEntrySpawnTime;
-    int deathRatSpawnTime;
+    float[] timeSinceItemSpawn = new float[8];
 
-    Timer bombSpawnTimer;
-    Timer gasSpawnTimer;
-    Timer sterilisationSpawnTimer;
-    Timer poisonSpawnTimer;
-    Timer maleSexChangeSpawnTimer;
-    Timer femaleSexChangeSpawnTimer;
-    Timer noEntrySignSpawnTimer;
-    Timer deathRatSpawnTimer;
+    int[] itemSpawnTime = new int[8];
 
     ImageView itemBeingDragged;
 
@@ -139,8 +115,6 @@ public class Level {
         rat.img.setViewport(new Rectangle2D(-14, -4, 50, 50));
     }
 
-    float timeSinceFPSRefreshed;
-
     public void initialize(){
         firstLoop = true;
 
@@ -165,15 +139,6 @@ public class Level {
             }
         };
         gameLoop.start();
-
-        bombSpawnTimer = new Timer();
-        gasSpawnTimer = new Timer();
-        sterilisationSpawnTimer = new Timer();
-        poisonSpawnTimer = new Timer();
-        maleSexChangeSpawnTimer = new Timer();
-        femaleSexChangeSpawnTimer = new Timer();
-        noEntrySignSpawnTimer = new Timer();
-        deathRatSpawnTimer = new Timer();
     }
 
     public void updateFPSCount(float deltaTime){
@@ -195,19 +160,14 @@ public class Level {
 
     private void stopGameLoop(){
         gameLoop.stop();
-        bombSpawnTimer.cancel();
-        gasSpawnTimer.cancel();
-        sterilisationSpawnTimer.cancel();
-        poisonSpawnTimer.cancel();
-        maleSexChangeSpawnTimer.cancel();
-        femaleSexChangeSpawnTimer.cancel();
-        noEntrySignSpawnTimer.cancel();
-        deathRatSpawnTimer.cancel();
-
     }
 
     public void update(float deltaTime){
         drawTiles();
+        updateRats(deltaTime);
+    }
+
+    private void updateRats(float deltaTime){
         for (Rat rat:rats){
             rat.update(deltaTime, levelGrid);
         }
@@ -219,6 +179,7 @@ public class Level {
         pauseTime = new Date().getTime();
     }
 
+    // TODO: Add popup to ask whether user wants to save the level if leaving early.
     /**
      * Return from the level to the main menu.
      * @param event The action that triggered this.
@@ -326,7 +287,7 @@ public class Level {
         File levelFile = new File("src/Levels/" + src);
         Scanner fileReader = new Scanner(levelFile);
 
-        setupItemTimers(fileReader);
+        setupItems(fileReader);
         setupLevelGrid(fileReader);
         setupRatSpawns(fileReader);
     }
@@ -362,22 +323,38 @@ public class Level {
                 levelGrid[col][row] = tile;
             }
         }
+        // Need to draw tunnels after everything to add them on top of the level.
         drawTunnels();
     }
 
-    private void setupItemTimers(Scanner fileReader){
+    private void setupItems(Scanner fileReader){
+
+        String itemsToStartWith = fileReader.nextLine();
+        String[] itemsToStartWithSplit = itemsToStartWith.split(" ");
+
+        // TODO: Add items here instead of hard code.
+        for (int i = 0; i < 8; i++){
+            for (int j = 0 ; j < Integer.parseInt(itemsToStartWithSplit[i]); j++) {
+                items.get(i).add(new Item() {
+                    @Override
+                    public void use() {
+
+                    }
+                    @Override
+                    public void steppedOn() {
+
+                    }
+                });
+            }
+        }
+
         // Read The item spawn times
         String itemSpawnTimes = fileReader.nextLine();
         String[] itemSpawnTimesSplit = itemSpawnTimes.split(" ");
 
-        bombSpawnTime = Integer.parseInt(itemSpawnTimesSplit[0]);
-        gasSpawnTime = Integer.parseInt(itemSpawnTimesSplit[1]);
-        sterilisationSpawnTime = Integer.parseInt(itemSpawnTimesSplit[2]);
-        poisonSpawnTime = Integer.parseInt(itemSpawnTimesSplit[3]);
-        maleSexChangeSpawnTime = Integer.parseInt(itemSpawnTimesSplit[4]);
-        femaleSexChangeSpawnTime = Integer.parseInt(itemSpawnTimesSplit[5]);
-        noEntrySpawnTime = Integer.parseInt(itemSpawnTimesSplit[6]);
-        deathRatSpawnTime = Integer.parseInt(itemSpawnTimesSplit[7]);
+        for (int i = 0; i < 8; i++){
+            itemSpawnTime[i] = Integer.parseInt(itemSpawnTimesSplit[i]);
+        }
     }
 
     private void setupRatSpawns(Scanner fileReader) {
@@ -401,12 +378,18 @@ public class Level {
         }
     }
 
+    // TODO: Right now female and male gets incremented even if they're babies, need to only happen when they grow.
     private void spawnRat(String type, int xPos, int yPos, boolean isDeathRat){
         Rat rat = new Rat(type, xPos, yPos, isDeathRat);
         levelPane.getChildren().add(rat.img);
         rats.add(rat);
         numOfFemaleRatsAlive++;
         numOfRatsAlive++;
+        if (type.equals("female")){
+            numOfFemaleRatsAlive++;
+        } else {
+            numOfMaleRatsAlive++;
+        }
         drawRat(rat);
 
         // Update tunnel after every rat spawns so that tunnels are always on top.
@@ -491,16 +474,19 @@ public class Level {
     }
 
     private void writeItemSpawns(FileWriter fileWriter) throws IOException {
-        fileWriter.write(
-                bombSpawnTime + " " +
-                gasSpawnTime + " " +
-                sterilisationSpawnTime + " " +
-                poisonSpawnTime + " " +
-                maleSexChangeSpawnTime + " " +
-                femaleSexChangeSpawnTime + " " +
-                noEntrySpawnTime + " " +
-                deathRatSpawnTime + "\n"
-                );
+        StringBuilder itemsSpawns = new StringBuilder();
+        for (ItemTypes type : ItemTypes.values()){
+            itemsSpawns.append(itemSpawnTime[type.getArrayPos()]).append(" ");
+        }
+        fileWriter.write(itemsSpawns + "\n");
+
+        StringBuilder itemsOnLoad = new StringBuilder();
+        for (Stack<Item> itemStack : items){
+            itemsOnLoad.append(itemStack.size()).append(" ");
+        }
+
+        fileWriter.write(String.valueOf(itemsOnLoad));
+
     }
 
     private void writeLevelGrid(FileWriter fileWriter) throws IOException {
@@ -515,71 +501,39 @@ public class Level {
         fileWriter.write("\n");
     }
 
-    // TODO: Rats need a toSave() method
+    // TODO: Rats need a toString() method
     private void writeRatSpawnGrid(FileWriter fileWriter) throws IOException {
         for (Rat rat : rats){
-//            fileWriter.write(rat.toSave());
+            fileWriter.write(rat.toString());
         }
     }
 
-    int[] itemsInInventory = new int[8];
-
-    public void updateItems(){
+    private void spawnItems(float deltaTime){
         for (ItemTypes type : ItemTypes.values()){
-            if (items.get(type.getArrayPos()).size() < itemsInInventory[type.getArrayPos()]) {
-                inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class);
-                itemsInInventory[type.getArrayPos()] = 0;
-            }
-            if (items.get(type.getArrayPos()).size() > itemsInInventory[type.getArrayPos()]) {
-                while (items.get(type.getArrayPos()).size() > itemsInInventory[type.getArrayPos()]) {
-                    Item item = items.get(type.getArrayPos()).get(itemsInInventory[type.getArrayPos()]);
-                    ImageView itemIcon = new ImageView();
-                    item.texture = new Image("Assets/Bomb.png");
-                    itemIcon.setImage(item.texture);
-                    itemIcon.setOnDragDetected(this::onBeginDrag);
-                    itemIcon.setOnMouseDragged(this::onItemDrag);
-                    itemIcon.setOnMouseReleased(this::onItemDragFinished);
-                    inventoryGrid.add(itemIcon, itemsInInventory[type.getArrayPos()], type.getArrayPos() + 1);
-                    itemsInInventory[type.getArrayPos()]++;
-                }
+            timeSinceItemSpawn[type.getArrayPos()] += deltaTime;
+            if (timeSinceItemSpawn[type.getArrayPos()] > itemSpawnTime[type.getArrayPos()]){
+                spawnItem(type);
             }
         }
     }
 
-    public void removeItem(ItemTypes item){
-        for (Node node : inventoryGrid.getChildren()){
-            if (node.getClass() == ImageView.class){
-                String imgURL = ((ImageView) node).getImage().getUrl();
-                String toCmpURL = "Assets/Bomb.png";
-                String imgFile = imgURL.substring(imgURL.length()-toCmpURL.length());
-                if (imgFile.equals(toCmpURL)){
-                    inventoryGrid.getChildren().remove(node);
-                    return;
-                }
+    private void spawnItem(ItemTypes type){
+        Item item = new Item() {
+            @Override
+            public void use() {
+
             }
-        }
+
+            @Override
+            public void steppedOn() {
+
+            }
+        };
+        items.get(type.getArrayPos()).add(item);
     }
 
-    public void spawnItem(ItemTypes item){
-        if (items.get(item.getArrayPos()).size() < 4) {
-            Item test = new Item() {
-                @Override
-                public void use() {
-                    System.out.println("Item uses!");
-                }
-
-                @Override
-                public void steppedOn() {
-
-                }
-            };
-            test.texture = new Image("Assets/Bomb.png");
-            items.get(item.getArrayPos()).push(test);
-            updateItems();
-        }
-    }
-
-    public void onBeginDrag(MouseEvent event){
+    // TODO: Need to add inventory methods and add functionality.
+    public void onItemBeginDrag(MouseEvent event){
         lastMouseX = event.getSceneX();
         lastMouseY = event.getSceneY();
         ImageView target = (ImageView) event.getTarget();
@@ -599,7 +553,7 @@ public class Level {
         }
     }
 
-    public void onItemDragFinished(MouseEvent event){
+    public void onItemDragFinished(){
         double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
         double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
         double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/TILE_WIDTH);
@@ -611,7 +565,7 @@ public class Level {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
                 ItemTypes itemType = ItemTypes.BOMB;
                 items.get(itemType.getArrayPos()).pop().use();
-                updateItems();
+//                updateItems();
             }
         }
     }
