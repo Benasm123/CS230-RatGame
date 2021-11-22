@@ -61,9 +61,22 @@ public class Level {
     private static final int TILE_WIDTH = 50;
     private static final int NUMBER_OF_ITEMS = 8;
 
-    private static final String SAVE_FOLDER_PATH = "src/Saves/";
+    private static final float FPS_REFRESH_INTERVAL = 0.1f;
 
-    ArrayDeque<Float> last60deltaTime = new ArrayDeque<>();
+    private static final double NANO_TO_SECOND = 1e9;
+
+    private static final String SAVE_FOLDER_PATH = "src/Saves/";
+    private static final String MAIN_MENU_PATH = "FXML/mainMenu.fxml";
+    private static final String LEVEL_FOLDER_PATH = "src/Levels/";
+    private static final char GRASS_CHAR = 'G';
+    private static final char PATH_CHAR = 'P';
+    private static final char TUNNEL_CHAR = 'T';
+    private static final char VERTICAL_TUNNEL_CHAR = 'V';
+    private static final String FILE_DELIMITER = " ";
+    private static final int INVENTORY_GRID_OFFSET = 1;
+    private static final int ITEM_MAX_STACK = 4;
+
+    ArrayDeque<Float> pastDeltaTimes = new ArrayDeque<>();
     long lastFrameTime;
     float timeSinceFPSRefreshed;
 
@@ -96,9 +109,9 @@ public class Level {
 
     long pauseTime;
 
-    float[] timeSinceItemSpawn = new float[8];
+    float[] timeSinceItemSpawn;
 
-    int[] itemSpawnTime = new int[8];
+    int[] itemSpawnTime;
 
     ImageView itemBeingDragged;
 
@@ -148,9 +161,10 @@ public class Level {
                 if (firstLoop){
                     firstLoop = false;
                     lastFrameTime = now;
+                    System.out.println(now);
                 }
 
-                float deltaTime = (float) ((now - lastFrameTime) / 1e9);
+                float deltaTime = (float) ((now - lastFrameTime) / NANO_TO_SECOND);
                 lastFrameTime = now;
 
                 if (!isPaused){
@@ -165,17 +179,15 @@ public class Level {
 
     public void updateFPSCount(float deltaTime){
         timeSinceFPSRefreshed += deltaTime;
-        last60deltaTime.addLast(deltaTime);
-        if (last60deltaTime.size() > 60){
-            last60deltaTime.pop();
-        }
-        if (timeSinceFPSRefreshed > 0.1){
+        pastDeltaTimes.addLast(deltaTime);
+        if (timeSinceFPSRefreshed > FPS_REFRESH_INTERVAL){
             float sum = 0;
-            for (Float num : last60deltaTime){
+            for (Float num : pastDeltaTimes){
                 sum += num;
             }
-            fpsCount.setText("FPS: " + (int) (1/ (sum/last60deltaTime.size())));
+            fpsCount.setText("FPS: " + (int) (1/ (sum/ pastDeltaTimes.size())));
 
+            pastDeltaTimes.clear();
             timeSinceFPSRefreshed = 0;
         }
     }
@@ -229,7 +241,7 @@ public class Level {
     public void exitPressed(ActionEvent event) throws IOException {
         stopGameLoop();
 
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(MAIN_MENU_PATH)));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
@@ -309,6 +321,8 @@ public class Level {
 
     public void createLevel(String src){
         rats = new ArrayList<>();
+        timeSinceItemSpawn = new float[NUMBER_OF_ITEMS];
+        itemSpawnTime = new int[NUMBER_OF_ITEMS];
 
         numberOfRatsToLose = 100;
         numberOfRatsToWin = 1;
@@ -330,7 +344,7 @@ public class Level {
      */
     public void readLevelFile(String src) throws FileNotFoundException {
         levelName = src;
-        File levelFile = new File("src/Levels/" + src);
+        File levelFile = new File(LEVEL_FOLDER_PATH + src);
         Scanner fileReader = new Scanner(levelFile);
 
         setupItems(fileReader);
@@ -354,13 +368,13 @@ public class Level {
             String rowLayout = fileReader.nextLine();
             for (int col = 0; col < levelWidth; col++) {
                 Tile tile = null;
-                if (rowLayout.charAt(col) == 'G') {
+                if (rowLayout.charAt(col) == GRASS_CHAR) {
                     tile = new Tile(row, col, TileType.Grass);
-                } else if (rowLayout.charAt(col) == 'P') {
+                } else if (rowLayout.charAt(col) == PATH_CHAR) {
                     tile = new Tile(row, col, TileType.Path);
-                } else if (rowLayout.charAt(col) == 'T') {
+                } else if (rowLayout.charAt(col) == TUNNEL_CHAR) {
                     tile = new Tile(row, col, TileType.Tunnel);
-                } else if (rowLayout.charAt(col) == 'V') {
+                } else if (rowLayout.charAt(col) == VERTICAL_TUNNEL_CHAR) {
                     tile = new Tile(row, col, TileType.VerticalTunnel);
                 } else {
                     System.out.println("There seems to be a error in the level file!");
@@ -376,10 +390,10 @@ public class Level {
     private void setupItems(Scanner fileReader){
 
         String itemsToStartWith = fileReader.nextLine();
-        String[] itemsToStartWithSplit = itemsToStartWith.split(" ");
+        String[] itemsToStartWithSplit = itemsToStartWith.split(FILE_DELIMITER);
 
         // TODO: Add items here instead of hard code.
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++){
             for (int j = 0 ; j < Integer.parseInt(itemsToStartWithSplit[i]); j++) {
                 spawnItem(ItemType.values()[i]);
             }
@@ -387,9 +401,9 @@ public class Level {
 
         // Read The item spawn times
         String itemSpawnTimes = fileReader.nextLine();
-        String[] itemSpawnTimesSplit = itemSpawnTimes.split(" ");
+        String[] itemSpawnTimesSplit = itemSpawnTimes.split(FILE_DELIMITER);
 
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++){
             itemSpawnTime[i] = Integer.parseInt(itemSpawnTimesSplit[i]);
         }
     }
@@ -400,7 +414,9 @@ public class Level {
             if (ratToSpawn.equals("")){
                 return;
             }
-            String[] ratToSpawnSplit = ratToSpawn.split(" ");
+            String[] ratToSpawnSplit = ratToSpawn.split(FILE_DELIMITER);
+
+            // TODO: Needs to change when we set up enum for the rat class.
             String type;
             if (ratToSpawnSplit[0].equals("F")){
                 type = "female";
@@ -416,13 +432,13 @@ public class Level {
 //            boolean isBaby = ratToSpawnSplit[3].equals("T");
 
             // TODO: most of this should be in rat class, only should construct here and add
-            spawnRat(type, xPos, yPos, false);
+            spawnRat(type, xPos, yPos);
         }
     }
 
     // TODO: Right now female and male gets incremented even if they're babies, need to only happen when they grow.
-    private void spawnRat(String type, int xPos, int yPos, boolean isDeathRat){
-        Rat rat = new Rat(type, xPos, yPos, isDeathRat);
+    private void spawnRat(String type, int xPos, int yPos){
+        Rat rat = new Rat(type, xPos, yPos, false);
         levelPane.getChildren().add(rat.img);
         rats.add(rat);
         numOfRatsAlive++;
@@ -517,23 +533,22 @@ public class Level {
     private void writeItemSpawns(FileWriter fileWriter) throws IOException {
         StringBuilder itemsHeld = new StringBuilder();
         for (ItemType type : ItemType.values()){
-            itemsHeld.append(items.get(type.getArrayPos()).size()).append(" ");
+            itemsHeld.append(items.get(type.getArrayPos()).size()).append(FILE_DELIMITER);
         }
         fileWriter.write(itemsHeld + "\n");
 
         StringBuilder itemsSpawns = new StringBuilder();
         for (ItemType type : ItemType.values()){
-            itemsSpawns.append(itemSpawnTime[type.getArrayPos()]).append(" ");
+            itemsSpawns.append(itemSpawnTime[type.getArrayPos()]).append(FILE_DELIMITER);
         }
         fileWriter.write(itemsSpawns + "\n");
 
     }
 
     private void writeLevelGrid(FileWriter fileWriter) throws IOException {
-        fileWriter.write(levelWidth + " " + levelHeight + "\n");
+        fileWriter.write(levelWidth + FILE_DELIMITER + levelHeight + "\n");
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
-                // TODO: tile class need a toSave() method and can replace this whole block with:
                 fileWriter.write(levelGrid[col][row].toString());
             }
             fileWriter.write("\n");
@@ -558,20 +573,19 @@ public class Level {
         }
     }
 
-    // TODO: Tidy this up and remove duplicate code
     private void removeItem(ItemType type){
         inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class &&
                 ((ImageView) node).getImage().getUrl().endsWith(type.getTexture()));
         for (int i = 0; i < items.get(type.getArrayPos()).size(); i++){
             Item item = items.get(type.getArrayPos()).get(i);
             ImageView itemIcon = createImageIcon(item);
-            inventoryGrid.add(itemIcon, i, type.getArrayPos() + 1);
+            inventoryGrid.add(itemIcon, i, type.getArrayPos() + INVENTORY_GRID_OFFSET);
         }
     }
 
     private ImageView createImageIcon(Item item) {
         ImageView itemIcon = new ImageView();
-        itemIcon.setImage(item.texture);
+        itemIcon.setImage(item.getTexture());
         inventoryGrid.setAlignment(Pos.CENTER);
         GridPane.setHalignment(itemIcon, HPos.CENTER);
         GridPane.setValignment(itemIcon, VPos.CENTER);
@@ -582,29 +596,18 @@ public class Level {
     }
 
     private void spawnItem(ItemType type){
-        if (items.get(type.getArrayPos()).size() >= 4){
+        if (items.get(type.getArrayPos()).size() >= ITEM_MAX_STACK){
             return;
         }
 
-        Item item = new Item() {
-            @Override
-            public void use() {
+        Item item = Item.create(type);
 
-            }
-
-            @Override
-            public void steppedOn() {
-
-            }
-        };
-
-        item.texture = new Image(type.getTexture());
+        item.setTexture(new Image(type.getTexture()));
         ImageView itemIcon = createImageIcon(item);
-        inventoryGrid.add(itemIcon, items.get(type.getArrayPos()).size(), type.getArrayPos() + 1);
+        inventoryGrid.add(itemIcon, items.get(type.getArrayPos()).size(), type.getArrayPos() + INVENTORY_GRID_OFFSET);
         items.get(type.getArrayPos()).add(item);
     }
 
-    // TODO: Need to add inventory methods and add functionality.
     public void onItemBeginDrag(MouseEvent event){
         if (isPaused){
             return;
