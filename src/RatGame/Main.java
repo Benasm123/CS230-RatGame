@@ -22,7 +22,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("FXML/mainMenu.fxml"));
         primaryStage.setTitle("Rat Game");
 
-        primaryStage.setScene(new Scene(root, Math.min(WINDOW_WIDTH, screenSize.getWidth()), Math.min(WINDOW_HEIGHT, screenSize.getHeight())));
+        primaryStage.setScene(new Scene(root, Math.min(WINDOW_WIDTH, screenSize.getWidth() - 100), Math.min(WINDOW_HEIGHT, screenSize.getHeight() - 100)));
         primaryStage.show();
     }
 
