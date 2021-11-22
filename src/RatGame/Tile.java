@@ -24,7 +24,7 @@ public class Tile {
     public Image getTexture() {
         return texture;
     }
-    // toString
+
     @Override
     public String toString() {
         if (type.Grass == type){
