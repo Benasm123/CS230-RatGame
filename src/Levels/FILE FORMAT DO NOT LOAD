@@ -1,3 +1,4 @@
+{The number of each item the player will spawn with same order as below}
 {Item (8) spawn rate in seconds {Bombs} {Gas} {Sterilisation} {Poison} {MaleSexChange} {FemaleSexChange} {NoEntrySign} {DeathRat}}
 {Grid Width} {Grid Height}
 {Level grid, must be same width and height as specified above
