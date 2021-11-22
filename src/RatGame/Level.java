@@ -30,7 +30,7 @@ import java.util.*;
 
 // TODO: Use item class and items
 
-enum ItemTypes {
+enum ItemType {
     BOMB(0, "Assets/Bomb.png"),
     GAS(1, "Assets/Gas.png"),
     STERILISATION(2, "Assets/Sterilisation.png"),
@@ -42,7 +42,7 @@ enum ItemTypes {
 
     private final int arrayPos;
     private final String texture;
-    ItemTypes(int arrayPos, String texture){
+    ItemType(int arrayPos, String texture){
         this.arrayPos = arrayPos;
         this.texture = texture;
     }
@@ -382,7 +382,7 @@ public class Level {
         // TODO: Add items here instead of hard code.
         for (int i = 0; i < 8; i++){
             for (int j = 0 ; j < Integer.parseInt(itemsToStartWithSplit[i]); j++) {
-                spawnItem(ItemTypes.values()[i]);
+                spawnItem(ItemType.values()[i]);
             }
         }
 
@@ -517,13 +517,13 @@ public class Level {
 
     private void writeItemSpawns(FileWriter fileWriter) throws IOException {
         StringBuilder itemsHeld = new StringBuilder();
-        for (ItemTypes type : ItemTypes.values()){
+        for (ItemType type : ItemType.values()){
             itemsHeld.append(items.get(type.getArrayPos()).size()).append(" ");
         }
         fileWriter.write(itemsHeld + "\n");
 
         StringBuilder itemsSpawns = new StringBuilder();
-        for (ItemTypes type : ItemTypes.values()){
+        for (ItemType type : ItemType.values()){
             itemsSpawns.append(itemSpawnTime[type.getArrayPos()]).append(" ");
         }
         fileWriter.write(itemsSpawns + "\n");
@@ -550,7 +550,7 @@ public class Level {
     }
 
     private void updateItems(float deltaTime){
-        for (ItemTypes type : ItemTypes.values()){
+        for (ItemType type : ItemType.values()){
             timeSinceItemSpawn[type.getArrayPos()] += deltaTime;
             if (timeSinceItemSpawn[type.getArrayPos()] > itemSpawnTime[type.getArrayPos()]){
                 spawnItem(type);
@@ -560,7 +560,7 @@ public class Level {
     }
 
     // TODO: Tidy this up and remove duplicate code
-    private void removeItem(ItemTypes type){
+    private void removeItem(ItemType type){
         inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class &&
                 ((ImageView) node).getImage().getUrl().endsWith(type.getTexture()));
         for (int i = 0; i < items.get(type.getArrayPos()).size(); i++){
@@ -582,7 +582,7 @@ public class Level {
         return itemIcon;
     }
 
-    private void spawnItem(ItemTypes type){
+    private void spawnItem(ItemType type){
         if (items.get(type.getArrayPos()).size() >= 4){
             return;
         }
@@ -632,8 +632,8 @@ public class Level {
         double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/TILE_WIDTH);
         double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelPane.getTranslateY()))/TILE_HEIGHT);
 
-        ItemTypes itemType = null;
-        for (ItemTypes type : ItemTypes.values()){
+        ItemType itemType = null;
+        for (ItemType type : ItemType.values()){
             if (type.getTexture().equals(itemBeingDragged.getImage().getUrl().substring(itemBeingDragged.getImage().getUrl().length() - type.getTexture().length()))){
                 itemType = type;
             }
