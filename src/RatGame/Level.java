@@ -607,6 +607,9 @@ public class Level {
 
     // TODO: Need to add inventory methods and add functionality.
     public void onItemBeginDrag(MouseEvent event){
+        if (isPaused){
+            return;
+        }
         lastMouseX = event.getSceneX();
         lastMouseY = event.getSceneY();
         ImageView target = (ImageView) event.getTarget();
@@ -627,6 +630,9 @@ public class Level {
     }
 
     public void onItemDragFinished(MouseEvent event){
+        if (isPaused){
+            return;
+        }
         double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
         double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
         double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/TILE_WIDTH);
@@ -653,5 +659,6 @@ public class Level {
                 removeItem(itemType);
             }
         }
+        itemBeingDragged = null;
     }
 }
