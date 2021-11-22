@@ -1,3 +1,10 @@
+/**
+ * This class creates a player profile.
+ * The player profile is also responsible for saving, loading and deleting player profile files.
+ * @author CS-250 Group13 (21/22)
+ * @version 1.0
+ *
+ */
 package RatGame;
 
 import java.io.File;
@@ -6,89 +13,125 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class PlayerProfile implements Comparable<PlayerProfile>
-{
+public class PlayerProfile implements Comparable<PlayerProfile> {
 	private String name;
 	private int score;
 	private int level;
-	
-	public PlayerProfile(String name)
-	{
+
+	/**
+	 * creates an instance of a profile with a name using setName method
+	 * @param name
+	 */
+	public PlayerProfile(String name) {
 		setName(name);
 	}
-	
-	public String getName()
-	{
+
+	/**
+	 *
+	 * @return the name of a profile
+	 */
+	public String getName() {
 		return name;
 	}
-	public void setName(String name)
-	{
+
+	/**
+	 * sets the name of a profile
+	 * @param name
+	 */
+	public void setName(String name) {
 		this.name = name;
 	}
-	public int getScore()
-	{
+
+	/**
+	 *
+	 * @return the score related to a profile
+	 */
+	public int getScore() {
 		return score;
 	}
-	public void setScore(int score)
-	{
+
+	/**
+	 * ??
+	 * @param score
+	 */
+	public void setScore(int score) {
 		this.score = score;
 	}
-	public int getLevel()
-	{
+
+	/**
+	 *
+	 * @return the level obtained by a profile
+	 */
+	public int getLevel() {
 		return level;
 	}
-	public void setLevel(int level)
-	{
+
+	/**
+	 * ??
+	 * @param level
+	 */
+	public void setLevel(int level) {
 		this.level = level;
 	}
-	public void newFile(String file)
-	{
-		try
-		{
+
+	/**
+	 * attempts to create a file as any name that the player would want
+	 * @param file
+	 */
+	public void newFile(String file) {
+		try {
 			File myObj = new File(file + ".txt");
-			if (myObj.createNewFile())
-			{
+			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
 				System.out.println("Absolute path: " + myObj.getAbsolutePath());
-			} else
-			{
+			}
+			else {
 				System.out.println("File already exists.");
 				System.out.println("Absolute path: " + myObj.getAbsolutePath());
 			}
-		} catch (IOException e)
-		{
+		}
+		catch (IOException e) {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
 	}
-	public void save()
-	{
+
+	/**
+	 * attempts to save/write the profile progress to the file
+	 */
+	public void save() {
 		newFile(name);
-		try
-		{
+		try {
 			FileWriter writer = new FileWriter(name + ".txt");
 			writer.write(name + "\n" + score + "\n" + level);
 			writer.close();
 			System.out.println("Saved");
-		} catch (IOException e)
-		{
+		}
+		catch (IOException e) {
 			System.out.println("An error occurred.");
 			e.printStackTrace();
 		}
 	}
-	public void deleteSave(String save)
-	{
+
+	/**
+	 * attempts to delete the file saved by the player
+	 * @param save
+	 */
+	public void deleteSave(String save) {
 		File myObj = new File(save + ".txt");
-		if (myObj.delete())
-		{
+		if (myObj.delete()) {
 			System.out.println("Save deleted");
-		} else
-		{
+		}
+		else {
 			System.out.println("Failed to delete the file.");
 		}
 	}
-	public void load(String save)
-	{
+
+	/**
+	 * attempts to load the file saved the player
+	 * @param save
+	 */
+	public void load(String save) {
 		try {
 		      File myObj = new File(save + ".txt");
 		      Scanner in = new Scanner(myObj);
@@ -98,20 +141,30 @@ public class PlayerProfile implements Comparable<PlayerProfile>
 		      level = Integer.parseInt(in.nextLine());
 		      
 		      in.close();
-		    } catch (FileNotFoundException e) {
+		}
+		catch (FileNotFoundException e) {
 		      System.out.println("An error occurred.");
 		      e.printStackTrace();
-		    }
+		}
 	}
+
+	/**
+	 * This method allows player profiles to be compared by score
+	 * uses the difference to decide if the profile goes up or down on the leaderboard
+	 * @param profile
+	 * @return the difference between the score
+	 */
 	@Override
-    public int compareTo(PlayerProfile profile) 
-	{
+    public int compareTo(PlayerProfile profile) {
         return (int)(profile.getScore() - this.score);
     }
 
+	/**
+	 *
+	 * @return player's name, score and level obtained as a string
+	 */
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return name + " -  Score: " + score + " - LV: " + level;
 	}
 }
