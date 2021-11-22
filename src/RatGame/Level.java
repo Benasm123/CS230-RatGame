@@ -10,7 +10,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -26,14 +25,6 @@ import java.io.IOException;
 import java.util.*;
 
 // TODO: Use item class and items
-// TODO: Tidy timer and pausing code. Duplicate code right now
-// TODO: Reorganise file
-// TODO: Implement number of rats alive
-// TODO: Create timers for all items
-// TODO: Create a close level method to shutdown all necessary timers and events
-// TODO: Make fps timer take average not current frame
-// TODO: Update saves method so save rat positions and items
-// TODO: Create a setupLevel method and move most code out of read level file
 
 enum ItemTypes {
     BOMB(0),
@@ -44,7 +35,7 @@ enum ItemTypes {
     FEMALE_SEX_CHANGE(5),
     NO_ENTRY_SIGN(6),
     DEATH_RAT(7);
-    
+
     private final int arrayPos;
     ItemTypes(int arrayPos){
         this.arrayPos = arrayPos;
@@ -92,14 +83,7 @@ public class Level {
 
     long pauseTime;
 
-    int bombSpawnTime;
-    int gasSpawnTime;
-    int sterilisationSpawnTime;
-    int poisonSpawnTime;
-    int maleSexChangeSpawnTime;
-    int femaleSexChangeSpawnTime;
-    int noEntrySpawnTime;
-    int deathRatSpawnTime;
+    float[] timeSinceItemSpawn = new float[8];
 
     int[] itemSpawnTime = new int[8];
 
@@ -368,14 +352,9 @@ public class Level {
         String itemSpawnTimes = fileReader.nextLine();
         String[] itemSpawnTimesSplit = itemSpawnTimes.split(" ");
 
-        bombSpawnTime = Integer.parseInt(itemSpawnTimesSplit[0]);
-        gasSpawnTime = Integer.parseInt(itemSpawnTimesSplit[1]);
-        sterilisationSpawnTime = Integer.parseInt(itemSpawnTimesSplit[2]);
-        poisonSpawnTime = Integer.parseInt(itemSpawnTimesSplit[3]);
-        maleSexChangeSpawnTime = Integer.parseInt(itemSpawnTimesSplit[4]);
-        femaleSexChangeSpawnTime = Integer.parseInt(itemSpawnTimesSplit[5]);
-        noEntrySpawnTime = Integer.parseInt(itemSpawnTimesSplit[6]);
-        deathRatSpawnTime = Integer.parseInt(itemSpawnTimesSplit[7]);
+        for (int i = 0; i < 8; i++){
+            itemSpawnTime[i] = Integer.parseInt(itemSpawnTimesSplit[i]);
+        }
     }
 
     private void setupRatSpawns(Scanner fileReader) {
@@ -495,16 +474,11 @@ public class Level {
     }
 
     private void writeItemSpawns(FileWriter fileWriter) throws IOException {
-        fileWriter.write(
-                bombSpawnTime + " " +
-                gasSpawnTime + " " +
-                sterilisationSpawnTime + " " +
-                poisonSpawnTime + " " +
-                maleSexChangeSpawnTime + " " +
-                femaleSexChangeSpawnTime + " " +
-                noEntrySpawnTime + " " +
-                deathRatSpawnTime + "\n"
-                );
+        StringBuilder itemsSpawns = new StringBuilder();
+        for (ItemTypes type : ItemTypes.values()){
+            itemsSpawns.append(itemSpawnTime[type.getArrayPos()]).append(" ");
+        }
+        fileWriter.write(itemsSpawns + "\n");
 
         StringBuilder itemsOnLoad = new StringBuilder();
         for (Stack<Item> itemStack : items){
@@ -533,17 +507,6 @@ public class Level {
             fileWriter.write(rat.toString());
         }
     }
-
-    float timeSinceBombSpawn;
-    float timeSinceGasSpawn;
-    float timeSinceSterilisationSpawn;
-    float timeSincePoisonSpawn;
-    float timeSinceMaleSexChangeSpawn;
-    float timeSinceFemaleSexChangeSpawn;
-    float timeSinceNoEntrySpawn;
-    float timeSinceDeathRatSpawn;
-
-    float[] timeSinceItemSpawn = new float[8];
 
     private void spawnItems(float deltaTime){
         for (ItemTypes type : ItemTypes.values()){
@@ -590,7 +553,7 @@ public class Level {
         }
     }
 
-    public void onItemDragFinished(MouseEvent event){
+    public void onItemDragFinished(){
         double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
         double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
         double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/TILE_WIDTH);
