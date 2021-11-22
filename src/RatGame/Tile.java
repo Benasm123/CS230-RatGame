@@ -27,16 +27,16 @@ public class Tile {
 
     @Override
     public String toString() {
-        if (type.Grass == type){
+        if (TileType.Grass == type){
             return "G";
         }
-        else if (type.Path == type) {
+        else if (TileType.Path == type) {
             return "P";
         }
-        else if (type.Tunnel == type) {
+        else if (TileType.Tunnel == type) {
             return "T";
         }
-        else if (type.VerticalTunnel == type) {
+        else if (TileType.VerticalTunnel == type) {
             return "V";
         }
         else return "";
