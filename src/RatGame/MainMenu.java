@@ -40,12 +40,18 @@ public class MainMenu {
      */
     public void updateMessage() {
         Random rand = new Random();
-
         messageDay.setText(words[rand.nextInt(words.length)]);
     }
 
     public void switchToLevelSelect(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("FXML/levelSelect.fxml"));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
+
+    public void switchToChangeProfile(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("FXML/changeProfile.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);

@@ -1,11 +1,13 @@
 package RatGame;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,37 +29,56 @@ import java.io.IOException;
 import java.util.*;
 
 // TODO: Use item class and items
-// TODO: Tidy timer and pausing code. Duplicate code right now
-// TODO: Reorganise file
-// TODO: Implement number of rats alive
-// TODO: Create timers for all items
-// TODO: Create a close level method to shutdown all necessary timers and events
-// TODO: Make fps timer take average not current frame
-// TODO: Update saves method so save rat positions and items
-// TODO: Create a setupLevel method and move most code out of read level file
 
-enum ItemTypes {
-    BOMB(0),
-    GAS(1),
-    STERILISATION(2),
-    POISON(3),
-    MALE_SEX_CHANGE(4),
-    FEMALE_SEX_CHANGE(5),
-    NO_ENTRY_SIGN(6),
-    DEATH_RAT(7);
-    
+enum ItemType {
+    BOMB(0, "Assets/Bomb.png"),
+    GAS(1, "Assets/Gas.png"),
+    STERILISATION(2, "Assets/Sterilisation.png"),
+    POISON(3, "Assets/Poison.png"),
+    MALE_SEX_CHANGE(4, "Assets/MaleSexChange.png"),
+    FEMALE_SEX_CHANGE(5, "Assets/FemaleSexChange.png"),
+    NO_ENTRY_SIGN(6, "Assets/Stop.png"),
+    DEATH_RAT(7, "Assets/Death.png");
+
     private final int arrayPos;
-    ItemTypes(int arrayPos){
+    private final String texture;
+    ItemType(int arrayPos, String texture){
         this.arrayPos = arrayPos;
+        this.texture = texture;
     }
 
     public int getArrayPos() {
         return arrayPos;
     }
+
+    public String getTexture(){
+        return texture;
+    }
 }
 
 public class Level {
+    private static final int TILE_HEIGHT = 50;
+    private static final int TILE_WIDTH = 50;
+    private static final int NUMBER_OF_ITEMS = 8;
+
+    private static final float FPS_REFRESH_INTERVAL = 0.1f;
+
+    private static final double NANO_TO_SECOND = 1e9;
+
+    private static final String SAVE_FOLDER_PATH = "src/Saves/";
+    private static final String MAIN_MENU_PATH = "FXML/mainMenu.fxml";
+    private static final String LEVEL_FOLDER_PATH = "src/Levels/";
+    private static final char GRASS_CHAR = 'G';
+    private static final char PATH_CHAR = 'P';
+    private static final char TUNNEL_CHAR = 'T';
+    private static final char VERTICAL_TUNNEL_CHAR = 'V';
+    private static final String FILE_DELIMITER = " ";
+    private static final int INVENTORY_GRID_OFFSET = 1;
+    private static final int ITEM_MAX_STACK = 4;
+
+    ArrayDeque<Float> pastDeltaTimes = new ArrayDeque<>();
     long lastFrameTime;
+    float timeSinceFPSRefreshed;
 
     boolean isPaused;
     boolean firstLoop;
@@ -66,18 +87,18 @@ public class Level {
     private int levelHeight;
     private int levelWidth;
 
-    private static final int TILE_HEIGHT = 50;
-    private static final int TILE_WIDTH = 50;
-
-    private static final int SECOND_TO_MILLI = 1000;
+    GraphicsContext levelGraphicsContext;
 
     private Tile[][] levelGrid;
-    private char[][] ratSpawnGrid;
+    ArrayList<ImageView> tunnels;
 
-    private ArrayList<Rat> rats = new ArrayList<>();
+    private ArrayList<Rat> rats;
     private int numOfRatsAlive;
     private int numOfMaleRatsAlive;
     private int numOfFemaleRatsAlive;
+
+    private int numberOfRatsToLose;
+    private int numberOfRatsToWin;
 
     private ArrayList<Stack<Item>> items;
 
@@ -87,16 +108,12 @@ public class Level {
     AnimationTimer gameLoop;
 
     long pauseTime;
-    long timeLeftOnTimer;
 
-    Timer bombSpawnTimer;
-    Timer gasSpawnTimer;
-    Timer sterilisationSpawnTimer;
-    Timer poisonSpawnTimer;
-    Timer maleSexChangeSpawnTimer;
-    Timer femaleSexChangeSpawnTimer;
-    Timer noEntrySignSpawnTimer;
-    Timer deathRatSpawnTimer;
+    float[] timeSinceItemSpawn;
+
+    int[] itemSpawnTime;
+
+    ImageView itemBeingDragged;
 
     // All FXML variables.
     @FXML
@@ -110,6 +127,15 @@ public class Level {
 
     @FXML
     private Text fpsCount;
+
+    @FXML
+    private Text ratsAlive;
+
+    @FXML
+    private Text maleRatsAlive;
+
+    @FXML
+    private Text femaleRatsAlive;
 
     @FXML
     private GridPane inventoryGrid;
@@ -126,34 +152,76 @@ public class Level {
 
     public void initialize(){
         firstLoop = true;
+
+        levelGraphicsContext = GameBoard.getGraphicsContext2D();
+
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (firstLoop){
                     firstLoop = false;
                     lastFrameTime = now;
+                    System.out.println(now);
                 }
-                float deltaTime = (float) ((now - lastFrameTime) / 1e9);
-                updateFPSCount(deltaTime);
+
+                float deltaTime = (float) ((now - lastFrameTime) / NANO_TO_SECOND);
+                lastFrameTime = now;
+
                 if (!isPaused){
                     update(deltaTime);
                 }
-                lastFrameTime = now;
+
+                updateFPSCount(deltaTime);
             }
         };
         gameLoop.start();
+    }
 
-        bombSpawnTimer = new Timer();
+    public void updateFPSCount(float deltaTime){
+        timeSinceFPSRefreshed += deltaTime;
+        pastDeltaTimes.addLast(deltaTime);
+        if (timeSinceFPSRefreshed > FPS_REFRESH_INTERVAL){
+            float sum = 0;
+            for (Float num : pastDeltaTimes){
+                sum += num;
+            }
+            fpsCount.setText("FPS: " + (int) (1/ (sum/ pastDeltaTimes.size())));
+
+            pastDeltaTimes.clear();
+            timeSinceFPSRefreshed = 0;
+        }
     }
 
     private void stopGameLoop(){
         gameLoop.stop();
-
     }
 
     public void update(float deltaTime){
-        GraphicsContext gc = GameBoard.getGraphicsContext2D();
-        spawnTiles(gc);
+        drawTiles();
+        updateRats(deltaTime);
+        updateRatsAliveText();
+        updateItems(deltaTime);
+        checkWinLoseCondition();
+    }
+
+    private void updateRatsAliveText() {
+        ratsAlive.setText("Rats alive: " + rats.size());
+        maleRatsAlive.setText("Males alive: " + numOfMaleRatsAlive);
+        femaleRatsAlive.setText("Females alive: " + numOfFemaleRatsAlive);
+    }
+
+    private void checkWinLoseCondition() {
+        // TODO: Add lose mechanic
+        if (numOfRatsAlive > numberOfRatsToLose){
+            System.out.println("You Lose!");
+        }
+
+        if (numOfRatsAlive < numberOfRatsToWin){
+            System.out.println("You Win!");
+        }
+    }
+
+    private void updateRats(float deltaTime){
         for (Rat rat:rats){
             rat.update(deltaTime, levelGrid);
         }
@@ -161,42 +229,19 @@ public class Level {
 
     public void pauseLoop(){
         isPaused = !isPaused;
-        firstLoop = true;
         pauseTime = new Date().getTime();
-        if (!isPaused){
-            TimerTask addBomb = new TimerTask() {
-                public void run(){
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isPaused){
-                                timeLeftOnTimer = (new Date().getTime()) - pauseTime;
-                                bombSpawnTimer.cancel();
-                            } else {
-                                spawnItem(ItemTypes.BOMB);
-                            }
-                        }
-                    });
-                }
-            };
-            bombSpawnTimer = new Timer();
-            bombSpawnTimer.scheduleAtFixedRate(addBomb, timeLeftOnTimer, (long) bombSpawnTime * SECOND_TO_MILLI);
-        }
     }
 
-    public void updateFPSCount(float deltaTime){
-        fpsCount.setText("FPS: " + (int)(1/deltaTime));
-    }
-
+    // TODO: Add popup to ask whether user wants to save the level if leaving early.
     /**
      * Return from the level to the main menu.
      * @param event The action that triggered this.
      * @throws IOException If the FXML file does not exist will throw exception.
      */
     public void exitPressed(ActionEvent event) throws IOException {
-        gameLoop.stop();
+        stopGameLoop();
 
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(MAIN_MENU_PATH)));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
@@ -220,7 +265,6 @@ public class Level {
         levelPane.setTranslateY(levelPane.getTranslateY() + (event.getY() - lastMouseY));
         clampToGameScreen();
     }
-
 
     /**
      * Prevents player from dragging the level off the screen.
@@ -275,115 +319,176 @@ public class Level {
         }
     }
 
-    int bombSpawnTime;
-    int gasSpawnTime;
-    int sterilisationSpawnTime;
-    int poisonSpawnTime;
-    int maleSexChangeSpawnTime;
-    int femaleSexChangeSpawnTime;
-    int noEntrySpawnTime;
-    int deathRatSpawnTime;
+    public void createLevel(String src){
+        rats = new ArrayList<>();
+        timeSinceItemSpawn = new float[NUMBER_OF_ITEMS];
+        itemSpawnTime = new int[NUMBER_OF_ITEMS];
 
-    // TODO create a createLevel method and separate readLevelFile and parseLevel and spawnTiles.
+        numberOfRatsToLose = 100;
+        numberOfRatsToWin = 1;
+
+        try {
+            readLevelFile(src);
+        } catch (FileNotFoundException e) {
+            System.out.println("Can not find file: " + src);
+            e.printStackTrace();
+            return;
+        }
+        drawTiles();
+        createInventory();
+    }
+
     /**
      * Reads in a file and parses the data for the level.
      * @param src A path to the level wanting to be read.
      */
-    public void readLevelFile(String src){
-        try {
-            // Read in file
-            File levelFile = new File(src);
-            Scanner fileReader = new Scanner(levelFile);
+    public void readLevelFile(String src) throws FileNotFoundException {
+        levelName = src;
+        File levelFile = new File(LEVEL_FOLDER_PATH + src);
+        Scanner fileReader = new Scanner(levelFile);
 
-            // Get the level Name from the path
-            levelName = src.substring(11);
-            System.out.println(levelName);
+        setupItems(fileReader);
+        setupLevelGrid(fileReader);
+        setupRatSpawns(fileReader);
+    }
 
-            // Read level dimensions
-            String levelDimensions = fileReader.nextLine();
-            String[] levelDimensionsSplit = levelDimensions.split(" ");
-            levelWidth = Integer.parseInt(levelDimensionsSplit[0]);
-            levelHeight = Integer.parseInt(levelDimensionsSplit[1]);
+    private void setupLevelGrid(Scanner fileReader){
+        // Read level dimensions
+        String levelDimensions = fileReader.nextLine();
+        String[] levelDimensionsSplit = levelDimensions.split(" ");
+        levelWidth = Integer.parseInt(levelDimensionsSplit[0]);
+        levelHeight = Integer.parseInt(levelDimensionsSplit[1]);
 
-            // Read The item spawn times
-            String itemSpawnTimes = fileReader.nextLine();
-            String[] itemSpawnTimesSplit = itemSpawnTimes.split(" ");
+        // Create the 2d array that holds tile positions.
+        GameBoard.setHeight(TILE_HEIGHT * levelHeight);
+        GameBoard.setWidth(TILE_WIDTH * levelWidth);
 
-            bombSpawnTime = Integer.parseInt(itemSpawnTimesSplit[0]);
-            gasSpawnTime = Integer.parseInt(itemSpawnTimesSplit[1]);
-            sterilisationSpawnTime = Integer.parseInt(itemSpawnTimesSplit[2]);
-            poisonSpawnTime = Integer.parseInt(itemSpawnTimesSplit[3]);
-            maleSexChangeSpawnTime = Integer.parseInt(itemSpawnTimesSplit[4]);
-            femaleSexChangeSpawnTime = Integer.parseInt(itemSpawnTimesSplit[5]);
-            noEntrySpawnTime = Integer.parseInt(itemSpawnTimesSplit[6]);
-            deathRatSpawnTime = Integer.parseInt(itemSpawnTimesSplit[7]);
-
-            // Create the 2d array that holds tile positions.
-            GameBoard.setHeight(TILE_HEIGHT * levelHeight);
-            GameBoard.setWidth(TILE_WIDTH * levelWidth);
-
-            // TODO: Set this as a array of Tiles instead.
-            levelGrid = new Tile[levelWidth][levelHeight];
-            for (int row = 0; row < levelHeight; row++) {
-                String rowLayout = fileReader.nextLine();
-                for (int col = 0; col < levelWidth; col++) {
-                    Tile tile = null;
-                    if (rowLayout.charAt(col) == 'G') {
-                        tile = new Tile(row, col, TileType.Grass);
-                    } else if (rowLayout.charAt(col) == 'P') {
-                        tile = new Tile(row, col, TileType.Path);
-                    } else if (rowLayout.charAt(col) == 'T') {
-                        tile = new Tile(row, col, TileType.Tunnel);
-                    } else if (rowLayout.charAt(col) == 'V') {
-                        tile = new Tile(row, col, TileType.VerticalTunnel);
-                    } else {
-                        System.out.println("There seems to be a error in the level file!");
-                    }
-
-                    levelGrid[col][row] = tile;
+        levelGrid = new Tile[levelWidth][levelHeight];
+        for (int row = 0; row < levelHeight; row++) {
+            String rowLayout = fileReader.nextLine();
+            for (int col = 0; col < levelWidth; col++) {
+                Tile tile = null;
+                if (rowLayout.charAt(col) == GRASS_CHAR) {
+                    tile = new Tile(row, col, TileType.Grass);
+                } else if (rowLayout.charAt(col) == PATH_CHAR) {
+                    tile = new Tile(row, col, TileType.Path);
+                } else if (rowLayout.charAt(col) == TUNNEL_CHAR) {
+                    tile = new Tile(row, col, TileType.Tunnel);
+                } else if (rowLayout.charAt(col) == VERTICAL_TUNNEL_CHAR) {
+                    tile = new Tile(row, col, TileType.VerticalTunnel);
+                } else {
+                    System.out.println("There seems to be a error in the level file!");
                 }
+
+                levelGrid[col][row] = tile;
             }
+        }
+        // Need to draw tunnels after everything to add them on top of the level.
+        drawTunnels();
+    }
 
-            // Ignore the newline between the grids
-            fileReader.nextLine();
+    private void setupItems(Scanner fileReader){
 
-            // Read rat positions and store to grid
-            ratSpawnGrid = new char[levelWidth][levelHeight];
-            for (int row = 0; row < levelHeight; row++) {
-                String rowLayout = fileReader.nextLine();
-                for (int col = 0; col < levelWidth; col++) {
-                    ratSpawnGrid[col][row] = rowLayout.charAt(col);
-                }
+        String itemsToStartWith = fileReader.nextLine();
+        String[] itemsToStartWithSplit = itemsToStartWith.split(FILE_DELIMITER);
+
+        // TODO: Add items here instead of hard code.
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++){
+            for (int j = 0 ; j < Integer.parseInt(itemsToStartWithSplit[i]); j++) {
+                spawnItem(ItemType.values()[i]);
             }
-
-
-        } catch (FileNotFoundException e){
-            e.printStackTrace();
         }
 
-        spawnTiles(GameBoard.getGraphicsContext2D());
-        spawnRats();
+        // Read The item spawn times
+        String itemSpawnTimes = fileReader.nextLine();
+        String[] itemSpawnTimesSplit = itemSpawnTimes.split(FILE_DELIMITER);
 
-        TimerTask addBomb = new TimerTask(){
-            public void run(){
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isPaused){
-                            timeLeftOnTimer = (new Date().getTime()) - pauseTime;
-                            bombSpawnTimer.cancel();
-                        } else {
-                            spawnItem(ItemTypes.BOMB);
-                        }
-                    }
-                });
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++){
+            itemSpawnTime[i] = Integer.parseInt(itemSpawnTimesSplit[i]);
+        }
+    }
+
+    private void setupRatSpawns(Scanner fileReader) {
+        while (fileReader.hasNextLine()){
+            String ratToSpawn = fileReader.nextLine();
+            if (ratToSpawn.equals("")){
+                return;
             }
-        };
+            String[] ratToSpawnSplit = ratToSpawn.split(FILE_DELIMITER);
 
-        bombSpawnTimer.scheduleAtFixedRate(addBomb, (long) bombSpawnTime * SECOND_TO_MILLI, (long) bombSpawnTime * SECOND_TO_MILLI);
+            // TODO: Needs to change when we set up enum for the rat class.
+            String type;
+            if (ratToSpawnSplit[0].equals("F")){
+                type = "female";
+            } else if (ratToSpawnSplit[0].equals("M")){
+                type = "male";
+            } else {
+                type = "death";
+            }
 
-        items = new ArrayList<>(8);
-        for (int i = 0; i < 8; i++){
+            int xPos = Integer.parseInt(ratToSpawnSplit[1]);
+            int yPos = Integer.parseInt(ratToSpawnSplit[2]);
+            // TODO: Needs to add an isBaby bool to constructor as loads can have full adults.
+//            boolean isBaby = ratToSpawnSplit[3].equals("T");
+
+            // TODO: most of this should be in rat class, only should construct here and add
+            spawnRat(type, xPos, yPos);
+        }
+    }
+
+    // TODO: Right now female and male gets incremented even if they're babies, need to only happen when they grow.
+    private void spawnRat(String type, int xPos, int yPos){
+        Rat rat = new Rat(type, xPos, yPos, false);
+        levelPane.getChildren().add(rat.img);
+        rats.add(rat);
+        numOfRatsAlive++;
+        if (type.equals("female")){
+            numOfFemaleRatsAlive++;
+        } else {
+            numOfMaleRatsAlive++;
+        }
+        drawRat(rat);
+
+        // Update tunnel after every rat spawns so that tunnels are always on top.
+        updateTunnels();
+    }
+
+    /**
+     * Draws the tiles onto the level.
+     */
+    private void drawTiles(){
+        for (int row = 0; row < levelHeight; row++) {
+            for (int col = 0; col < levelWidth; col++) {
+                levelGraphicsContext.drawImage(levelGrid[col][row].getTexture(), col * TILE_HEIGHT, row * TILE_WIDTH);
+            }
+        }
+    }
+
+    private void drawTunnels(){
+        tunnels = new ArrayList<>();
+        for (int row = 0; row < levelHeight; row++) {
+            for (int col = 0; col < levelWidth; col++) {
+                if (levelGrid[col][row].getType() == TileType.Tunnel || levelGrid[col][row].getType() == TileType.VerticalTunnel) {
+                    ImageView tunnel =  new ImageView();
+                    tunnel.setImage(levelGrid[col][row].getTexture());
+                    tunnel.setTranslateX(col * TILE_WIDTH);
+                    tunnel.setTranslateY(row * TILE_HEIGHT);
+                    levelPane.getChildren().add(tunnel);
+                    tunnels.add(tunnel);
+                }
+            }
+        }
+    }
+
+    private void updateTunnels(){
+        for (ImageView tunnel : tunnels){
+            tunnel.toFront();
+        }
+    }
+
+    public void createInventory(){
+        items = new ArrayList<>(NUMBER_OF_ITEMS);
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++){
             Stack<Item> itemStack = new Stack<>();
             items.add(itemStack);
         }
@@ -391,164 +496,171 @@ public class Level {
 
     // TODO Once we have a player class store all saves for each player in the player folder instead.
     // TODO If a level save is already active for a player we need to only let the player resume.
-    public void saveLevel(ActionEvent event){
+    public void saveLevel(){
         try {
-            File levelSaveFile = new File("src/Saves/" + levelName);
-            if (levelSaveFile.createNewFile()){
-                System.out.println("File Created Successfully!");
-            } else {
-                System.out.println("Error creating file!");
-            }
+            createSaveFile();
 
-            FileWriter fileWriter = new FileWriter("src/Saves/" + levelName);
-            fileWriter.write(levelHeight + " " + levelWidth + "\n");
-            for (int row = 0; row < levelHeight; row++) {
-                for (int col = 0; col < levelWidth; col++) {
-                    if (levelGrid[col][row].getType() == TileType.Grass){
-                        fileWriter.write("G");
-                    } else if (levelGrid[col][row].getType() == TileType.Path){
-                        fileWriter.write("P");
-                    } else if (levelGrid[col][row].getType() == TileType.Tunnel){
-                        fileWriter.write("T");
-                    } else if (levelGrid[col][row].getType() == TileType.VerticalTunnel){
-                        fileWriter.write("V");
-                    } else {
-                        System.out.print("There seems to be an error on the tile type, We should never see this.");
-                    }
-                }
-                fileWriter.write("\n");
-            }
+            FileWriter fileWriter = new FileWriter(SAVE_FOLDER_PATH + levelName);
+
+            writeItemSpawns(fileWriter);
+
+            writeLevelGrid(fileWriter);
+
+            writeRatSpawnGrid(fileWriter);
+
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    int[] itemsInInventory = new int[8];
+    private void createSaveFile() throws IOException {
+        if (new File(SAVE_FOLDER_PATH).mkdirs()){
+            System.out.println("Created save folder at: " + SAVE_FOLDER_PATH);
+        }
 
-    public void updateItems(){
-        for (ItemTypes type : ItemTypes.values()){
-            if (items.get(type.getArrayPos()).size() < itemsInInventory[type.getArrayPos()]) {
-                inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class);
-                itemsInInventory[type.getArrayPos()] = 0;
+        // TODO: Can possibly add a popup to check if user wants to delete the save or not.
+        File levelSaveFile = new File(SAVE_FOLDER_PATH + levelName);
+        if (levelSaveFile.delete()){
+            System.out.println("Deleted previous save file: " + levelName);
+        }
+
+        if (levelSaveFile.createNewFile()){
+            System.out.println("New save file created: " + levelName);
+        }
+    }
+
+    private void writeItemSpawns(FileWriter fileWriter) throws IOException {
+        StringBuilder itemsHeld = new StringBuilder();
+        for (ItemType type : ItemType.values()){
+            itemsHeld.append(items.get(type.getArrayPos()).size()).append(FILE_DELIMITER);
+        }
+        fileWriter.write(itemsHeld + "\n");
+
+        StringBuilder itemsSpawns = new StringBuilder();
+        for (ItemType type : ItemType.values()){
+            itemsSpawns.append(itemSpawnTime[type.getArrayPos()]).append(FILE_DELIMITER);
+        }
+        fileWriter.write(itemsSpawns + "\n");
+
+    }
+
+    private void writeLevelGrid(FileWriter fileWriter) throws IOException {
+        fileWriter.write(levelWidth + FILE_DELIMITER + levelHeight + "\n");
+        for (int row = 0; row < levelHeight; row++) {
+            for (int col = 0; col < levelWidth; col++) {
+                fileWriter.write(levelGrid[col][row].toString());
             }
-            if (items.get(type.getArrayPos()).size() > itemsInInventory[type.getArrayPos()]) {
-                while (items.get(type.getArrayPos()).size() > itemsInInventory[type.getArrayPos()]) {
-                    Item item = items.get(type.getArrayPos()).get(itemsInInventory[type.getArrayPos()]);
-                    ImageView itemIcon = new ImageView();
-                    item.texture = new Image("Assets/Bomb.png");
-                    itemIcon.setImage(item.texture);
-                    itemIcon.setOnDragDetected(this::onBeginDrag);
-                    itemIcon.setOnMouseDragged(this::onItemDrag);
-                    itemIcon.setOnMouseReleased(this::onItemDragFinished);
-                    inventoryGrid.add(itemIcon, itemsInInventory[type.getArrayPos()], type.getArrayPos() + 1);
-                    itemsInInventory[type.getArrayPos()]++;
-                }
+            fileWriter.write("\n");
+        }
+    }
+
+    // TODO: Rats need a toString() method
+    private void writeRatSpawnGrid(FileWriter fileWriter) throws IOException {
+        for (Rat rat : rats){
+            fileWriter.write(rat.toString());
+            fileWriter.write("\n");
+        }
+    }
+
+    private void updateItems(float deltaTime){
+        for (ItemType type : ItemType.values()){
+            timeSinceItemSpawn[type.getArrayPos()] += deltaTime;
+            if (timeSinceItemSpawn[type.getArrayPos()] > itemSpawnTime[type.getArrayPos()]){
+                spawnItem(type);
+                timeSinceItemSpawn[type.getArrayPos()] = 0;
             }
         }
     }
 
-    public void removeItem(ItemTypes item){
-        for (Node node : inventoryGrid.getChildren()){
-            if (node.getClass() == ImageView.class){
-                String imgURL = ((ImageView) node).getImage().getUrl();
-                String toCmpURL = "Assets/Bomb.png";
-                String imgFile = imgURL.substring(imgURL.length()-toCmpURL.length());
-                if (imgFile.equals(toCmpURL)){
-                    inventoryGrid.getChildren().remove(node);
-                    return;
-                }
-            }
+    private void removeItem(ItemType type){
+        inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class &&
+                ((ImageView) node).getImage().getUrl().endsWith(type.getTexture()));
+        for (int i = 0; i < items.get(type.getArrayPos()).size(); i++){
+            Item item = items.get(type.getArrayPos()).get(i);
+            ImageView itemIcon = createImageIcon(item);
+            inventoryGrid.add(itemIcon, i, type.getArrayPos() + INVENTORY_GRID_OFFSET);
         }
     }
 
-    public void spawnItem(ItemTypes item){
-        if (items.get(item.getArrayPos()).size() < 4) {
-            Item test = new Item() {
-                @Override
-                public void use() {
-                    System.out.println("Item uses!");
-                }
-            };
-            test.texture = new Image("Assets/Bomb.png");
-            items.get(item.getArrayPos()).push(test);
-            updateItems();
-        }
+    private ImageView createImageIcon(Item item) {
+        ImageView itemIcon = new ImageView();
+        itemIcon.setImage(item.getTexture());
+        inventoryGrid.setAlignment(Pos.CENTER);
+        GridPane.setHalignment(itemIcon, HPos.CENTER);
+        GridPane.setValignment(itemIcon, VPos.CENTER);
+        itemIcon.setOnMousePressed(this::onItemBeginDrag);
+        itemIcon.setOnMouseDragged(this::onItemDrag);
+        itemIcon.setOnMouseReleased(this::onItemDragFinished);
+        return itemIcon;
     }
 
-    ImageView toDrag;
+    private void spawnItem(ItemType type){
+        if (items.get(type.getArrayPos()).size() >= ITEM_MAX_STACK){
+            return;
+        }
 
-    public void onBeginDrag(MouseEvent event){
+        Item item = Item.create(type);
+
+        item.setTexture(new Image(type.getTexture()));
+        ImageView itemIcon = createImageIcon(item);
+        inventoryGrid.add(itemIcon, items.get(type.getArrayPos()).size(), type.getArrayPos() + INVENTORY_GRID_OFFSET);
+        items.get(type.getArrayPos()).add(item);
+    }
+
+    public void onItemBeginDrag(MouseEvent event){
+        if (isPaused){
+            return;
+        }
         lastMouseX = event.getSceneX();
         lastMouseY = event.getSceneY();
         ImageView target = (ImageView) event.getTarget();
-        toDrag = new ImageView();
-        toDrag.setImage(target.getImage());
-        levelGameScreen.getChildren().add(toDrag);
-        toDrag.setTranslateX(event.getSceneX() - toDrag.getImage().getWidth()/2);
-        toDrag.setTranslateY(event.getSceneY() - toDrag.getImage().getHeight()/2);
+        itemBeingDragged = new ImageView();
+        itemBeingDragged.setImage(target.getImage());
+        levelGameScreen.getChildren().add(itemBeingDragged);
+        itemBeingDragged.setTranslateX(event.getSceneX() - itemBeingDragged.getImage().getWidth()/2);
+        itemBeingDragged.setTranslateY(event.getSceneY() - itemBeingDragged.getImage().getHeight()/2);
     }
 
     public void onItemDrag(MouseEvent event){
-        if (toDrag != null) {
-            toDrag.setTranslateX(toDrag.getTranslateX() + (event.getSceneX() - lastMouseX));
-            toDrag.setTranslateY(toDrag.getTranslateY() + (event.getSceneY() - lastMouseY));
+        if (itemBeingDragged != null) {
+            itemBeingDragged.setTranslateX(itemBeingDragged.getTranslateX() + (event.getSceneX() - lastMouseX));
+            itemBeingDragged.setTranslateY(itemBeingDragged.getTranslateY() + (event.getSceneY() - lastMouseY));
             lastMouseX = event.getSceneX();
             lastMouseY = event.getSceneY();
         }
     }
 
     public void onItemDragFinished(MouseEvent event){
-        double droppedAbsoluteXPos = (toDrag.getTranslateX() + toDrag.getImage().getWidth()/2);
-        double droppedAbsoluteYPos = (toDrag.getTranslateY() + toDrag.getImage().getHeight()/2);
+        if (isPaused){
+            return;
+        }
+        double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
+        double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
         double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/TILE_WIDTH);
         double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelPane.getTranslateY()))/TILE_HEIGHT);
-        levelGameScreen.getChildren().remove(toDrag);
+
+        ItemType itemType = null;
+        for (ItemType type : ItemType.values()){
+            if (type.getTexture().equals(itemBeingDragged.getImage().getUrl().substring(itemBeingDragged.getImage().getUrl().length() - type.getTexture().length()))){
+                itemType = type;
+            }
+        }
+
+        levelGameScreen.getChildren().remove(itemBeingDragged);
+
+        if (itemType == null){
+            return;
+        }
+
         if (droppedGridXPos < levelWidth && droppedGridXPos > 0 && droppedGridYPos < levelHeight && droppedGridYPos > 0 &&
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
                 droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
-                ItemTypes itemType = ItemTypes.BOMB;
                 items.get(itemType.getArrayPos()).pop().use();
-                updateItems();
+                removeItem(itemType);
             }
         }
-    }
-
-    public void spawnRats(){
-        for (int row = 0; row < levelHeight ; row++){
-            for (int col = 0; col < levelWidth ; col++){
-                Rat rat;
-                if (ratSpawnGrid[col][row] == 'F'){
-                    rat = new Rat("female", col, row, false);
-                    levelPane.getChildren().add(rat.img);
-                    rats.add(rat);
-                    numOfFemaleRatsAlive++;
-                    numOfRatsAlive++;
-                    drawRat(rat);
-                } else if (ratSpawnGrid[col][row] == 'M'){
-                    rat = new Rat("male", col, row, false);
-                    levelPane.getChildren().add(rat.img);
-                    rats.add(rat);
-                    numOfMaleRatsAlive++;
-                    numOfRatsAlive++;
-                    drawRat(rat);
-                }
-            }
-        }
-    }
-
-    // TODO Once we have a tiles class we will need to use those instead of hard coding to draw.#
-
-    /**
-     * Draws the tiles onto the level.
-     * @param gc Takes in the graphics content of what we want to draw on.
-     */
-    private void spawnTiles(GraphicsContext gc){
-        for (int row = 0; row < levelHeight; row++) {
-            for (int col = 0; col < levelWidth; col++) {
-                gc.drawImage(levelGrid[col][row].getTexture(), col * TILE_HEIGHT, row * TILE_WIDTH);
-            }
-        }
+        itemBeingDragged = null;
     }
 }

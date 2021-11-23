@@ -12,12 +12,11 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 
-public class LevelSelect {
-
+public class ChangeProfile {
     @FXML
-    VBox LevelButtons;
+    VBox profiles;
     public void initialize(){
-        String[] allLevels = new File("src/Levels/").list();
+        String[] allLevels = new File("src/Profiles").list();
 
         assert allLevels != null;
 
@@ -30,12 +29,11 @@ public class LevelSelect {
                     e.printStackTrace();
                 }
             });
-            LevelButtons.getChildren().add(levelSelectButton);
+            profiles.getChildren().add(levelSelectButton);
         }
     }
-
     public void playPressed(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/changeProfile.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(loader.load());
