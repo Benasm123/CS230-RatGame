@@ -19,6 +19,6 @@ public class Sterilisation extends Item{
 
     @Override
     public void steppedOn(Rat rat) {
-        
+
     }
 }
