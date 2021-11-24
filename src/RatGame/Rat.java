@@ -36,7 +36,6 @@ public class Rat {
 
     float rotation;
 
-    // TODO: Move function
     public Rat(String type, int xPos, int yPos, boolean isDeathRat){
         this.xPos = xPos;
         this.yPos = yPos;
