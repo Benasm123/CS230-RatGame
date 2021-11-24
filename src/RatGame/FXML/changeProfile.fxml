@@ -12,7 +12,10 @@
          </font>
       </Label>
    </top>
+   <bottom>
+      <Button mnemonicParsing="false" onAction="#switchToMain" text="Back" BorderPane.alignment="CENTER" />
+   </bottom>
    <center>
-      <VBox fx:id="profiles" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+      <VBox fx:id="profiles" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
