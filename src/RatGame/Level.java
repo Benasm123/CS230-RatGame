@@ -417,13 +417,13 @@ public class Level {
             String[] ratToSpawnSplit = ratToSpawn.split(FILE_DELIMITER);
 
             // TODO: Needs to change when we set up enum for the rat class.
-            String type;
+            Rat.sexType type;
             if (ratToSpawnSplit[0].equals("F")){
-                type = "female";
+                type = Rat.sexType.FEMALE;
             } else if (ratToSpawnSplit[0].equals("M")){
-                type = "male";
+                type = Rat.sexType.MALE;
             } else {
-                type = "death";
+                type = Rat.sexType.FEMALE;
             }
 
             int xPos = Integer.parseInt(ratToSpawnSplit[1]);
@@ -437,14 +437,14 @@ public class Level {
     }
 
     // TODO: Right now female and male gets incremented even if they're babies, need to only happen when they grow.
-    private void spawnRat(String type, int xPos, int yPos){
+    private void spawnRat(Rat.sexType type, int xPos, int yPos){
         Rat rat = new Rat(type, xPos, yPos, false);
         levelPane.getChildren().add(rat.img);
         rats.add(rat);
         numOfRatsAlive++;
-        if (type.equals("female")){
+        if (type == Rat.sexType.FEMALE){
             numOfFemaleRatsAlive++;
-        } else {
+        } else if (type == Rat.sexType.MALE){
             numOfMaleRatsAlive++;
         }
         drawRat(rat);
