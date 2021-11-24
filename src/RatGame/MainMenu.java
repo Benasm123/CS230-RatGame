@@ -56,4 +56,10 @@ public class MainMenu {
         Scene scene = stage.getScene();
         scene.setRoot(root);
     }
+    public void switchToNewGame(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("FXML/newGame.fxml"));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
 }

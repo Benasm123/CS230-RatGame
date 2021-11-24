@@ -80,7 +80,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 */
 	public void newFile(String file) {
 		try {
-			File myObj = new File(file + ".txt");
+			File myObj = new File("src//Profiles//" + file + ".txt");
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
 				System.out.println("Absolute path: " + myObj.getAbsolutePath());
@@ -102,7 +102,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	public void save() {
 		newFile(name);
 		try {
-			FileWriter writer = new FileWriter(name + ".txt");
+			FileWriter writer = new FileWriter("src//Profiles//" + name + ".txt");
 			writer.write(name + "\n" + score + "\n" + level);
 			writer.close();
 			System.out.println("Saved");
@@ -118,7 +118,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 * @param save
 	 */
 	public void deleteSave(String save) {
-		File myObj = new File(save + ".txt");
+		File myObj = new File("src//Profiles//" + save + ".txt");
 		if (myObj.delete()) {
 			System.out.println("Save deleted");
 		}
@@ -133,7 +133,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 */
 	public void load(String save) {
 		try {
-		      File myObj = new File(save + ".txt");
+		      File myObj = new File("src//Profiles//" + save + ".txt");
 		      Scanner in = new Scanner(myObj);
 		      
 		      name = in.nextLine();
