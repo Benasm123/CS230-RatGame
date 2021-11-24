@@ -18,7 +18,7 @@ public class Gas extends Item{
     }
 
     @Override
-    public void steppedOn() {
+    public void steppedOn(Rat rat) {
 
     }
 }
