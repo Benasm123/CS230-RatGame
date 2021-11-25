@@ -160,5 +160,11 @@ public class Rat {
         this.setRotation(img);
    }
 
+    public float getxPos() {
+        return xPos;
+    }
 
+    public float getyPos() {
+        return yPos;
+    }
 }

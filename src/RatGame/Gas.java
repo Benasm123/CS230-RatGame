@@ -8,8 +8,6 @@ public class Gas extends Item{
     private static int lifeRemaining;
     private static final int speed = 5;
 
-    private float posY;
-    Image texture;
 
     public Gas() {
         texture = new Image("Assets/Gas.png");
