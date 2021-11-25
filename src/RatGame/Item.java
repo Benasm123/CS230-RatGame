@@ -43,7 +43,7 @@ public abstract class Item {
                 item = new FemaleSexChange();
                 break;
             case NO_ENTRY_SIGN:
-                item = new NoEntrySign();
+                item = new NoEntrySign(x, y);
                 break;
             case DEATH_RAT:
                 item = new DeathRat();
