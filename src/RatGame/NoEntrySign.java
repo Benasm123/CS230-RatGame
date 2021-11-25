@@ -8,7 +8,7 @@ public class NoEntrySign extends Item
 	private static final int HP = 5;
 	private int hpLeft;
 	
-	public NoEntrySign(float xPos, float yPos)
+	public NoEntrySign(int xPos, int yPos)
 	{
 		hpLeft = HP;
 		this.xPos = xPos;
