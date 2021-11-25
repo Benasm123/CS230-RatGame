@@ -1,6 +1,12 @@
 package RatGame;
 
+import javafx.scene.image.Image;
+
 public class MaleSexChange extends Item {
+    public MaleSexChange()
+	{
+        texture = new Image("Assets/MaleSexChange.png");
+	}
     @Override
     public void use() {
 
