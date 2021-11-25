@@ -22,15 +22,22 @@ public class LevelSelect {
         assert allLevels != null;
 
         for (String i : allLevels){
+
             Button levelSelectButton = new Button(i);
-            levelSelectButton.setOnAction(event -> {
-                try {
-                    playPressed(event);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            // TODO: once have access to player profile i can do this.
+//            if (player.highestLevelReached > i.substring(10)){
+//
+//            } else {
+                levelSelectButton.setOnAction(event -> {
+                    try {
+                        playPressed(event);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+//            }
             LevelButtons.getChildren().add(levelSelectButton);
+
         }
     }
 
