@@ -683,6 +683,7 @@ public class Level {
                 itemUsed.getImageView().setTranslateY(itemUsed.getYPos() * TILE_HEIGHT);
                 levelPane.getChildren().add(itemUsed.getImageView());
                 itemUsed.use();
+                itemsInPlay.add(itemUsed);
                 removeItem(itemType);
             }
         }
