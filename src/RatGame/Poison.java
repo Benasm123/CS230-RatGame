@@ -25,4 +25,9 @@ public class Poison extends Item {
 
     }
 
+    @Override
+    public void update(float deltaTime) {
+
+    }
+
 }

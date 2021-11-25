@@ -8,13 +8,10 @@ public class NoEntrySign extends Item
 	private static final int HP = 5;
 	private int hpLeft;
 	
-	public NoEntrySign(int xPos, int yPos)
+	public NoEntrySign()
 	{
 		hpLeft = HP;
-		this.xPos = xPos;
-        this.yPos = yPos;
         texture = new Image("Assets/Stop.png");
-        
 	}
     
     @Override
@@ -24,7 +21,12 @@ public class NoEntrySign extends Item
 
     @Override
     public void steppedOn(Rat rat) {
-
+        hpLeft--;
+        //rat.something to change velocity
+    	if (hpLeft == 0)
+    	{
+    		expired = true;
+    	}
     }
 
 }

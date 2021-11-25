@@ -43,7 +43,7 @@ public abstract class Item {
                 item = new FemaleSexChange();
                 break;
             case NO_ENTRY_SIGN:
-                item = new NoEntrySign(x, y);
+                item = new NoEntrySign();
                 break;
             case DEATH_RAT:
                 item = new DeathRat();
@@ -57,6 +57,7 @@ public abstract class Item {
 
     public abstract void use();
     public abstract void steppedOn(Rat rat);
+    public abstract void update(float deltaTime);
 
     public Image getTexture(){
         return texture;
