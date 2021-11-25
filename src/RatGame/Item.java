@@ -16,8 +16,7 @@ public abstract class Item {
     protected boolean expired;
 
     protected Item(){
-        this.imageView = new ImageView();
-        this.imageView.setImage(this.texture);
+        imageView = new ImageView();
         expired = false;
     }
 
@@ -52,6 +51,7 @@ public abstract class Item {
                 System.out.println("Attempting to spawn an item not available!");
                 break;
         }
+        item.getImageView().setImage(item.getTexture());
         return item;
     }
 

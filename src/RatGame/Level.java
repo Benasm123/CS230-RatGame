@@ -100,7 +100,8 @@ public class Level {
     private int numberOfRatsToLose;
     private int numberOfRatsToWin;
 
-    private ArrayList<Stack<Item>> items;
+    private ArrayList<Stack<Item>> itemsInInventory;
+    private ArrayList<Item> itemsInPlay;
 
     private double lastMouseX;
     private double lastMouseY;
@@ -201,7 +202,22 @@ public class Level {
         updateRats(deltaTime);
         updateRatsAliveText();
         updateItems(deltaTime);
+        updateItemsInPlay(deltaTime);
         checkWinLoseCondition();
+    }
+
+    private void updateItemsInPlay(float deltaTime){
+        Iterator<Item> itemIterator = itemsInPlay.iterator();
+        while (itemIterator.hasNext()){
+            Item item = itemIterator.next();
+            if (item.expired){
+                levelPane.getChildren().remove(item.imageView);
+                itemsInPlay.remove(item);
+            }
+        }
+        for (Item item : itemsInPlay){
+            item.update(deltaTime);
+        }
     }
 
     private void updateRatsAliveText() {
@@ -321,6 +337,7 @@ public class Level {
 
     public void createLevel(String src){
         rats = new ArrayList<>();
+        itemsInPlay = new ArrayList<>();
         timeSinceItemSpawn = new float[NUMBER_OF_ITEMS];
         itemSpawnTime = new int[NUMBER_OF_ITEMS];
 
@@ -487,10 +504,10 @@ public class Level {
     }
 
     public void createInventory(){
-        items = new ArrayList<>(NUMBER_OF_ITEMS);
+        itemsInInventory = new ArrayList<>(NUMBER_OF_ITEMS);
         for (int i = 0; i < NUMBER_OF_ITEMS; i++){
             Stack<Item> itemStack = new Stack<>();
-            items.add(itemStack);
+            itemsInInventory.add(itemStack);
         }
     }
 
@@ -533,7 +550,7 @@ public class Level {
     private void writeItemSpawns(FileWriter fileWriter) throws IOException {
         StringBuilder itemsHeld = new StringBuilder();
         for (ItemType type : ItemType.values()){
-            itemsHeld.append(items.get(type.getArrayPos()).size()).append(FILE_DELIMITER);
+            itemsHeld.append(itemsInInventory.get(type.getArrayPos()).size()).append(FILE_DELIMITER);
         }
         fileWriter.write(itemsHeld + "\n");
 
@@ -576,8 +593,8 @@ public class Level {
     private void removeItem(ItemType type){
         inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class &&
                 ((ImageView) node).getImage().getUrl().endsWith(type.getTexture()));
-        for (int i = 0; i < items.get(type.getArrayPos()).size(); i++){
-            Item item = items.get(type.getArrayPos()).get(i);
+        for (int i = 0; i < itemsInInventory.get(type.getArrayPos()).size(); i++){
+            Item item = itemsInInventory.get(type.getArrayPos()).get(i);
             ImageView itemIcon = createImageIcon(item);
             inventoryGrid.add(itemIcon, i, type.getArrayPos() + INVENTORY_GRID_OFFSET);
         }
@@ -596,7 +613,7 @@ public class Level {
     }
 
     private void spawnItem(ItemType type){
-        if (items.get(type.getArrayPos()).size() >= ITEM_MAX_STACK){
+        if (itemsInInventory.get(type.getArrayPos()).size() >= ITEM_MAX_STACK){
             return;
         }
 
@@ -604,8 +621,8 @@ public class Level {
 
         item.setTexture(new Image(type.getTexture()));
         ImageView itemIcon = createImageIcon(item);
-        inventoryGrid.add(itemIcon, items.get(type.getArrayPos()).size(), type.getArrayPos() + INVENTORY_GRID_OFFSET);
-        items.get(type.getArrayPos()).add(item);
+        inventoryGrid.add(itemIcon, itemsInInventory.get(type.getArrayPos()).size(), type.getArrayPos() + INVENTORY_GRID_OFFSET);
+        itemsInInventory.get(type.getArrayPos()).add(item);
     }
 
     public void onItemBeginDrag(MouseEvent event){
@@ -659,7 +676,12 @@ public class Level {
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
                 droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
-                Item itemUsed = items.get(itemType.getArrayPos()).pop();
+                Item itemUsed = itemsInInventory.get(itemType.getArrayPos()).pop();
+                itemUsed.setXPos(gridX);
+                itemUsed.setYPos(gridY);
+                itemUsed.getImageView().setTranslateX(itemUsed.getXPos() * TILE_WIDTH);
+                itemUsed.getImageView().setTranslateY(itemUsed.getYPos() * TILE_HEIGHT);
+                levelPane.getChildren().add(itemUsed.getImageView());
                 itemUsed.use();
                 removeItem(itemType);
             }

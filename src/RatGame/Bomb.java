@@ -5,9 +5,7 @@ import javafx.scene.image.Image;
 public class Bomb extends Item {
 
     private static final int countdown = 4;
-    private float posX;
-    private float posY;
-    Image texture;
+    //private boolean isOnPath;
 
     public Bomb() {
         texture = new Image("Assets/Bomb.png");
