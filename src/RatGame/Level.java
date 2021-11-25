@@ -203,7 +203,19 @@ public class Level {
         updateRatsAliveText();
         updateItems(deltaTime);
         updateItemsInPlay(deltaTime);
+        checkSteppedOn();
         checkWinLoseCondition();
+    }
+
+    private void checkSteppedOn(){
+        for (Rat rat : rats){
+            for (Item item : itemsInPlay){
+                // TODO: Add detection when i can get reference to the rat coords.
+                if (rat.getxPos() == item.getXPos() && rat.getyPos() == item.getYPos()){
+                    item.steppedOn(rat);
+                }
+            }
+        }
     }
 
     private void updateItemsInPlay(float deltaTime){
@@ -212,7 +224,7 @@ public class Level {
             Item item = itemIterator.next();
             if (item.expired){
                 levelPane.getChildren().remove(item.imageView);
-                itemsInPlay.remove(item);
+                itemIterator.remove();
             }
         }
         for (Item item : itemsInPlay){
