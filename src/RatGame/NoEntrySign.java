@@ -8,11 +8,10 @@ public class NoEntrySign extends Item
 	private static final int HP = 5;
 	private int hpLeft;
 	
-	public NoEntrySign(int xPos, int yPos)
+	public NoEntrySign()
 	{
+        super();
 		hpLeft = HP;
-		this.xPos = xPos;
-        this.yPos = yPos;
         texture = new Image("Assets/Stop.png");
         
 	}
