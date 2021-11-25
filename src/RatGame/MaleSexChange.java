@@ -11,4 +11,9 @@ public class MaleSexChange extends Item {
 
     }
 
+    @Override
+    public void update(float deltaTime) {
+
+    }
+
 }
