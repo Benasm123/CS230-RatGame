@@ -10,10 +10,8 @@ public class NoEntrySign extends Item
 	
 	public NoEntrySign()
 	{
-        super();
 		hpLeft = HP;
         texture = new Image("Assets/Stop.png");
-        
 	}
     
     @Override
