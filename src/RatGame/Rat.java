@@ -35,12 +35,16 @@ public class Rat {
     int lastY = (int)yPos;
 
     float rotation;
+    sexType type;
+    enum sexType{
+        MALE, FEMALE;
+    }
 
-    // TODO: Move function
-    public Rat(String type, int xPos, int yPos, boolean isDeathRat){
+    public Rat(sexType type, int xPos, int yPos, boolean isDeathRat){
         this.xPos = xPos;
         this.yPos = yPos;
         this.isDeathRat = isDeathRat;
+        this.type = type;
         // You can just put isDeathRat, as its a bool it will return either true or false already == true is redundant and messy imo.
         // This looks good, but again id just refactor the rat variable to texture
         // Also it would be a lot better if instead of a string for type you had an enum (like in the Tile class) that way typos wont be a common bug.
@@ -49,10 +53,10 @@ public class Rat {
         if(isDeathRat==true){
             rat = new Image("Assets/Death.png");
             img.setImage(rat);
-        }else if(type.equalsIgnoreCase("male")){
+        }else if(type == sexType.MALE){
             rat = new Image("Assets/Male.png");
             img.setImage(rat);
-        }else if(type.equalsIgnoreCase("female")){
+        }else if(type==sexType.FEMALE){
             rat = new Image("Assets/Female.png");
             img.setImage(rat);
         }

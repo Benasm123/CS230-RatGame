@@ -8,6 +8,7 @@
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="600.0" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="600.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="600.0" />
   </columnConstraints>
   <rowConstraints>
       <RowConstraints maxHeight="253.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
@@ -16,18 +17,19 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Text fx:id="messageDay" strokeType="OUTSIDE" strokeWidth="0.0" text="Message of the day!!!" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Text fx:id="messageDay" strokeType="OUTSIDE" strokeWidth="0.0" text="Message of the day!!!" wrappingWidth="203.50781202316284" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <font>
             <Font size="18.0" />
          </font></Text>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Rat Game" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="RATS!" textAlignment="CENTER" wrappingWidth="400.85938715934753" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <font>
             <Font size="120.0" />
          </font>
       </Text>
       <Button fx:id="play" mnemonicParsing="false" onAction="#switchToLevelSelect" prefHeight="50.0" prefWidth="200.0" text="Play" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-      <Button fx:id="settings" mnemonicParsing="false" onAction="#switchToSettings" prefHeight="50.0" prefWidth="200.0" text="Settings" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-      <Button fx:id="changeProfile" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="Change Profile" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-      <Button fx:id="quit" mnemonicParsing="false" onAction="#quitProgram" prefHeight="50.0" prefWidth="200.0" text="Quit" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+      <Button fx:id="settings" mnemonicParsing="false" onAction="#switchToSettings" prefHeight="50.0" prefWidth="200.0" text="Settings" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <Button fx:id="changeProfile" mnemonicParsing="false" onAction="#switchToChangeProfile" prefHeight="50.0" prefWidth="200.0" text="Change Profile" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+      <Button fx:id="quit" mnemonicParsing="false" onAction="#quitProgram" prefHeight="50.0" prefWidth="200.0" text="Quit" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+      <Button fx:id="create" alignment="CENTER" mnemonicParsing="false" onAction="#switchToNewGame" prefHeight="50.0" prefWidth="200.0" text="Create" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
    </children>
 </GridPane>

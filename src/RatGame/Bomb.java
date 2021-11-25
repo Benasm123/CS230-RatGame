@@ -23,7 +23,8 @@ public class Bomb extends Item {
     }
 
     @Override
-    public void steppedOn() {
+    public void steppedOn(Rat rat) {
 
     }
+
 }

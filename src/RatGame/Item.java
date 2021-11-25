@@ -1,12 +1,25 @@
 package RatGame;
 
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 
 public abstract class Item {
 
-    Image texture;
-    int xPos;
-    int yPos;
+    protected Image texture;
+    protected ImageView imageView;
+    protected int xPos;
+    protected int yPos;
+    protected boolean expired;
+
+    protected Item(){
+        this.imageView = new ImageView();
+        this.imageView.setImage(this.texture);
+        expired = false;
+    }
 
     public static Item create(ItemType type){
         Item item = null;
@@ -43,6 +56,37 @@ public abstract class Item {
     }
 
     public abstract void use();
-    public abstract void steppedOn();
-    
+    public abstract void steppedOn(Rat rat);
+
+    public Image getTexture(){
+        return texture;
+    }
+
+    public void setTexture(Image texture) {
+        this.texture = texture;
+    }
+
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
+    }
+
+    public int getXPos() {
+        return xPos;
+    }
+
+    public void setXPos(int xPos) {
+        this.xPos = xPos;
+    }
+
+    public int getYPos() {
+        return yPos;
+    }
+
+    public void setYPos(int yPos) {
+        this.yPos = yPos;
+    }
 }
