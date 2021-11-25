@@ -639,6 +639,8 @@ public class Level {
         double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
         double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/TILE_WIDTH);
         double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelPane.getTranslateY()))/TILE_HEIGHT);
+        int gridX = (int) droppedGridXPos;
+        int gridY = (int) droppedGridYPos;
 
         ItemType itemType = null;
         for (ItemType type : ItemType.values()){
@@ -657,7 +659,8 @@ public class Level {
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
                 droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
-                items.get(itemType.getArrayPos()).pop().use();
+                Item itemUsed = items.get(itemType.getArrayPos()).pop();
+                itemUsed.use();
                 removeItem(itemType);
             }
         }
