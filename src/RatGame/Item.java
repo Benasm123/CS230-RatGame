@@ -9,14 +9,16 @@ import javafx.scene.layout.GridPane;
 
 public abstract class Item {
 
-    private Image texture;
-    private ImageView imageView;
-    private int xPos;
-    private int yPos;
+    protected Image texture;
+    protected ImageView imageView;
+    protected int xPos;
+    protected int yPos;
+    protected boolean expired;
 
     protected Item(){
         this.imageView = new ImageView();
         this.imageView.setImage(this.texture);
+        expired = false;
     }
 
     public static Item create(ItemType type){
