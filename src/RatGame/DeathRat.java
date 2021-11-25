@@ -1,6 +1,10 @@
 package RatGame;
 
 public class DeathRat extends Item {
+    public DeathRat()
+	{
+        texture = new Image("Assets/Death.png");
+	}
     @Override
     public void use() {
 
