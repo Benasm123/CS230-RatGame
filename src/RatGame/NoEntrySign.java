@@ -29,4 +29,9 @@ public class NoEntrySign extends Item
     	}
     }
 
+    @Override
+    public void update(float deltaTime) {
+
+    }
+
 }
