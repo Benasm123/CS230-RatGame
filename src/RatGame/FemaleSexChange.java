@@ -1,5 +1,7 @@
 package RatGame;
 
+import javafx.scene.image.Image;
+
 public class FemaleSexChange extends Item {
     public FemaleSexChange()
 	{
