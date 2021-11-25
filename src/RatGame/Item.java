@@ -57,6 +57,7 @@ public abstract class Item {
 
     public abstract void use();
     public abstract void steppedOn(Rat rat);
+    public abstract void update(float deltaTime);
 
     public Image getTexture(){
         return texture;

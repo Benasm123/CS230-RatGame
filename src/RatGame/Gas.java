@@ -29,4 +29,9 @@ public class Gas extends Item{
     public void steppedOn(Rat rat) {
 
     }
+
+    @Override
+    public void update(float deltaTime) {
+
+    }
 }

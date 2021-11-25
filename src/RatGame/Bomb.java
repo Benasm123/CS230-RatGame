@@ -29,4 +29,9 @@ public class Bomb extends Item {
 
     }
 
+    @Override
+    public void update(float deltaTime) {
+
+    }
+
 }

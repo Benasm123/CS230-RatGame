@@ -10,4 +10,9 @@ public class DeathRat extends Item {
     public void steppedOn(Rat rat) {
 
     }
+
+    @Override
+    public void update(float deltaTime) {
+
+    }
 }
