@@ -21,7 +21,12 @@ public class NoEntrySign extends Item
 
     @Override
     public void steppedOn(Rat rat) {
-
+        hpLeft--;
+        //rat.something to change velocity
+    	if (hpLeft == 0)
+    	{
+    		expired = true;
+    	}
     }
 
 }
