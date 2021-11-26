@@ -250,19 +250,26 @@ public class Level {
     }
 
     private void updateRats(float deltaTime){
-        for (Rat rat : rats) {
-            rat.update(deltaTime, levelGrid);
-            for (Rat otherRat : rats) {
-                if (rat.getxPos() == otherRat.getxPos() &&
-                        rat.getyPos() == otherRat.getyPos() &&
-                        rat != otherRat) {
-                    rat.steppedOn(otherRat);
-                }
-                if (rat.getIsDead()){
-                    levelPane.getChildren().remove(rat.img);
-                    rats.remove(rat);
+        Iterator<Rat> ratIterator = rats.iterator();
+        while (ratIterator.hasNext()){
+            Rat rat = ratIterator.next();
+            if (rat.getIsDead()){
+                levelPane.getChildren().remove(rat.img);
+                ratIterator.remove();
+            } else {
+                for (Rat otherRat : rats) {
+                    if (rat.getxPos() == otherRat.getxPos() &&
+                            rat.getyPos() == otherRat.getyPos() &&
+                            rat != otherRat) {
+                        rat.steppedOn(otherRat);
+                    }
                 }
             }
+        }
+
+        for (Rat rat : rats) {
+            rat.update(deltaTime, levelGrid);
+
         }
     }
 

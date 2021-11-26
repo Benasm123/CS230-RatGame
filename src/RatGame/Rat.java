@@ -220,6 +220,10 @@ public class Rat {
         return isDead;
     }
 
+    public void die(){
+        this.isDead = true;
+    }
+
     public void steppedOn(Rat rat) {
         if(type == ratType.FEMALE && rat.type == Rat.ratType.MALE){
             isPregnant = true;
