@@ -22,7 +22,8 @@ public class Poison extends Item {
 
     @Override
     public void steppedOn(Rat rat) {
-
+        rat.die();
+        this.expired = true;
     }
 
     @Override
