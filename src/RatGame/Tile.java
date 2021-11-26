@@ -1,7 +1,8 @@
 /**
- * This class creates a Tile.
+ * This class creates instances of tiles that are used in the map of the game.
+ * It is implemented in the level class which spawns tiles according to the level format.
  *
- * @author CS-250 Group13 (21/22)
+ * @author CS-230 Group13 (21/22)
  * @version 1.0
  *
  */
