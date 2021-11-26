@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class Rat {
     // I think better to call this texture, as Rat.rat isnt going to be clear as what this variable acutally holds.
-    Image rat;
+    Image texture;
     ImageView img;
 
     private float xPos;
@@ -26,39 +26,41 @@ public class Rat {
     private int[] maleRats;
     private int[] femaleRats;
 
-    private boolean isDeathRat;
-    // rat class doesnt need to store the level grid, youll have it passed where you need it
-    private char[][] levelGrid;
-
     // You want to set this in the constructor as you want hte lastX/Y to be set on where the rat spawns, but if you do it here it will always initialize to 0.
-    int lastX = (int)xPos;
-    int lastY = (int)yPos;
+    int lastX;
+    int lastY;
+
+    private boolean isBaby;
 
     float rotation;
-    sexType type;
-    enum sexType{
-        MALE, FEMALE;
+    ratType type;
+    enum ratType{
+        MALE, FEMALE, DEATHRAT;
     }
 
-    public Rat(sexType type, int xPos, int yPos, boolean isDeathRat){
+    public Rat(ratType type, int xPos, int yPos, boolean isBaby){
         this.xPos = xPos;
         this.yPos = yPos;
-        this.isDeathRat = isDeathRat;
         this.type = type;
+        lastX = (int)xPos;
+        lastY = (int)yPos;
         // You can just put isDeathRat, as its a bool it will return either true or false already == true is redundant and messy imo.
         // This looks good, but again id just refactor the rat variable to texture
         // Also it would be a lot better if instead of a string for type you had an enum (like in the Tile class) that way typos wont be a common bug.
         // Then id have ratType.DeathRat or RatType.BabyRat or RatType.AdultRat... and so on
         img = new ImageView();
-        if(isDeathRat==true){
-            rat = new Image("Assets/Death.png");
-            img.setImage(rat);
-        }else if(type == sexType.MALE){
-            rat = new Image("Assets/Male.png");
-            img.setImage(rat);
-        }else if(type==sexType.FEMALE){
-            rat = new Image("Assets/Female.png");
-            img.setImage(rat);
+        if(type == ratType.DEATHRAT && isBaby==false){
+            texture = new Image("Assets/Death.png");
+            img.setImage(texture);
+        }else if(type == ratType.MALE && isBaby==false){
+            texture = new Image("Assets/Male.png");
+            img.setImage(texture);
+        }else if(type==ratType.FEMALE && isBaby==false){
+            texture = new Image("Assets/Female.png");
+            img.setImage(texture);
+        }else {
+            texture = new Image("Assets/Baby.png");
+            img.setImage(texture);
         }
         img.setTranslateX(xPos*50);
         img.setTranslateY(yPos*50);
@@ -160,11 +162,45 @@ public class Rat {
         this.setRotation(img);
    }
 
+   public void changeSex(Rat rat){
+        if(rat.type == ratType.MALE){
+            rat.type = ratType.FEMALE;
+            rat.texture = new Image("Assets/Female.png");
+            rat.img.setImage(rat.texture);
+        }else if(rat.type == ratType.FEMALE){
+            rat.type = ratType.MALE;
+            rat.texture = new Image("Assets/Male.png");
+            rat.img.setImage(rat.texture);
+        }
+   }
+
     public float getxPos() {
         return xPos;
     }
 
     public float getyPos() {
         return yPos;
+    }
+
+    public String toString(){
+        String stringOfType="";
+        String stringOfBaby="";
+        String properties ="";
+        if(type == ratType.MALE){
+            stringOfType += "M";
+        }else if(type == ratType.FEMALE){
+            stringOfType += "F";
+        }else{
+            stringOfType += "D";
+        }
+
+        if(isBaby){
+            stringOfBaby += "T";
+        }else{
+            stringOfBaby += "F";
+        }
+
+        properties += stringOfType+", x:"+ xPos +", y:" + yPos + " ," + stringOfBaby;
+        return properties;
     }
 }
