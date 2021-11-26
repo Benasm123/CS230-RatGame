@@ -14,7 +14,7 @@ public class MaleSexChange extends Item {
 
     @Override
     public void steppedOn(Rat rat) {
-
+        rat.changeSex(rat);
     }
 
     @Override
