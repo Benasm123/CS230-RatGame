@@ -16,8 +16,8 @@ public class FemaleSexChange extends Item {
     public void steppedOn(Rat rat) {
         if (rat.type == Rat.ratType.MALE){
             rat.changeSex(rat);
+            expired = true;
         }
-
     }
 
     @Override
