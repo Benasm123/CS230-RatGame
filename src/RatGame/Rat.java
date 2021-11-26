@@ -34,6 +34,7 @@ public class Rat {
     private boolean isPregnant = false;
     private boolean isGivingBirth = false;
     private float birthTime = 0.0f;
+    private boolean isDead = false;
 
     float rotation;
     ratType type;
@@ -206,6 +207,7 @@ public class Rat {
         properties += stringOfType + " " + (int)xPos + " " + (int)yPos + " " + stringOfBaby;
         return properties;
     }
+
     private void timeToBirth(float deltaTime){
         if (isPregnant==true){
             birthTime += deltaTime;
@@ -214,9 +216,15 @@ public class Rat {
         }
     }
 
+    private boolean getIsDead(){
+        return isDead;
+    }
+
     public void steppedOn(Rat rat) {
         if(type == ratType.FEMALE && rat.type == Rat.ratType.MALE){
             isPregnant = true;
+        }else if (rat.type == Rat.ratType.DEATHRAT){
+            isDead = true;
         }
     }
 }
