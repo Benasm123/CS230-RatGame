@@ -216,7 +216,7 @@ public class Rat {
         }
     }
 
-    private boolean getIsDead(){
+    public boolean getIsDead(){
         return isDead;
     }
 
