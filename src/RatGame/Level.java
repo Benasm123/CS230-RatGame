@@ -203,7 +203,19 @@ public class Level {
         updateRatsAliveText();
         updateItems(deltaTime);
         updateItemsInPlay(deltaTime);
+        checkSteppedOn();
         checkWinLoseCondition();
+    }
+
+    private void checkSteppedOn(){
+        for (Rat rat : rats){
+            for (Item item : itemsInPlay){
+                // TODO: Add detection when i can get reference to the rat coords.
+                if (rat.getxPos() == item.getXPos() && rat.getyPos() == item.getYPos()){
+                    item.steppedOn(rat);
+                }
+            }
+        }
     }
 
     private void updateItemsInPlay(float deltaTime){
@@ -212,7 +224,7 @@ public class Level {
             Item item = itemIterator.next();
             if (item.expired){
                 levelPane.getChildren().remove(item.imageView);
-                itemsInPlay.remove(item);
+                itemIterator.remove();
             }
         }
         for (Item item : itemsInPlay){
@@ -238,8 +250,26 @@ public class Level {
     }
 
     private void updateRats(float deltaTime){
-        for (Rat rat:rats){
+        Iterator<Rat> ratIterator = rats.iterator();
+        while (ratIterator.hasNext()){
+            Rat rat = ratIterator.next();
+            if (rat.getIsDead()){
+                levelPane.getChildren().remove(rat.img);
+                ratIterator.remove();
+            } else {
+                for (Rat otherRat : rats) {
+                    if (rat.getxPos() == otherRat.getxPos() &&
+                            rat.getyPos() == otherRat.getyPos() &&
+                            rat != otherRat) {
+                        rat.steppedOn(otherRat);
+                    }
+                }
+            }
+        }
+
+        for (Rat rat : rats) {
             rat.update(deltaTime, levelGrid);
+
         }
     }
 
@@ -434,13 +464,13 @@ public class Level {
             String[] ratToSpawnSplit = ratToSpawn.split(FILE_DELIMITER);
 
             // TODO: Needs to change when we set up enum for the rat class.
-            Rat.sexType type;
+            Rat.ratType type;
             if (ratToSpawnSplit[0].equals("F")){
-                type = Rat.sexType.FEMALE;
+                type = Rat.ratType.FEMALE;
             } else if (ratToSpawnSplit[0].equals("M")){
-                type = Rat.sexType.MALE;
+                type = Rat.ratType.MALE;
             } else {
-                type = Rat.sexType.FEMALE;
+                type = Rat.ratType.FEMALE;
             }
 
             int xPos = Integer.parseInt(ratToSpawnSplit[1]);
@@ -454,14 +484,14 @@ public class Level {
     }
 
     // TODO: Right now female and male gets incremented even if they're babies, need to only happen when they grow.
-    private void spawnRat(Rat.sexType type, int xPos, int yPos){
-        Rat rat = new Rat(type, xPos, yPos, false);
+    private void spawnRat(Rat.ratType type, int xPos, int yPos){
+        Rat rat = new Rat(type, xPos, yPos, true);
         levelPane.getChildren().add(rat.img);
         rats.add(rat);
         numOfRatsAlive++;
-        if (type == Rat.sexType.FEMALE){
+        if (type == Rat.ratType.FEMALE){
             numOfFemaleRatsAlive++;
-        } else if (type == Rat.sexType.MALE){
+        } else if (type == Rat.ratType.MALE){
             numOfMaleRatsAlive++;
         }
         drawRat(rat);
