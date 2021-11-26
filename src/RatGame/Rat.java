@@ -31,6 +31,9 @@ public class Rat {
     int lastY;
 
     private boolean isBaby;
+    private boolean isPregnant = false;
+    private boolean isGivingBirth = false;
+    private float birthTime = 0.0f;
 
     float rotation;
     ratType type;
@@ -200,7 +203,20 @@ public class Rat {
             stringOfBaby += "F";
         }
 
-        properties += stringOfType+", x:"+ xPos +", y:" + yPos + " ," + stringOfBaby;
+        properties += stringOfType + " " + (int)xPos + " " + (int)yPos + " " + stringOfBaby;
         return properties;
+    }
+    private void timeToBirth(float deltaTime){
+        if (isPregnant==true){
+            birthTime += deltaTime;
+            isGivingBirth = true;
+            birthTime += deltaTime;
+        }
+    }
+
+    public void steppedOn(Rat rat) {
+        if(type == ratType.FEMALE && rat.type == Rat.ratType.MALE){
+            isPregnant = true;
+        }
     }
 }
