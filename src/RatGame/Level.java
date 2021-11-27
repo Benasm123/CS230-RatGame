@@ -1,6 +1,7 @@
 package RatGame;
 
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +28,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+// TODO: Add Game timer and Expected time to the save and load.
+
 public class Level {
     // Constant Variables
     private static final int TILE_HEIGHT = 50;
@@ -49,31 +52,27 @@ public class Level {
     private static final int ITEM_MAX_STACK = 4;
 
     // Fps related variables
-    ArrayDeque<Float> pastDeltaTimes = new ArrayDeque<>();
-    long lastFrameTime;
-    float timeSinceFPSRefreshed;
+    private ArrayDeque<Float> pastDeltaTimes;
+    private long lastFrameTime;
+    private float timeSinceFPSRefreshed;
 
     // Game Loop variables
-    boolean isPaused;
-    boolean firstLoop;
-    long pauseTime;
+    private boolean isPaused;
+    private boolean firstLoop;
 
     // Level setup variables
-    AnimationTimer gameLoop;
+    private AnimationTimer gameLoop;
 
     private String levelName;
     private int levelHeight;
     private int levelWidth;
 
-    GraphicsContext levelGraphicsContext;
+    private GraphicsContext levelGraphicsContext;
 
     private Tile[][] levelGrid;
-    ArrayList<ImageView> tunnels;
+    private ArrayList<ImageView> tunnels;
 
     private ArrayList<Rat> rats;
-    private int numOfRatsAlive;
-    private int numOfMaleRatsAlive;
-    private int numOfFemaleRatsAlive;
 
     private int numberOfRatsToLose;
     private int numberOfRatsToWin;
@@ -81,15 +80,17 @@ public class Level {
     private ArrayList<Stack<Item>> itemsInInventory;
     private ArrayList<Item> itemsInPlay;
 
-    float[] timeSinceItemSpawn;
+    private float[] timeSinceItemSpawn;
 
-    int[] itemSpawnTime;
+    private int[] itemSpawnTime;
+
+    private int score;
 
     // Mouse variables
     private double lastMouseX;
     private double lastMouseY;
 
-    ImageView itemBeingDragged;
+    private ImageView itemBeingDragged;
 
     // All FXML variables.
     @FXML
@@ -228,8 +229,28 @@ public class Level {
      */
     private void updateRatsAliveText() {
         ratsAlive.setText("Rats alive: " + rats.size());
-        maleRatsAlive.setText("Males alive: " + numOfMaleRatsAlive);
-        femaleRatsAlive.setText("Females alive: " + numOfFemaleRatsAlive);
+        maleRatsAlive.setText("Males alive: " + getNumberOfMaleRatsAlive());
+        femaleRatsAlive.setText("Females alive: " + getNumberOfFemaleRatsAlive());
+    }
+
+    private int getNumberOfFemaleRatsAlive(){
+        int counter = 0;
+        for (Rat rat : rats){
+            if (rat.type == Rat.ratType.FEMALE){
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    private int getNumberOfMaleRatsAlive(){
+        int counter = 0;
+        for (Rat rat : rats){
+            if (rat.type == Rat.ratType.MALE){
+                counter++;
+            }
+        }
+        return counter;
     }
 
     /**
@@ -237,12 +258,24 @@ public class Level {
      */
     private void checkWinLoseCondition() {
         // TODO: Add lose mechanic
-        if (numOfRatsAlive > numberOfRatsToLose){
+        if (rats.size() > numberOfRatsToLose){
+            isPaused = true;
             System.out.println("You Lose!");
         }
 
-        if (numOfRatsAlive < numberOfRatsToWin){
+        if (rats.size() < numberOfRatsToWin){
+            isPaused = true;
             System.out.println("You Win!");
+        }
+
+        if (getNumberOfFemaleRatsAlive() == 0){
+            isPaused = true;
+            System.out.println("You win only females alive and cannot reproduce!");
+        }
+
+        if (getNumberOfMaleRatsAlive() == 0){
+            isPaused = true;
+            System.out.println("You win only male alive and cannot reproduce!");
         }
     }
 
@@ -258,7 +291,20 @@ public class Level {
             if (rat.getIsDead()){
                 levelPane.getChildren().remove(rat.img);
                 ratIterator.remove();
-            } else {
+            }
+//            else if (rat){
+//                Random rand = new Random();
+//                int num = rand.nextInt(2);
+//                Rat.ratType type;
+//                if (num == 0){
+//                    type = Rat.ratType.MALE;
+//                } else {
+//                    type = Rat.ratType.FEMALE;
+//                }
+//                spawnRat(type, (int)rat.getxPos(), (int)rat.getyPos(),true);
+//                rat.
+//            }
+            else {
                 rat.update(deltaTime, levelGrid);
                 for (Rat otherRat : rats) {
                     if (rat.getxPos() == otherRat.getxPos() &&
@@ -276,7 +322,6 @@ public class Level {
      */
     public void pauseLoop(){
         isPaused = !isPaused;
-        pauseTime = new Date().getTime();
     }
 
     // TODO: Add popup to ask whether user wants to save the level if leaving early.
@@ -375,9 +420,8 @@ public class Level {
         itemsInPlay = new ArrayList<>();
         timeSinceItemSpawn = new float[NUMBER_OF_ITEMS];
         itemSpawnTime = new int[NUMBER_OF_ITEMS];
-
-        numberOfRatsToLose = 100;
-        numberOfRatsToWin = 1;
+        pastDeltaTimes = new ArrayDeque<>();
+        score = 0;
 
         try {
             readLevelFile(src);
@@ -399,9 +443,17 @@ public class Level {
         File levelFile = new File(LEVEL_FOLDER_PATH + src);
         Scanner fileReader = new Scanner(levelFile);
 
+        setupWinLoseCondition(fileReader);
         setupItems(fileReader);
         setupLevelGrid(fileReader);
         setupRatSpawns(fileReader);
+    }
+
+    private void setupWinLoseCondition(Scanner fileReader){
+        String winLoseCondition = fileReader.nextLine();
+        String[] winLoseConditionSplit = winLoseCondition.split(" ");
+        numberOfRatsToWin = Integer.parseInt(winLoseConditionSplit[0]);
+        numberOfRatsToLose = Integer.parseInt(winLoseConditionSplit[1]);
     }
 
     /**
@@ -475,12 +527,14 @@ public class Level {
     private void setupRatSpawns(Scanner fileReader) {
         while (fileReader.hasNextLine()){
             String ratToSpawn = fileReader.nextLine();
+            if (ratToSpawn.equals("ITEMS")) {
+                return;
+            }
             if (ratToSpawn.equals("")){
                 return;
             }
             String[] ratToSpawnSplit = ratToSpawn.split(FILE_DELIMITER);
 
-            // TODO: Needs to change when we set up enum for the rat class.
             Rat.ratType type;
             if (ratToSpawnSplit[0].equals("F")){
                 type = Rat.ratType.FEMALE;
@@ -492,11 +546,21 @@ public class Level {
 
             int xPos = Integer.parseInt(ratToSpawnSplit[1]);
             int yPos = Integer.parseInt(ratToSpawnSplit[2]);
-            // TODO: Needs to add an isBaby bool to constructor as loads can have full adults.
-//            boolean isBaby = ratToSpawnSplit[3].equals("T");
+            boolean isBaby = ratToSpawnSplit[3].equals("T");
 
-            // TODO: most of this should be in rat class, only should construct here and add
-            spawnRat(type, xPos, yPos);
+            spawnRat(type, xPos, yPos, isBaby);
+        }
+    }
+
+    private void setupItemsOnBoard(Scanner fileReader){
+        while (fileReader.hasNextLine()){
+            String itemToSpawn = fileReader.nextLine();
+            if (itemToSpawn.equals("")){
+                return;
+            }
+            String[] itemToSpawnSplit = itemToSpawn.split(FILE_DELIMITER);
+
+            // TODO: find out how to save items, probably something like {TYPE X Y} would suffice.
         }
     }
 
@@ -508,16 +572,10 @@ public class Level {
      * @param xPos The X position of the rat to be spawned.
      * @param yPos The Y position of the rat to be spawned.
      */
-    private void spawnRat(Rat.ratType type, int xPos, int yPos){
-        Rat rat = new Rat(type, xPos, yPos, true);
+    private void spawnRat(Rat.ratType type, int xPos, int yPos, boolean isBaby){
+        Rat rat = new Rat(type, xPos, yPos, isBaby);
         levelPane.getChildren().add(rat.img);
         rats.add(rat);
-        numOfRatsAlive++;
-        if (type == Rat.ratType.FEMALE){
-            numOfFemaleRatsAlive++;
-        } else if (type == Rat.ratType.MALE){
-            numOfMaleRatsAlive++;
-        }
 
         // Update tunnel after every rat spawns so that tunnels are always on top.
         updateTunnels();
@@ -586,6 +644,8 @@ public class Level {
 
             FileWriter fileWriter = new FileWriter(SAVE_FOLDER_PATH + levelName);
 
+            writeWinLoseConditions(fileWriter);
+
             writeItemSpawns(fileWriter);
 
             writeLevelGrid(fileWriter);
@@ -616,6 +676,17 @@ public class Level {
         if (levelSaveFile.createNewFile()){
             System.out.println("New save file created: " + levelName);
         }
+    }
+
+    /**
+     * Writes the win and lose conditions to the save file.
+     * @param fileWriter The file writer containing the file we want to write to.
+     * @throws IOException Throws an exception if you cannot write to the file.
+     */
+    private void writeWinLoseConditions(FileWriter fileWriter) throws IOException {
+        StringBuilder winLoseCondition = new StringBuilder();
+        fileWriter.write(numberOfRatsToWin + " ");
+        fileWriter.write(numberOfRatsToLose + "\n");
     }
 
     /**
