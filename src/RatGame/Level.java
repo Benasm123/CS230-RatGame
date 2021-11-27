@@ -1,7 +1,6 @@
 package RatGame;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -270,12 +269,12 @@ public class Level {
 
         if (getNumberOfFemaleRatsAlive() == 0){
             isPaused = true;
-            System.out.println("You win only females alive and cannot reproduce!");
+            System.out.println("You win only males alive and cannot reproduce!");
         }
 
         if (getNumberOfMaleRatsAlive() == 0){
             isPaused = true;
-            System.out.println("You win only male alive and cannot reproduce!");
+            System.out.println("You win only female alive and cannot reproduce!");
         }
     }
 
