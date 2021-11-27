@@ -17,6 +17,9 @@ public class Rat {
 
     private float xPos;
     private float yPos;
+    private float adultSpeed = 2.0f;
+    private float babySpeed = 1.0f;
+    private float movementSpeed = adultSpeed;
 
     private float xVel=5.0f;
     private float yVel=0.0f;
@@ -34,6 +37,7 @@ public class Rat {
     private boolean isPregnant = false;
     private boolean isGivingBirth = false;
     private float birthTime = 0.0f;
+    private float growUpTime = 0.0f;
     private boolean isDead = false;
 
     float rotation;
@@ -43,6 +47,9 @@ public class Rat {
     }
 
     public Rat(ratType type, int xPos, int yPos, boolean isBaby){
+        if(isBaby==true){
+            movementSpeed = babySpeed;
+        }
         this.xPos = xPos;
         this.yPos = yPos;
         this.type = type;
@@ -100,10 +107,6 @@ public class Rat {
     // This need to be tidied up, lots of repeated code and a pain to work with, i know this is how ive done it but it was
     // for testing purposes.
     public void move(float deltaTime, Tile[][] levelGrid){
-        if(isBaby == true){
-            xPos += (xVel * deltaTime)*2;
-            yPos += (yVel * deltaTime)*2;
-        }
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
         lastX = (int) xPos;
@@ -152,6 +155,9 @@ public class Rat {
     public void update(float deltaTime, Tile[][] levelGrid){
         this.move(deltaTime, levelGrid);
         this.setRotation(img);
+        if(isBaby==true){
+            growUp(deltaTime);
+        }
    }
 
    public void changeSexMale(Rat rat){
@@ -200,7 +206,18 @@ public class Rat {
             birthTime += deltaTime;
             isGivingBirth = true;
             birthTime += deltaTime;
-            isBaby = false;
+        }
+    }
+    private void growUp(float deltaTime){
+        growUpTime += deltaTime;
+        isBaby = false;
+        movementSpeed = adultSpeed;
+        if(type == ratType.MALE){
+            texture = new Image("Assets/Male.png");
+            img.setImage(texture);
+        }else if(type==ratType.FEMALE){
+            texture = new Image("Assets/Female.png");
+            img.setImage(texture);
         }
     }
 
