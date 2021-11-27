@@ -13,21 +13,21 @@ public class Tile {
     private static final int TILE_HEIGHT = 50;
     private static final int TILE_WIDTH = 50;
 
-    private float posX;
-    private float posY;
+    private float xPos;
+    private float yPos;
     private TileType type;
     private Image texture;
 
     /**
      * Creates a Tile object
-     * @param posX x-position of the tile
-     * @param posY y-position of the tile
+     * @param xPos x-position of the tile
+     * @param yPos y-position of the tile
      * @param type the type of the tile
      */
 
-    public Tile(float posX, float posY, TileType type) {
-        this.posX = posX;
-        this.posY = posY;
+    public Tile(float xPos, float yPos, TileType type) {
+        this.xPos = xPos;
+        this.yPos = yPos;
         this.type = type;
         this.texture = type.textureName;
     }
