@@ -166,17 +166,16 @@ public class Rat {
         this.setRotation(img);
    }
 
-   public void changeSex(Rat rat){
-        if(rat.type == ratType.MALE){
-            rat.type = ratType.FEMALE;
-            rat.texture = new Image("Assets/Female.png");
-            rat.img.setImage(rat.texture);
-        }else if(rat.type == ratType.FEMALE){
-            rat.type = ratType.MALE;
-            rat.texture = new Image("Assets/Male.png");
-            rat.img.setImage(rat.texture);
-        }
+   public void changeSexMale(Rat rat){
+        rat.type = ratType.MALE;
+        rat.texture = new Image("Assets/Male.png");
+        rat.img.setImage(rat.texture);
    }
+    public void changeSexFemale(Rat rat){
+        rat.type = ratType.FEMALE;
+        rat.texture = new Image("Assets/Female.png");
+        rat.img.setImage(rat.texture);
+    }
 
     public float getxPos() {
         return xPos;
@@ -216,6 +215,14 @@ public class Rat {
         }
     }
 
+    public boolean getIsGivingBirth(){
+        return isGivingBirth;
+    }
+
+    public void setIsGivingBirth(){
+        isGivingBirth = false;
+    }
+
     public boolean getIsDead(){
         return isDead;
     }
@@ -224,11 +231,13 @@ public class Rat {
         this.isDead = true;
     }
 
-    public void steppedOn(Rat rat) {
-        if(type == ratType.FEMALE && rat.type == Rat.ratType.MALE){
+    public void steppedOn(Rat otherRat) {
+        if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE){
             isPregnant = true;
-        }else if (rat.type == Rat.ratType.DEATHRAT){
-            isDead = true;
+        }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE){
+            otherRat.isPregnant = true;
+        }else if (type == ratType.DEATHRAT){
+            otherRat.isDead=true;
         }
     }
 }
