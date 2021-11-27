@@ -212,6 +212,7 @@ public class Rat {
             birthTime += deltaTime;
             isGivingBirth = true;
             birthTime += deltaTime;
+            isBaby = false;
         }
     }
 
