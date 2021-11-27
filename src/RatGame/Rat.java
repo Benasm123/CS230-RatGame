@@ -100,42 +100,30 @@ public class Rat {
     // This need to be tidied up, lots of repeated code and a pain to work with, i know this is how ive done it but it was
     // for testing purposes.
     public void move(float deltaTime, Tile[][] levelGrid){
+        if(isBaby == true){
+            xPos += (xVel * deltaTime)*2;
+            yPos += (yVel * deltaTime)*2;
+        }
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
+        lastX = (int) xPos;
+        lastY = (int) yPos;
+        xPos = (int)xPos;
+        yPos = (int)yPos;
         img.setTranslateX(xPos*50);
         img.setTranslateY(yPos*50);
         if (xVel < 0){
             if ((int)xPos+1 != lastX) {
-                xPos = (int)xPos+1;
-                yPos = (int)yPos;
-                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
-                lastX = (int) xPos;
-                lastY = (int) yPos;
+                xPos = xPos+1;
             }
         }else if (yVel < 0) {
             if ((int)yPos+1 != lastY) {
-                xPos = (int)xPos;
-                yPos = (int)yPos+1;
-                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
-                lastX = (int) xPos;
-                lastY = (int) yPos;
+                yPos = yPos+1;
                 img.setRotate(180.0);
             }
-        }else {
-            if ((int)xPos != lastX || (int)yPos != lastY) {
-                xPos = (int)xPos;
-                yPos = (int)yPos;
-                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
-                lastX = (int) xPos;
-                lastY = (int) yPos;
-            }
         }
+        xVel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY).getKey();
+        yVel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY).getValue();
 
     }
 
