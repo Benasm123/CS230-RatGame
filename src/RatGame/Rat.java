@@ -97,6 +97,7 @@ public class Rat {
 
     // Added Level grid as a parameter here and in checkPaths so that i can pass it in to the update method so you have access to the level.
     public void move(float deltaTime, Tile[][] levelGrid){
+
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
 
@@ -108,8 +109,8 @@ public class Rat {
                 xPos = (int)xPos+1;
                 yPos = (int)yPos;
                 Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
+                xVel = vel.getKey()*movementSpeed;
+                yVel = vel.getValue()*movementSpeed;
                 lastX = (int) xPos;
                 lastY = (int) yPos;
 
@@ -119,8 +120,8 @@ public class Rat {
                 xPos = (int)xPos;
                 yPos = (int)yPos+1;
                 Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
+                xVel = vel.getKey()*movementSpeed;
+                yVel = vel.getValue()*movementSpeed;
                 lastX = (int) xPos;
                 lastY = (int) yPos;
                 img.setRotate(180.0);
@@ -130,8 +131,8 @@ public class Rat {
                 xPos = (int)xPos;
                 yPos = (int)yPos;
                 Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
+                xVel = vel.getKey()*movementSpeed;
+                yVel = vel.getValue()*movementSpeed;
                 lastX = (int) xPos;
                 lastY = (int) yPos;
             }
