@@ -1,7 +1,6 @@
 package RatGame;
 
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class NoEntrySign extends Item 
 {
@@ -22,7 +21,8 @@ public class NoEntrySign extends Item
     @Override
     public void steppedOn(Rat rat) {
         hpLeft--;
-        //rat.something to change velocity
+        rat.setxVel(rat.getxVel()*-1);
+        rat.setyVel(rat.getyVel()*-1);
     	if (hpLeft == 0)
     	{
     		expired = true;
