@@ -1,7 +1,7 @@
 /**
  * This enum class allows for the creation of various tile types.
  *
- * @author CS-250 Group13 (21/22)
+ * @author CS-230 Group13 (21/22)
  * @version 1.0
  *
  */

@@ -1,7 +1,7 @@
 /**
  * This class ranks the top 10 scores in a leaderboard and prints them as a string.
  *
- * @author CS-250 Group13 (21/22)
+ * @author CS-230 Group13 (21/22)
  * @version 1.0
  *
  */

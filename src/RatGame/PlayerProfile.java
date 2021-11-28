@@ -1,7 +1,7 @@
 /**
  * This class creates a player profile.
  * The player profile is also responsible for saving, loading and deleting player profile files.
- * @author CS-250 Group13 (21/22)
+ * @author CS-230 Group13 (21/22)
  * @version 1.0
  *
  */
