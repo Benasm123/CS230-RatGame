@@ -25,8 +25,9 @@ public class LevelSelect {
 
             Button levelSelectButton = new Button(i);
             // TODO: once have access to player profile i can do this.
-//            if (player.highestLevelReached > i.substring(10)){
-//
+//            if (MainMenu.getCurrentProfile().getLevel() > Integer.parseInt(i.substring(0, 1))){
+            // TODO Make this set the button to do nothing.
+////                  levelSelectButton.setOnAction();
 //            } else {
                 levelSelectButton.setOnAction(event -> {
                     try {

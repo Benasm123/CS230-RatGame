@@ -11,20 +11,18 @@ import java.util.Random;
 // and setters.
 
 public class Rat {
-    // I think better to call this texture, as Rat.rat isnt going to be clear as what this variable acutally holds.
     Image texture;
     ImageView img;
 
     private float xPos;
     private float yPos;
+    private float adultSpeed = 2.0f;
+    private float babySpeed = 1.0f;
+    private float movementSpeed = adultSpeed;
 
     private float xVel=5.0f;
     private float yVel=0.0f;
 
-    // rat doesnt care about what other rats exist, only itself. Dont think as this class as all the rats, but each individual rat.
-    // So each instance will only ever care about itself and no other rat (Other than when they need to interact, but well manage that in the level class).
-    private int[] maleRats;
-    private int[] femaleRats;
 
     // You want to set this in the constructor as you want hte lastX/Y to be set on where the rat spawns, but if you do it here it will always initialize to 0.
     int lastX;
@@ -34,6 +32,7 @@ public class Rat {
     private boolean isPregnant = false;
     private boolean isGivingBirth = false;
     private float birthTime = 0.0f;
+    private float growUpTime = 0.0f;
     private boolean isDead = false;
 
     float rotation;
@@ -43,15 +42,15 @@ public class Rat {
     }
 
     public Rat(ratType type, int xPos, int yPos, boolean isBaby){
+        if(isBaby==true){
+            movementSpeed = babySpeed;
+        }
         this.xPos = xPos;
         this.yPos = yPos;
         this.type = type;
         lastX = (int)xPos;
         lastY = (int)yPos;
-        // You can just put isDeathRat, as its a bool it will return either true or false already == true is redundant and messy imo.
-        // This looks good, but again id just refactor the rat variable to texture
-        // Also it would be a lot better if instead of a string for type you had an enum (like in the Tile class) that way typos wont be a common bug.
-        // Then id have ratType.DeathRat or RatType.BabyRat or RatType.AdultRat... and so on
+
         img = new ImageView();
         if(type == ratType.DEATHRAT && isBaby==false){
             texture = new Image("Assets/Death.png");
@@ -97,11 +96,12 @@ public class Rat {
     }
 
     // Added Level grid as a parameter here and in checkPaths so that i can pass it in to the update method so you have access to the level.
-    // This need to be tidied up, lots of repeated code and a pain to work with, i know this is how ive done it but it was
-    // for testing purposes.
     public void move(float deltaTime, Tile[][] levelGrid){
+
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
+
+
         img.setTranslateX(xPos*50);
         img.setTranslateY(yPos*50);
         if (xVel < 0){
@@ -109,38 +109,40 @@ public class Rat {
                 xPos = (int)xPos+1;
                 yPos = (int)yPos;
                 Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
+                xVel = vel.getKey()*movementSpeed;
+                yVel = vel.getValue()*movementSpeed;
                 lastX = (int) xPos;
                 lastY = (int) yPos;
+
             }
         }else if (yVel < 0) {
             if ((int)yPos+1 != lastY) {
                 xPos = (int)xPos;
                 yPos = (int)yPos+1;
                 Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
+                xVel = vel.getKey()*movementSpeed;
+                yVel = vel.getValue()*movementSpeed;
                 lastX = (int) xPos;
                 lastY = (int) yPos;
                 img.setRotate(180.0);
             }
         }else {
-            if ((int)xPos != lastX || (int)yPos != lastY) {
+            if((int)xPos != lastX || (int)yPos != lastY){
                 xPos = (int)xPos;
                 yPos = (int)yPos;
                 Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey();
-                yVel = vel.getValue();
+                xVel = vel.getKey()*movementSpeed;
+                yVel = vel.getValue()*movementSpeed;
                 lastX = (int) xPos;
                 lastY = (int) yPos;
             }
+
         }
+
 
     }
 
-    // this can setRotation as well, as this always refers to the current instance of rat you can just set rotation to the return value and not return anything.
-    public float getRotation() {
+    public float setGetRotation(ImageView img) {
         if (xVel < 0) {
             rotation = 90.0f;
         } else if (xVel > 0) {
@@ -150,33 +152,29 @@ public class Rat {
         } else {
             rotation = 180.0f;
         }
+        img.setRotate(rotation);
         return rotation;
-    }
-
-    // yeah here this is redundant you can just copy the code above and set rotation instead of return and set getRotation to just return this.rotation or however java does that.
-    // Oh also just noticed your changing the rotation of the img directly, i would use this to set the variable you have called rotation. Because we might need rotation later for more
-    // uses and then when we need to actually draw the image well set the rotation of the rat there.
-    public void setRotation(ImageView img){
-        img.setRotate(getRotation());
     }
 
     // Commented out move as right now this is trying ot check a null array.
     public void update(float deltaTime, Tile[][] levelGrid){
         this.move(deltaTime, levelGrid);
-        this.setRotation(img);
-   }
-
-   public void changeSex(Rat rat){
-        if(rat.type == ratType.MALE){
-            rat.type = ratType.FEMALE;
-            rat.texture = new Image("Assets/Female.png");
-            rat.img.setImage(rat.texture);
-        }else if(rat.type == ratType.FEMALE){
-            rat.type = ratType.MALE;
-            rat.texture = new Image("Assets/Male.png");
-            rat.img.setImage(rat.texture);
+        this.setGetRotation(img);
+        if(isBaby==true){
+            growUp(deltaTime);
         }
    }
+
+   public void changeSexMale(Rat rat){
+        rat.type = ratType.MALE;
+        rat.texture = new Image("Assets/Male.png");
+        rat.img.setImage(rat.texture);
+   }
+    public void changeSexFemale(Rat rat){
+        rat.type = ratType.FEMALE;
+        rat.texture = new Image("Assets/Female.png");
+        rat.img.setImage(rat.texture);
+    }
 
     public float getxPos() {
         return xPos;
@@ -215,6 +213,26 @@ public class Rat {
             birthTime += deltaTime;
         }
     }
+    private void growUp(float deltaTime){
+        growUpTime += deltaTime;
+        isBaby = false;
+        movementSpeed = adultSpeed;
+        if(type == ratType.MALE){
+            texture = new Image("Assets/Male.png");
+            img.setImage(texture);
+        }else if(type==ratType.FEMALE){
+            texture = new Image("Assets/Female.png");
+            img.setImage(texture);
+        }
+    }
+
+    public boolean getIsGivingBirth(){
+        return isGivingBirth;
+    }
+
+    public void setIsGivingBirth(){
+        isGivingBirth = false;
+    }
 
     public boolean getIsDead(){
         return isDead;
@@ -224,11 +242,29 @@ public class Rat {
         this.isDead = true;
     }
 
-    public void steppedOn(Rat rat) {
-        if(type == ratType.FEMALE && rat.type == Rat.ratType.MALE){
+    public void steppedOn(Rat otherRat) {
+        if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE){
             isPregnant = true;
-        }else if (rat.type == Rat.ratType.DEATHRAT){
-            isDead = true;
+        }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE){
+            otherRat.isPregnant = true;
+        }else if (type == ratType.DEATHRAT){
+            otherRat.isDead=true;
         }
+    }
+
+    public float getxVel() {
+        return xVel;
+    }
+
+    public float getyVel() {
+        return yVel;
+    }
+
+    public void setxPos(float xPos) {
+        this.xPos = xPos;
+    }
+
+    public void setyPos(float yPos) {
+        this.yPos = yPos;
     }
 }

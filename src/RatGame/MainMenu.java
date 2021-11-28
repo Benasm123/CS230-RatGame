@@ -18,6 +18,7 @@ import java.util.Objects;
 // TODO: Add functionality to settings
 // TODO: Add player profile selection and changing
 public class MainMenu {
+    private static PlayerProfile currentProfile;
 
     private static final String MESSAGE_URL = "http://cswebcat.swansea.ac.uk/puzzle";
     private static final String SOLUTION_URL = "http://cswebcat.swansea.ac.uk/message?solution=";
@@ -143,5 +144,13 @@ public class MainMenu {
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
+    }
+
+    public static PlayerProfile getCurrentProfile() {
+        return currentProfile;
+    }
+
+    public static void setCurrentProfile(PlayerProfile pp){
+        currentProfile = pp;
     }
 }
