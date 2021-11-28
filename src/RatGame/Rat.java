@@ -229,4 +229,20 @@ public class Rat {
             otherRat.isDead=true;
         }
     }
+
+    public float getxVel() {
+        return xVel;
+    }
+
+    public float getyVel() {
+        return yVel;
+    }
+
+    public void setxPos(float xPos) {
+        this.xPos = xPos;
+    }
+
+    public void setyPos(float yPos) {
+        this.yPos = yPos;
+    }
 }
