@@ -85,6 +85,10 @@ public class Level {
 
     private int score;
 
+    private int expectedTime;
+
+    private float totalTimeOnLevel;
+
     // Mouse variables
     private double lastMouseX;
     private double lastMouseY;
@@ -182,6 +186,8 @@ public class Level {
      * @param deltaTime The time in seconds since the last frame.
      */
     public void update(float deltaTime){
+        totalTimeOnLevel += deltaTime;
+
         drawTiles();
         updateRats(deltaTime);
         updateRatsAliveText();
@@ -197,7 +203,6 @@ public class Level {
     private void checkSteppedOn(){
         for (Rat rat : rats){
             for (Item item : itemsInPlay){
-                // TODO: Add detection when i can get reference to the rat coords.
                 if (rat.getxPos() == item.getXPos() && rat.getyPos() == item.getYPos()){
                     item.steppedOn(rat);
                 }
@@ -232,6 +237,10 @@ public class Level {
         femaleRatsAlive.setText("Females alive: " + getNumberOfFemaleRatsAlive());
     }
 
+    /**
+     * counts the number of female rats on the level and returns it.
+     * @return The number of female rats alive on the level.
+     */
     private int getNumberOfFemaleRatsAlive(){
         int counter = 0;
         for (Rat rat : rats){
@@ -242,6 +251,10 @@ public class Level {
         return counter;
     }
 
+    /**
+     * counts the number of male rats on the level and returns it.
+     * @return The number of male rats alive on the level.
+     */
     private int getNumberOfMaleRatsAlive(){
         int counter = 0;
         for (Rat rat : rats){
@@ -256,25 +269,42 @@ public class Level {
      * Checks if the player has won or lost the game yet.
      */
     private void checkWinLoseCondition() {
+        boolean isGameFinished = false;
+        boolean hasWon = false;
         // TODO: Add lose mechanic
         if (rats.size() > numberOfRatsToLose){
             isPaused = true;
+            isGameFinished = true;
             System.out.println("You Lose!");
         }
 
         if (rats.size() < numberOfRatsToWin){
             isPaused = true;
+            isGameFinished = true;
+            hasWon = true;
             System.out.println("You Win!");
         }
 
         if (getNumberOfFemaleRatsAlive() == 0){
             isPaused = true;
+            isGameFinished = true;
+            hasWon = true;
             System.out.println("You win only males alive and cannot reproduce!");
         }
 
         if (getNumberOfMaleRatsAlive() == 0){
             isPaused = true;
+            isGameFinished = true;
+            hasWon = true;
             System.out.println("You win only female alive and cannot reproduce!");
+        }
+
+        if (isGameFinished){
+            if (hasWon){
+                if (totalTimeOnLevel < expectedTime){
+                    score += expectedTime - (int)totalTimeOnLevel;
+                }
+            }
         }
     }
 
@@ -291,7 +321,7 @@ public class Level {
                 levelPane.getChildren().remove(rat.img);
                 ratIterator.remove();
             }
-//            else if (rat){
+//            else if (rat.getIsGivingBirth){
 //                Random rand = new Random();
 //                int num = rand.nextInt(2);
 //                Rat.ratType type;
@@ -301,7 +331,7 @@ public class Level {
 //                    type = Rat.ratType.FEMALE;
 //                }
 //                spawnRat(type, (int)rat.getxPos(), (int)rat.getyPos(),true);
-//                rat.
+//                rat.setIsGivingBirth = false;
 //            }
             else {
                 rat.update(deltaTime, levelGrid);
@@ -442,12 +472,26 @@ public class Level {
         File levelFile = new File(LEVEL_FOLDER_PATH + src);
         Scanner fileReader = new Scanner(levelFile);
 
+        setupTimeLimit(fileReader);
         setupWinLoseCondition(fileReader);
         setupItems(fileReader);
         setupLevelGrid(fileReader);
         setupRatSpawns(fileReader);
     }
 
+    /**
+     * reads in the expected time for the level and sets it for the level.
+     * @param fileReader The scanner which contains the information for the expected time.
+     */
+    private void setupTimeLimit(Scanner fileReader){
+        String expectedTimeString = fileReader.nextLine();
+        expectedTime = Integer.parseInt(expectedTimeString);
+    }
+
+    /**
+     * Reads in the win and lose conditions and sets them for the level.
+     * @param fileReader The scanner which contains the information for the conditions.
+     */
     private void setupWinLoseCondition(Scanner fileReader){
         String winLoseCondition = fileReader.nextLine();
         String[] winLoseConditionSplit = winLoseCondition.split(" ");
@@ -503,7 +547,6 @@ public class Level {
         String itemsToStartWith = fileReader.nextLine();
         String[] itemsToStartWithSplit = itemsToStartWith.split(FILE_DELIMITER);
 
-        // TODO: Add items here instead of hard code.
         for (int i = 0; i < NUMBER_OF_ITEMS; i++){
             for (int j = 0 ; j < Integer.parseInt(itemsToStartWithSplit[i]); j++) {
                 spawnItem(ItemType.values()[i]);
@@ -551,19 +594,21 @@ public class Level {
         }
     }
 
+    /**
+     * Setups the items on the board if this is loading from a save.
+     * @param fileReader The scanner to read the save file from.
+     */
     private void setupItemsOnBoard(Scanner fileReader){
         while (fileReader.hasNextLine()){
             String itemToSpawn = fileReader.nextLine();
             if (itemToSpawn.equals("")){
                 return;
             }
-            String[] itemToSpawnSplit = itemToSpawn.split(FILE_DELIMITER);
+//            String[] itemToSpawnSplit = itemToSpawn.split(FILE_DELIMITER);
 
             // TODO: find out how to save items, probably something like {TYPE X Y} would suffice.
         }
     }
-
-    // TODO: Right now female and male gets incremented even if they're babies, need to only happen when they grow.
 
     /**
      * Spawns a rat onto the level.
@@ -643,12 +688,10 @@ public class Level {
 
             FileWriter fileWriter = new FileWriter(SAVE_FOLDER_PATH + levelName);
 
+            writeExpectedTime(fileWriter);
             writeWinLoseConditions(fileWriter);
-
             writeItemSpawns(fileWriter);
-
             writeLevelGrid(fileWriter);
-
             writeRatSpawnGrid(fileWriter);
 
             fileWriter.close();
@@ -678,12 +721,20 @@ public class Level {
     }
 
     /**
+     * Writes the expected time for the level the save file.
+     * @param fileWriter The file writer containing the file we want to write to.
+     * @throws IOException Throws an exception if you cannot write to the file.
+     */
+    private void writeExpectedTime(FileWriter fileWriter) throws IOException {
+        fileWriter.write(expectedTime + "\n");
+    }
+
+    /**
      * Writes the win and lose conditions to the save file.
      * @param fileWriter The file writer containing the file we want to write to.
      * @throws IOException Throws an exception if you cannot write to the file.
      */
     private void writeWinLoseConditions(FileWriter fileWriter) throws IOException {
-        StringBuilder winLoseCondition = new StringBuilder();
         fileWriter.write(numberOfRatsToWin + " ");
         fileWriter.write(numberOfRatsToLose + "\n");
     }
