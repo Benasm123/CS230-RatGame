@@ -18,11 +18,11 @@ public class ChangeProfile {
     @FXML
     VBox profiles;
     public void initialize(){
-        String[] allLevels = new File("src/Profiles").list();
+        String[] allProfiles = new File("src/Profiles").list();
 
-        assert allLevels != null;
+        assert allProfiles != null;
 
-        for (String i : allLevels){
+        for (String i : allProfiles){
             Button levelSelectButton = new Button(i);
             levelSelectButton.setOnAction(event -> {
                 try {
@@ -40,8 +40,7 @@ public class ChangeProfile {
         Scene scene = stage.getScene();
         scene.setRoot(loader.load());
 
-        Level controller = loader.getController();
-        controller.createLevel(((Button)event.getSource()).getText());
+
     }
 
     public void switchToMain(ActionEvent event) throws IOException {
