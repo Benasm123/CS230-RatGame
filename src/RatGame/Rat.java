@@ -3,7 +3,7 @@ import javafx.scene.image.Image;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
-
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,19 +16,21 @@ public class Rat {
 
     private float xPos;
     private float yPos;
-    private float adultSpeed = 1.0f;
-    private float babySpeed = 1.4f;
-    float timer = 5.0F;
+    private float adultSpeed = 0.6f;
+    private float babySpeed = 0.8f;
+    float timer = 10.0F;
+    float timer2= 20.0f;
     private float movementSpeed = adultSpeed;
 
     int points=0;
 
-    private float xVel=0.0f;
+    private float xVel=5.0f;
     private float yVel=0.0f;
 
 
     int lastX;
     int lastY;
+    boolean isSterile=false;
 
     private boolean isBaby;
     private boolean isPregnant = false;
@@ -36,6 +38,10 @@ public class Rat {
     private float birthTime = 0.0f;
     private float growUpTime = 0.0f;
     private boolean isDead = false;
+
+    Random rnd = new Random();
+    int spawnNumber=rnd.nextInt(3)+2;
+    int spawns=0;
 
     private int deathRatKills=0;
     float rotation;
@@ -59,11 +65,13 @@ public class Rat {
         if(isBaby==true){
             movementSpeed = babySpeed;
         }
+        this.isBaby=isBaby;
         this.xPos = xPos;
         this.yPos = yPos;
         this.type = type;
         lastX = (int)xPos;
         lastY = (int)yPos;
+        isPregnant=false;
 
 
         img = new ImageView();
@@ -266,13 +274,16 @@ public class Rat {
     * timer for pregnant rat to give birth
     * */
     private void timeToBirth(float deltaTime){
+        if(spawns==spawnNumber){
+            isPregnant=false;
+        }
         if (isPregnant==true){
             birthTime += deltaTime;
-            if(birthTime>=timer){
+            if(birthTime>=timer2){
                 isGivingBirth = true;
-                birthTime =0;
+                spawns+=1;
+                birthTime=0;
             }
-            birthTime += deltaTime;
         }
     }
 
@@ -362,5 +373,8 @@ public class Rat {
 
     public void setyPos(float yPos) {
         this.yPos = yPos;
+    }
+    public void setIsSterile(){
+        isSterile=true;
     }
 }
