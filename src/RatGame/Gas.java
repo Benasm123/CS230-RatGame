@@ -13,17 +13,19 @@ import javafx.scene.image.Image;
 
 public class Gas extends Item{
 
-    private static final int lifeDuration = 10;
+    private static final int lifeDuration = 1000;
     private static int lifeRemaining;
     private static final int speed = 5;
 
 
     public Gas() {
         texture = new Image("Assets/Gas.png");
+        lifeRemaining = lifeDuration;
     }
 
     public void spreadGas(){
 
+       // this.setTexture(texture = new Image("Assets/Gas.png"));
     }
 
     /**
@@ -42,6 +44,7 @@ public class Gas extends Item{
     @Override
     public void steppedOn(Rat rat) {
 
+       // this.spreadGas();
     }
 
     /**

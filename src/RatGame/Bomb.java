@@ -14,7 +14,7 @@ import javafx.scene.image.Image;
 public class Bomb extends Item {
 
     private static final int COUNTDOWN = 4;
-    private int timeSincePlaced = 0;
+    private float timeSincePlaced = 0;
 
     public Bomb() {
         texture = new Image("Assets/Bomb.png");
@@ -25,7 +25,19 @@ public class Bomb extends Item {
      * deletes everything in path (rat, item)
      */
     public void explode() {
+        Tile[][] levelGrid;
+        int placedX;
+        int placedY;
 
+        /*final boolean canExplodeRight = levelGrid[placedX + 1][placedY].getType().isTraversable;
+        final boolean canExplodeLeft = levelGrid[placedX - 1][placedY].getType().isTraversable;
+        final boolean canExplodeUp = levelGrid[placedX][placedY + 1].getType().isTraversable;
+        final boolean canExplodeDown = levelGrid[placedX][placedY - 1].getType().isTraversable;
+        final boolean isExploding = canExplodeDown || canExplodeLeft || canExplodeRight || canExplodeUp;
+        while (isExploding) {
+
+        }*/
+        expired = true;
     }
 
     /**
@@ -54,7 +66,6 @@ public class Bomb extends Item {
         timeSincePlaced += deltaTime;
         if (timeSincePlaced >= COUNTDOWN) {
             explode();
-            expired = true;
         }
     }
 }

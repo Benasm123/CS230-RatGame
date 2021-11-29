@@ -20,6 +20,7 @@ public class Sterilisation extends Item{
 
     public Sterilisation() {
         texture = new Image("Assets/Sterilisation.png");
+        remainingTime = lifeDuration;
     }
 
     public void makeSterile(){
