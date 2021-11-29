@@ -29,6 +29,7 @@ public class Rat {
 
     int lastX;
     int lastY;
+    boolean isSterile=false;
 
     private boolean isBaby;
     private boolean isPregnant = false;
@@ -64,6 +65,7 @@ public class Rat {
         this.type = type;
         lastX = (int)xPos;
         lastY = (int)yPos;
+        isPregnant=false;
 
 
         img = new ImageView();
@@ -273,6 +275,7 @@ public class Rat {
                 birthTime =0;
             }
             birthTime += deltaTime;
+
         }
     }
 
@@ -362,5 +365,8 @@ public class Rat {
 
     public void setyPos(float yPos) {
         this.yPos = yPos;
+    }
+    public void setIsSterile(){
+        isSterile=true;
     }
 }
