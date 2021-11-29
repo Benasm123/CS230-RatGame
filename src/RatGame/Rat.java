@@ -65,6 +65,7 @@ public class Rat {
         this.type = type;
         lastX = (int)xPos;
         lastY = (int)yPos;
+        isPregnant=false;
 
 
         img = new ImageView();
@@ -274,6 +275,7 @@ public class Rat {
                 birthTime =0;
             }
             birthTime += deltaTime;
+
         }
     }
 
