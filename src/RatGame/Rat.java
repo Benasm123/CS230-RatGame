@@ -17,7 +17,8 @@ public class Rat {
     private float xPos;
     private float yPos;
     private float adultSpeed = 1.0f;
-    private float babySpeed = 2.0f;
+    private float babySpeed = 1.4f;
+    float timer = 5.0F;
     private float movementSpeed = adultSpeed;
 
     int points=0;
@@ -187,10 +188,11 @@ public class Rat {
     * provides update on the rats
     * */
     public void update(float deltaTime, Tile[][] levelGrid){
+        growUpTime += deltaTime;
         this.move(deltaTime, levelGrid);
         this.setGetRotation(img);
-        if(isBaby==true){
-            growUp(deltaTime);
+        if(isBaby==true && growUpTime>=timer){
+            growUp();
         }
    }
 
@@ -200,8 +202,11 @@ public class Rat {
    * */
    public void changeSexMale(Rat rat){
         rat.type = ratType.MALE;
-        rat.texture = new Image("Assets/Male.png");
-        rat.img.setImage(rat.texture);
+        if(rat.isBaby==false) {
+            rat.texture = new Image("Assets/Male.png");
+            rat.img.setImage(rat.texture);
+        }
+
    }
    /*
    * @rat
@@ -209,8 +214,10 @@ public class Rat {
    * */
    public void changeSexFemale(Rat rat){
         rat.type = ratType.FEMALE;
-        rat.texture = new Image("Assets/Female.png");
-        rat.img.setImage(rat.texture);
+        if(rat.isBaby==false){
+            rat.texture = new Image("Assets/Female.png");
+            rat.img.setImage(rat.texture);
+        }
    }
 
    /*
@@ -268,8 +275,7 @@ public class Rat {
     * @param deltaTime
     * makes baby rat an adult after some time
     * */
-    private void growUp(float deltaTime){
-        growUpTime += deltaTime;
+    private void growUp(){
         isBaby = false;
         movementSpeed = adultSpeed;
         if(type == ratType.MALE){
