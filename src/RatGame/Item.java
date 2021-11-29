@@ -90,4 +90,8 @@ public abstract class Item {
     public void setYPos(int yPos) {
         this.yPos = yPos;
     }
+
+    public void setExpired(boolean expired) {
+        this.expired = true;
+    }
 }
