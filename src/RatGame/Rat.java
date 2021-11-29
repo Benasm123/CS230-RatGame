@@ -260,7 +260,17 @@ public class Rat {
         return yVel;
     }
 
-    public void setxPos(float xPos) {
+    public void setxVel(float xVel)
+	{
+		this.xVel = xVel;
+	}
+
+	public void setyVel(float yVel)
+	{
+		this.yVel = yVel;
+	}
+
+	public void setxPos(float xPos) {
         this.xPos = xPos;
     }
 
