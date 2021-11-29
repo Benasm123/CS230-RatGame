@@ -18,7 +18,7 @@ public class Rat {
     private float yPos;
     private float adultSpeed = 0.3f;
     private float babySpeed = 0.6f;
-    float timer = 20.0F;
+    float timer = 10.0F;
     float timer2= 20.0f;
     private float movementSpeed = adultSpeed;
 
