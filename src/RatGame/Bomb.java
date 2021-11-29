@@ -22,6 +22,7 @@ public class Bomb extends Item {
     public Bomb() {
         texture = new Image("Assets/Bomb.png");
         isExploding = false;
+        type = ItemType.BOMB;
     }
 
     /**
