@@ -966,6 +966,11 @@ public class Level {
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
                 droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
+                for (Item item : itemsInPlay){
+                    if (item.xPos == gridX && item.yPos == gridY){
+                        return;
+                    }
+                }
 
                 // TODO: TESTING ONLY DELETE
                 System.out.println("X: " + gridX + " Y: " + gridY);
