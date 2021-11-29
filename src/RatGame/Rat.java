@@ -29,6 +29,7 @@ public class Rat {
 
     int lastX;
     int lastY;
+    boolean isSterile=false;
 
     private boolean isBaby;
     private boolean isPregnant = false;
@@ -362,5 +363,8 @@ public class Rat {
 
     public void setyPos(float yPos) {
         this.yPos = yPos;
+    }
+    public void setIsSterile(){
+        isSterile=true;
     }
 }
