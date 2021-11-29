@@ -41,7 +41,8 @@ public class DeathRat extends Item {
         if (timeLeft <= 0)
         {
             isSpawning = true;
+            expired = true;
         }
-        expired = true;
+
     }
 }
