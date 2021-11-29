@@ -309,22 +309,21 @@ public class Rat {
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
             deathRatKills +=1;
+            points +=10;
             if(deathRatKills==5){
                 isDead = true;
             }
         }else if (otherRat.type == ratType.DEATHRAT) {
             isDead = true;
+            otherRat.deathRatKills +=1;
+            otherRat.points+=10;
+            if(otherRat.deathRatKills==5){
+                otherRat.isDead = true;
+            }
         }
     }
 
     public int getPoints(Rat rat){
-        if(isBaby == true){
-            points+=10;
-        }else if(isPregnant==true){
-            points+=30;
-        }else{
-            points+=20;
-        }
         return points;
     }
 
