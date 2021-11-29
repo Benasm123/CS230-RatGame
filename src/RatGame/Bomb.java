@@ -17,7 +17,7 @@ public class Bomb extends Item {
 
     private static final int COUNTDOWN = 4;
     private float timeSincePlaced = 0;
-    boolean isExploding;
+    private boolean isExploding;
 
     public Bomb() {
         texture = new Image("Assets/Bomb.png");
@@ -72,6 +72,13 @@ public class Bomb extends Item {
         return bombTiles;
     }
 
+    /**
+     *
+     * @return isExploding
+     */
+    public boolean isExploding() {
+        return isExploding;
+    }
     /**
      *
      */
