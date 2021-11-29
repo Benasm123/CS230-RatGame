@@ -9,7 +9,7 @@ public class DeathRat extends Item {
     private boolean isSpawning;
 
     public void setSpawning(boolean spawning){
-        isSpawning = false;
+        isSpawning = spawning;
     }
 
     public boolean getSpawning(){
@@ -40,7 +40,8 @@ public class DeathRat extends Item {
         timeLeft -= deltaTime;
         if (timeLeft <= 0)
         {
-            setSpawning(true);
+            isSpawning = true;
         }
+        expired = true;
     }
 }
