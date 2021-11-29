@@ -194,6 +194,7 @@ public class Rat {
         if(growUpTime>=timer){
             growUp();
         }
+        timeToBirth(deltaTime);
    }
 
    /*
