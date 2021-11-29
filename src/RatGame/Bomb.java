@@ -35,14 +35,14 @@ public class Bomb extends Item {
         final boolean canExplodeDown = levelGrid[xPos][yPos - 1].getType().isTraversable;
         final boolean isExploding = canExplodeDown || canExplodeLeft || canExplodeRight || canExplodeUp;
 
-        while (isExploding) {
-            if (item.xPos && item.yPos == getBombTiles()){
-                item.expired = true;
-            }
-            if (rat.getxPos() && rat.getyPos() == getBombTiles()) {
-                rat.die();
-            }
-        }
+//        while (isExploding) {
+//            if (item.xPos && item.yPos == getBombTiles()){
+//                item.expired = true;
+//            }
+//            if (rat.getxPos() && rat.getyPos() == getBombTiles()) {
+//                rat.die();
+//            }
+//        }
         expired = true;
     }
 
@@ -110,7 +110,7 @@ public class Bomb extends Item {
     public void update(float deltaTime) {
         timeSincePlaced += deltaTime;
         if (timeSincePlaced >= COUNTDOWN) {
-            explode();
+//            explode();
         }
     }
 }

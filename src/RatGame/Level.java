@@ -344,6 +344,7 @@ public class Level {
         while (ratIterator.hasNext()){
             Rat rat = ratIterator.next();
             if (rat.getIsDead()){
+//                score += rat.getScore();
                 levelPane.getChildren().remove(rat.img);
                 ratIterator.remove();
             } else if (rat.getIsGivingBirth()){
