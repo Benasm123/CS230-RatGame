@@ -6,12 +6,13 @@ public class DeathRat extends Item {
 
     private static final int timer = 2;
     private float timeLeft;
+    private boolean isSpawning;
 
     public void setSpawning(boolean spawning){
-        boolean isSpawning = false;
+        isSpawning = false;
     }
 
-    public boolean getSpawning(boolean isSpawning){
+    public boolean getSpawning(){
         return isSpawning;
     }
 
