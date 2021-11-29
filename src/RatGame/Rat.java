@@ -16,14 +16,15 @@ public class Rat {
 
     private float xPos;
     private float yPos;
-    private float adultSpeed = 1.0f;
-    private float babySpeed = 1.4f;
-    float timer = 5.0F;
+    private float adultSpeed = 0.3f;
+    private float babySpeed = 0.6f;
+    float timer = 20.0F;
+    float timer2= 20.0f;
     private float movementSpeed = adultSpeed;
 
     int points=0;
 
-    private float xVel=0.0f;
+    private float xVel=5.0f;
     private float yVel=0.0f;
 
 
@@ -60,6 +61,7 @@ public class Rat {
         if(isBaby==true){
             movementSpeed = babySpeed;
         }
+        this.isBaby=isBaby;
         this.xPos = xPos;
         this.yPos = yPos;
         this.type = type;
@@ -270,7 +272,7 @@ public class Rat {
     private void timeToBirth(float deltaTime){
         if (isPregnant==true){
             birthTime += deltaTime;
-            if(birthTime>=timer){
+            if(birthTime>=timer2){
                 isGivingBirth = true;
                 birthTime =0;
             }
