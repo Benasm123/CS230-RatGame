@@ -23,7 +23,7 @@ public class Rat {
 
     int points=0;
 
-    private float xVel=5.0f;
+    private float xVel=0.0f;
     private float yVel=0.0f;
 
 
@@ -64,6 +64,7 @@ public class Rat {
         this.type = type;
         lastX = (int)xPos;
         lastY = (int)yPos;
+
 
         img = new ImageView();
         if(type == ratType.DEATHRAT && isBaby==false){
@@ -267,7 +268,10 @@ public class Rat {
     private void timeToBirth(float deltaTime){
         if (isPregnant==true){
             birthTime += deltaTime;
-            isGivingBirth = true;
+            if(birthTime>=timer){
+                isGivingBirth = true;
+                birthTime =0;
+            }
             birthTime += deltaTime;
         }
     }
