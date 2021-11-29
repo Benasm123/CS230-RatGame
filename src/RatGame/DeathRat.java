@@ -11,18 +11,18 @@ public class DeathRat extends Item {
         boolean isSpawning = false;
     }
 
-    public boolean getSpawning(boolean spawning){
-        return spawning;
+    public boolean getSpawning(boolean isSpawning){
+        return isSpawning;
     }
 
     public void setType(ItemType type){
-        type = ItemType.DEATH_RAT;
     }
 
     public DeathRat()
 	{
         timeLeft = timer;
         texture = new Image("Assets/Death.png");
+        type = ItemType.DEATH_RAT;
 	}
     @Override
     public void use() {
