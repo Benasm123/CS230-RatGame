@@ -24,6 +24,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -242,6 +243,24 @@ public class Level {
                 if (((DeathRat) item).getSpawning()){
                     spawnRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
                     ((DeathRat) item).setSpawning(false);
+                }
+            } else if (item.getType() == ItemType.BOMB){
+                if (((Bomb) item).isExploding()){
+                    ArrayList<Pair<Integer, Integer>> tilesToClear = ((Bomb) item).getBombTiles(levelGrid);
+                    for (Pair<Integer, Integer> coord : tilesToClear){
+                        Integer xPos = coord.getKey();
+                        Integer yPos = coord.getValue();
+                        for (Rat rat : rats){
+                            if ((int)rat.getxPos() == xPos && (int)rat.getyPos() == yPos){
+                                rat.die();
+                            }
+                        }
+                        for (Item i : itemsInPlay){
+                            if (i.getXPos() == xPos && i.getYPos() == yPos){
+                                i.setExpired(true);
+                            }
+                        }
+                    }
                 }
             }
             if (item.expired){
@@ -947,6 +966,11 @@ public class Level {
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
                 droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
+                for (Item item : itemsInPlay){
+                    if (item.xPos == gridX && item.yPos == gridY){
+                        return;
+                    }
+                }
 
                 // TODO: TESTING ONLY DELETE
                 System.out.println("X: " + gridX + " Y: " + gridY);
