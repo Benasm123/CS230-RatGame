@@ -9,6 +9,7 @@ import javafx.scene.layout.GridPane;
 
 public abstract class Item {
 
+    protected ItemType type;
     protected Image texture;
     protected ImageView imageView;
     protected int xPos;
@@ -93,5 +94,13 @@ public abstract class Item {
 
     public void setExpired(boolean expired) {
         this.expired = true;
+    }
+
+    public ItemType getType() {
+        return type;
+    }
+
+    public void setType(ItemType type) {
+        this.type = type;
     }
 }
