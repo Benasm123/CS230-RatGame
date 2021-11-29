@@ -320,20 +320,18 @@ public class Level {
             if (rat.getIsDead()){
                 levelPane.getChildren().remove(rat.img);
                 ratIterator.remove();
-            }
-//            else if (rat.getIsGivingBirth){
-//                Random rand = new Random();
-//                int num = rand.nextInt(2);
-//                Rat.ratType type;
-//                if (num == 0){
-//                    type = Rat.ratType.MALE;
-//                } else {
-//                    type = Rat.ratType.FEMALE;
-//                }
-//                spawnRat(type, (int)rat.getxPos(), (int)rat.getyPos(),true);
-//                rat.setIsGivingBirth = false;
-//            }
-            else {
+            } else if (rat.getIsGivingBirth()){
+                Random rand = new Random();
+                int num = rand.nextInt(2);
+                Rat.ratType type;
+                if (num == 0){
+                    type = Rat.ratType.MALE;
+                } else {
+                    type = Rat.ratType.FEMALE;
+                }
+                spawnRat(type, (int)rat.getxPos(), (int)rat.getyPos(),true);
+                rat.setIsGivingBirth();
+            } else {
                 rat.update(deltaTime, levelGrid);
                 for (Rat otherRat : rats) {
                     if (rat.getxPos() == otherRat.getxPos() &&
