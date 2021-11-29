@@ -18,6 +18,7 @@ public class Bomb extends Item {
     private static final int COUNTDOWN = 4;
     private float timeSincePlaced = 0;
     private boolean isExploding;
+    Tile[][] levelGrid;
 
     public Bomb() {
         texture = new Image("Assets/Bomb.png");
@@ -30,44 +31,55 @@ public class Bomb extends Item {
      * deletes everything in path (rat, item)
      */
 
+    private boolean canExplodeRight(int xPos, int yPos){
+        return levelGrid[xPos + 1][yPos].getType().isTraversable;
+    }
+    private boolean canExplodeLeft(int xPos, int yPos){
+        return levelGrid[xPos - 1][yPos].getType().isTraversable;
+    }
+    private boolean canExplodeUp(int xPos, int yPos){
+        return levelGrid[xPos][yPos + 1].getType().isTraversable;
+    }
+    private boolean canExplodeDown(int xPos, int yPos){
+        return levelGrid[xPos][yPos - 1].getType().isTraversable;
+    }
+
+
     public ArrayList<Pair<Integer, Integer>> getBombTiles(Tile[][] levelGrid) {
         isExploding = false;
         ArrayList<Pair<Integer, Integer>> bombTiles = new ArrayList<>();
         int lastCheckedX = xPos;
         int lastCheckedY = yPos;
-        final boolean canExplodeRight = levelGrid[xPos + 1][yPos].getType().isTraversable;
-        final boolean canExplodeLeft = levelGrid[xPos - 1][yPos].getType().isTraversable;
-        final boolean canExplodeUp = levelGrid[xPos][yPos + 1].getType().isTraversable;
-        final boolean canExplodeDown = levelGrid[xPos][yPos - 1].getType().isTraversable;
+        //final boolean canExplodeRight = levelGrid[xPos + 1][yPos].getType().isTraversable;
+        //final boolean canExplodeLeft = levelGrid[xPos - 1][yPos].getType().isTraversable;
+        //final boolean canExplodeUp = levelGrid[xPos][yPos + 1].getType().isTraversable;
+        //final boolean canExplodeDown = levelGrid[xPos][yPos - 1].getType().isTraversable;
 
-        while (canExplodeLeft && xPos - 1 != lastCheckedX) {
-            bombTiles.add(new Pair<>(xPos,yPos));
+        while (canExplodeLeft(lastCheckedX,yPos)) {
+            bombTiles.add(new Pair<>(lastCheckedX,yPos));
             lastCheckedX--;
         }
         lastCheckedX = xPos;
         lastCheckedY = yPos;
-        while (canExplodeUp && yPos + 1 != lastCheckedY) {
-            bombTiles.add(new Pair<>(xPos,yPos));
+        while (canExplodeUp(xPos,lastCheckedY)) {
+            bombTiles.add(new Pair<>(xPos,lastCheckedY));
             lastCheckedY++;
         }
         lastCheckedX = xPos;
         lastCheckedY = yPos;
-        while (canExplodeRight && xPos + 1 != lastCheckedX) {
-            bombTiles.add(new Pair<>(xPos,yPos));
+        while (canExplodeRight(lastCheckedX,yPos)) {
+            bombTiles.add(new Pair<>(lastCheckedX,yPos));
             lastCheckedX++;
         }
         lastCheckedX = xPos;
         lastCheckedY = yPos;
-        while (canExplodeDown && yPos - 1 != lastCheckedY) {
-            bombTiles.add(new Pair<>(xPos,yPos));
+        while (canExplodeDown(xPos,lastCheckedY)) {
+            bombTiles.add(new Pair<>(xPos,lastCheckedY));
             lastCheckedY--;
         }
-        lastCheckedX = xPos;
-        lastCheckedY = yPos;
         //for debugging
-        for (Pair<Integer, Integer> i: bombTiles
-        ) {
-            System.out.println("x:" + i.getKey() + " y:" + i.getValue());
+        for (int i = 0; i< bombTiles.size(); i++) {
+            System.out.println("x:" + bombTiles.get(i).getKey() + " y:" + bombTiles.get(i).getValue());
         }
         return bombTiles;
     }
