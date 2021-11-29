@@ -240,7 +240,6 @@ public class Level {
             Item item = itemIterator.next();
             if (item.getType() == ItemType.DEATH_RAT){
                 if (((DeathRat) item).getSpawning()){
-                    System.out.println("Hello");
                     spawnRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
                     ((DeathRat) item).setSpawning(false);
                 }
