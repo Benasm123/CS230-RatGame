@@ -16,8 +16,8 @@ public class Rat {
 
     private float xPos;
     private float yPos;
-    private float adultSpeed = 2.0f;
-    private float babySpeed = 1.0f;
+    private float adultSpeed = 1.0f;
+    private float babySpeed = 2.0f;
     private float movementSpeed = adultSpeed;
 
     private float xVel=5.0f;
@@ -243,12 +243,14 @@ public class Rat {
     }
 
     public void steppedOn(Rat otherRat) {
-        if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE){
+        if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
             isPregnant = true;
-        }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE){
+        }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
             otherRat.isPregnant = true;
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
+        }else if (otherRat.type == ratType.DEATHRAT) {
+            isDead = true;
         }
     }
 
