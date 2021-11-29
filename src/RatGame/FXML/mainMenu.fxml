@@ -18,7 +18,7 @@
       <RowConstraints maxHeight="272.0" minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Text fx:id="messageDay" strokeType="OUTSIDE" strokeWidth="0.0" text="Message of the day!!!" textAlignment="CENTER" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Text fx:id="messageDay" strokeType="OUTSIDE" strokeWidth="0.0" text="Message of the day!!!" textAlignment="CENTER" wrappingWidth="800.0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <font>
             <Font size="18.0" />
          </font></Text>
