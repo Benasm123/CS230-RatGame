@@ -80,6 +80,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 */
 	public void newFile(String file) {
 		try {
+			new File("src/Profiles").mkdir();
 			File myObj = new File("src//Profiles//" + file + ".txt");
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
