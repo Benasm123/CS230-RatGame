@@ -20,11 +20,12 @@ public class Rat {
     private float babySpeed = 2.0f;
     private float movementSpeed = adultSpeed;
 
+    int points=0;
+
     private float xVel=5.0f;
     private float yVel=0.0f;
 
 
-    // You want to set this in the constructor as you want hte lastX/Y to be set on where the rat spawns, but if you do it here it will always initialize to 0.
     int lastX;
     int lastY;
 
@@ -35,12 +36,24 @@ public class Rat {
     private float growUpTime = 0.0f;
     private boolean isDead = false;
 
+    private int deathRatKills=0;
     float rotation;
     ratType type;
+
+    /*
+    * enum containing the rat types
+    * */
     enum ratType{
         MALE, FEMALE, DEATHRAT;
     }
 
+    /*
+    * @param type
+    * @param xPos
+    * @param yPos
+    * @param isBaby
+    * constructor to initialize the attributes of the rat
+    * */
     public Rat(ratType type, int xPos, int yPos, boolean isBaby){
         if(isBaby==true){
             movementSpeed = babySpeed;
@@ -69,9 +82,14 @@ public class Rat {
         img.setTranslateY(yPos*50);
     }
 
-    // I know i did but i wouldn't return a pair here, you can directly edit the velocity at the end, and saves memory,
-    // so when you do everything instead of returning just directly set the xVel and yVel, tidies it up too,
-    // and maybe change the name to something like setDirection, just to be more clear it edits it
+     /*
+     * @param levelGrid
+     * @param x
+     * @param y
+     * @param lastX
+     * @param lastY
+     * method checks the paths of the levelGrid to see which tiles are available for the rat to move on
+     * */
     private Pair<Integer, Integer> checkPaths(Tile[][] levelGrid, int x, int y, int lastX, int lastY){
         ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
 
@@ -95,7 +113,11 @@ public class Rat {
         return paths.get(rand.nextInt(paths.size()));
     }
 
-    // Added Level grid as a parameter here and in checkPaths so that i can pass it in to the update method so you have access to the level.
+    /*
+    * @param deltaTime
+    * @param levelGrid
+    * method controls the movement of rats
+    * */
     public void move(float deltaTime, Tile[][] levelGrid){
 
         xPos += xVel * deltaTime;
@@ -141,7 +163,10 @@ public class Rat {
 
 
     }
-
+    /*
+    * @param img
+    * rotates image and returns the angle the image is rotated at
+    * */
     public float setGetRotation(ImageView img) {
         if (xVel < 0) {
             rotation = 90.0f;
@@ -156,7 +181,11 @@ public class Rat {
         return rotation;
     }
 
-    // Commented out move as right now this is trying ot check a null array.
+    /*
+    * @param deltaTime
+    * @levelGrid
+    * provides update on the rats
+    * */
     public void update(float deltaTime, Tile[][] levelGrid){
         this.move(deltaTime, levelGrid);
         this.setGetRotation(img);
@@ -165,25 +194,42 @@ public class Rat {
         }
    }
 
+   /*
+   * @rat
+   * sets rat sex to Male
+   * */
    public void changeSexMale(Rat rat){
         rat.type = ratType.MALE;
         rat.texture = new Image("Assets/Male.png");
         rat.img.setImage(rat.texture);
    }
-    public void changeSexFemale(Rat rat){
+   /*
+   * @rat
+   * sets rat sex to Male
+   * */
+   public void changeSexFemale(Rat rat){
         rat.type = ratType.FEMALE;
         rat.texture = new Image("Assets/Female.png");
         rat.img.setImage(rat.texture);
-    }
+   }
 
-    public float getxPos() {
+   /*
+   * return x coordinate of rat
+   * */
+   public float getxPos() {
         return xPos;
-    }
+   }
 
-    public float getyPos() {
+   /*
+   * return y coordinate of rat
+   * */
+   public float getyPos() {
         return yPos;
-    }
+   }
 
+    /*
+    * return properties of the rats as a string
+    * */
     public String toString(){
         String stringOfType="";
         String stringOfBaby="";
@@ -206,6 +252,10 @@ public class Rat {
         return properties;
     }
 
+    /*
+    * @param deltaTime
+    * timer for pregnant rat to give birth
+    * */
     private void timeToBirth(float deltaTime){
         if (isPregnant==true){
             birthTime += deltaTime;
@@ -213,6 +263,11 @@ public class Rat {
             birthTime += deltaTime;
         }
     }
+
+    /*
+    * @param deltaTime
+    * makes baby rat an adult after some time
+    * */
     private void growUp(float deltaTime){
         growUpTime += deltaTime;
         isBaby = false;
@@ -242,6 +297,10 @@ public class Rat {
         this.isDead = true;
     }
 
+    /*
+    * @param otherRat
+    * determines the actions that happen once a rat steps on or is stepped on by another
+    * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
             isPregnant = true;
@@ -249,9 +308,24 @@ public class Rat {
             otherRat.isPregnant = true;
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
+            deathRatKills +=1;
+            if(deathRatKills==5){
+                isDead = true;
+            }
         }else if (otherRat.type == ratType.DEATHRAT) {
             isDead = true;
         }
+    }
+
+    public int getPoints(Rat rat){
+        if(isBaby == true){
+            points+=10;
+        }else if(isPregnant==true){
+            points+=30;
+        }else{
+            points+=20;
+        }
+        return points;
     }
 
     public float getxVel() {
