@@ -238,6 +238,13 @@ public class Level {
         Iterator<Item> itemIterator = itemsInPlay.iterator();
         while (itemIterator.hasNext()){
             Item item = itemIterator.next();
+            if (item.getType() == ItemType.DEATH_RAT){
+                if (((DeathRat) item).getSpawning()){
+                    System.out.println("Hello");
+                    spawnRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
+                    ((DeathRat) item).setSpawning(false);
+                }
+            }
             if (item.expired){
                 levelPane.getChildren().remove(item.imageView);
                 itemIterator.remove();
