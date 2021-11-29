@@ -23,12 +23,13 @@ public class Rat {
 
     int points=0;
 
-    private float xVel=5.0f;
+    private float xVel=0.0f;
     private float yVel=0.0f;
 
 
     int lastX;
     int lastY;
+    boolean isSterile=false;
 
     private boolean isBaby;
     private boolean isPregnant = false;
@@ -64,6 +65,8 @@ public class Rat {
         this.type = type;
         lastX = (int)xPos;
         lastY = (int)yPos;
+        isPregnant=false;
+
 
         img = new ImageView();
         if(type == ratType.DEATHRAT && isBaby==false){
@@ -194,6 +197,7 @@ public class Rat {
         if(growUpTime>=timer){
             growUp();
         }
+        timeToBirth(deltaTime);
    }
 
    /*
@@ -266,8 +270,12 @@ public class Rat {
     private void timeToBirth(float deltaTime){
         if (isPregnant==true){
             birthTime += deltaTime;
-            isGivingBirth = true;
+            if(birthTime>=timer){
+                isGivingBirth = true;
+                birthTime =0;
+            }
             birthTime += deltaTime;
+
         }
     }
 
@@ -357,5 +365,8 @@ public class Rat {
 
     public void setyPos(float yPos) {
         this.yPos = yPos;
+    }
+    public void setIsSterile(){
+        isSterile=true;
     }
 }
