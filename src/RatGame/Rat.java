@@ -19,7 +19,7 @@ public class Rat {
     private float adultSpeed = 0.6f;
     private float babySpeed = 0.8f;
     float timer = 10.0F;
-    float timer2= 20.0f;
+    float timer2= 5.0f;
     private float movementSpeed = adultSpeed;
 
     int points=0;
@@ -28,7 +28,7 @@ public class Rat {
     private float yVel=0.0f;
 
 
-    int lastX=-1;
+    int lastX;
     int lastY;
     boolean isSterile=false;
 
@@ -69,8 +69,8 @@ public class Rat {
         this.xPos = xPos;
         this.yPos = yPos;
         this.type = type;
-        lastX = (int)xPos;
-        lastY = (int)yPos;
+        lastX =-1;
+        lastY =-1;
 
 
         isPregnant=false;
