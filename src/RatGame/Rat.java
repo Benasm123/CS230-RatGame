@@ -3,7 +3,7 @@ import javafx.scene.image.Image;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
-
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,8 +16,8 @@ public class Rat {
 
     private float xPos;
     private float yPos;
-    private float adultSpeed = 0.3f;
-    private float babySpeed = 0.6f;
+    private float adultSpeed = 0.6f;
+    private float babySpeed = 0.8f;
     float timer = 10.0F;
     float timer2= 20.0f;
     private float movementSpeed = adultSpeed;
@@ -38,6 +38,10 @@ public class Rat {
     private float birthTime = 0.0f;
     private float growUpTime = 0.0f;
     private boolean isDead = false;
+
+    Random rnd = new Random();
+    int spawnNumber=rnd.nextInt(3)+2;
+    int spawns=0;
 
     private int deathRatKills=0;
     float rotation;
@@ -270,14 +274,16 @@ public class Rat {
     * timer for pregnant rat to give birth
     * */
     private void timeToBirth(float deltaTime){
+        if(spawns==spawnNumber){
+            isPregnant=false;
+        }
         if (isPregnant==true){
             birthTime += deltaTime;
             if(birthTime>=timer2){
                 isGivingBirth = true;
-                birthTime =0;
+                spawns+=1;
+                birthTime=0;
             }
-            birthTime += deltaTime;
-
         }
     }
 
