@@ -11,6 +11,14 @@ public class DeathRat extends Item {
         boolean isSpawning = false;
     }
 
+    public boolean getSpawning(boolean spawning){
+        return spawning;
+    }
+
+    public void setType(ItemType type){
+        type = ItemType.DEATH_RAT;
+    }
+
     public DeathRat()
 	{
         timeLeft = timer;
