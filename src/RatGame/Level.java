@@ -369,9 +369,14 @@ public class Level {
 
         if (isGameFinished){
             if (hasWon){
+                System.out.println(MainMenu.getCurrentProfile() == null);
                 WinLoseText.setText("YOU WIN!");
                 if (totalTimeOnLevel < expectedTime){
                     score += expectedTime - (int)totalTimeOnLevel;
+                }
+                if (MainMenu.getCurrentProfile() != null){
+                    PlayerProfile player = MainMenu.getCurrentProfile();
+                    player.levelComplete(Integer.parseInt(levelName.substring(0, 1)), score);
                 }
             } else {
                 WinLoseText.setText("YOU LOSE!");
