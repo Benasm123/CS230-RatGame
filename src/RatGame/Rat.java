@@ -269,7 +269,6 @@ public class Rat {
         }
         if(sexTimer>=timer3){
             havingSex=false;
-            System.out.println("not hs");
             sexTimer=0;
         }
         if(growUpTime>=timer){
@@ -397,12 +396,16 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            otherRat.havingSex=true;
-            havingSex=true;
+            if(isPregnant==false){
+                otherRat.havingSex=true;
+                havingSex=true;
+            }
             isPregnant = true;
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            havingSex=true;
-            otherRat.havingSex=true;
+            if(otherRat.isPregnant==false){
+                havingSex=true;
+                otherRat.havingSex=true;
+            }
             otherRat.isPregnant = true;
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
