@@ -32,7 +32,9 @@ public class Rat {
     int lastY;
     boolean isSterile=false;
 
+    private int sexTimer=0;
     private boolean isBaby;
+    private boolean havingSex=false;
     private boolean isPregnant = false;
     private boolean isGivingBirth = false;
     private float birthTime = 0.0f;
@@ -200,7 +202,9 @@ public class Rat {
     * */
     public void update(float deltaTime, Tile[][] levelGrid){
         growUpTime += deltaTime;
-        this.move(deltaTime, levelGrid);
+        if(havingSex==false){
+            this.move(deltaTime, levelGrid);
+        }
         this.setGetRotation(img);
         if(growUpTime>=timer){
             growUp();
@@ -327,6 +331,12 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
+            havingSex=true;
+            sexTimer+=1;
+            if(sexTimer>=timer){
+                havingSex=false;
+                sexTimer=0;
+            }
             isPregnant = true;
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
             otherRat.isPregnant = true;
