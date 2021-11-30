@@ -122,6 +122,7 @@ public class Rat {
     * constructor to initialize the attributes of the rat
     * */
     public Rat(ratType type, int xPos, int yPos, boolean isBaby){
+
         if(isBaby==true){
             movementSpeed = babySpeed;
         }
@@ -191,7 +192,12 @@ public class Rat {
     * method controls the movement of rats
     * */
     public void move(float deltaTime, Tile[][] levelGrid){
+        if(sexTimer>=timer3){
+            havingSex=false;
+            sexTimer=0;
+        }
         if(havingSex==true){
+            sexTimer+=deltaTime;
             return;
         }
 
@@ -264,13 +270,7 @@ public class Rat {
         growUpTime += deltaTime;
         this.move(deltaTime, levelGrid);
         this.setGetRotation(img);
-        if(havingSex==true){
-            sexTimer+=deltaTime;
-        }
-        if(sexTimer>=timer3){
-            havingSex=false;
-            sexTimer=0;
-        }
+
         if(growUpTime>=timer){
             growUp();
         }
@@ -351,6 +351,7 @@ public class Rat {
         if (isPregnant==true){
             birthTime += deltaTime;
             if(birthTime>=timer2){
+                havingSex=false;
                 isGivingBirth = true;
                 spawns+=1;
                 birthTime=0;
@@ -396,13 +397,13 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(isPregnant==false){
+            if(isPregnant==false && otherRat.isPregnant==false){
                 otherRat.havingSex=true;
                 havingSex=true;
             }
             isPregnant = true;
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(otherRat.isPregnant==false){
+            if(otherRat.isPregnant==false && isPregnant==false){
                 havingSex=true;
                 otherRat.havingSex=true;
             }
