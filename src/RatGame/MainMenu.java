@@ -26,6 +26,8 @@ public class MainMenu {
 
     @FXML
     private Text messageDay;
+    @FXML
+    private Text selectedProfile;
 
     /**
      * Set up the main menu when loaded.
@@ -33,14 +35,27 @@ public class MainMenu {
     public void initialize(){
         updateMessage();
     }
-
+    
+    
     /**
      * Used to exit the game from the main menu when pressing the exit button.
      */
     @FXML protected void quitProgram() {
         System.exit(0);
     }
-
+    /**
+     * shows current profile
+     */
+    private void updateSelectedProfile()
+    {
+    	if (currentProfile == null)
+    	{
+    		selectedProfile.setText("No profile selected");
+    	} else
+    	{
+    		selectedProfile.setText("Profile: " + currentProfile.getName());
+    	}
+    }
     /**
      * gives a message everytime the game started
      */

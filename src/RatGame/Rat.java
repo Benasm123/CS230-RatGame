@@ -77,6 +77,7 @@ public class Rat {
     private float babySpeed = 0.8f;
     float timer = 10.0F;
     float timer2= 5.0f;
+    float timer3= 5.0f;
     private float movementSpeed = adultSpeed;
 
     int points=0;
@@ -190,6 +191,9 @@ public class Rat {
     * method controls the movement of rats
     * */
     public void move(float deltaTime, Tile[][] levelGrid){
+        if(havingSex==true){
+            return;
+        }
 
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
@@ -197,6 +201,7 @@ public class Rat {
 
         img.setTranslateX(xPos*50);
         img.setTranslateY(yPos*50);
+
         if (xVel < 0){
             if ((int)xPos+1 != lastX) {
                 xPos = (int)xPos+1;
@@ -231,8 +236,6 @@ public class Rat {
             }
 
         }
-
-
     }
     /*
     * @param img
@@ -259,10 +262,16 @@ public class Rat {
     * */
     public void update(float deltaTime, Tile[][] levelGrid){
         growUpTime += deltaTime;
-        if(havingSex==false){
-            this.move(deltaTime, levelGrid);
-        }
+        this.move(deltaTime, levelGrid);
         this.setGetRotation(img);
+        if(havingSex==true){
+            sexTimer+=deltaTime;
+        }
+        if(sexTimer>=timer3){
+            havingSex=false;
+            System.out.println("not hs");
+            sexTimer=0;
+        }
         if(growUpTime>=timer){
             growUp();
         }
@@ -388,14 +397,12 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
+            otherRat.havingSex=true;
             havingSex=true;
-            sexTimer+=1;
-            if(sexTimer>=timer){
-                havingSex=false;
-                sexTimer=0;
-            }
             isPregnant = true;
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
+            havingSex=true;
+            otherRat.havingSex=true;
             otherRat.isPregnant = true;
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
