@@ -52,5 +52,11 @@ public class LevelSelect {
         Level controller = loader.getController();
         controller.createLevel(((Button)event.getSource()).getText());
     }
+    public void switchToMainMenu(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
 
 }
