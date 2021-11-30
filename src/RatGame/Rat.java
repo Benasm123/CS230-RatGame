@@ -267,6 +267,9 @@ public class Rat {
     * provides update on the rats
     * */
     public void update(float deltaTime, Tile[][] levelGrid){
+        if(havingSex==true){
+            sexTimer+=deltaTime;
+        }
         growUpTime += deltaTime;
         this.move(deltaTime, levelGrid);
         this.setGetRotation(img);
@@ -397,17 +400,21 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(isPregnant==false && otherRat.isPregnant==false){
+            if(isPregnant==false && otherRat.havingSex==false){
                 otherRat.havingSex=true;
                 havingSex=true;
+            }else{
+                isPregnant = true;
             }
-            isPregnant = true;
+
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(otherRat.isPregnant==false && isPregnant==false){
+            if(otherRat.isPregnant==false && havingSex==false){
                 havingSex=true;
                 otherRat.havingSex=true;
+            }else{
+                otherRat.isPregnant = true;
             }
-            otherRat.isPregnant = true;
+
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
             deathRatKills +=1;
