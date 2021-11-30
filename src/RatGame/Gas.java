@@ -11,8 +11,10 @@ package RatGame;
 
 import javafx.scene.image.Image;
 
+// Space after Item and before bracket open
 public class Gas extends Item{
 
+    // Static final needs to be ALL CAPS and at the top of the file (for speed)
     private static final int lifeDuration = 1000;
     private static int lifeRemaining;
     private static final int speed = 5;

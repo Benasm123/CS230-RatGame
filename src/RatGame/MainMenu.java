@@ -18,10 +18,11 @@ import java.util.Objects;
 // TODO: Add functionality to settings
 // TODO: Add player profile selection and changing
 public class MainMenu {
-    private static PlayerProfile currentProfile;
 
     private static final String MESSAGE_URL = "http://cswebcat.swansea.ac.uk/puzzle";
     private static final String SOLUTION_URL = "http://cswebcat.swansea.ac.uk/message?solution=";
+
+    private static PlayerProfile currentProfile;
 
     @FXML
     private Text messageDay;

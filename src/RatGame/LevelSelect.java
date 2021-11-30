@@ -16,6 +16,7 @@ public class LevelSelect {
 
     @FXML
     VBox LevelButtons;
+
     public void initialize(){
         String[] allLevels = new File("src/Levels/").list();
 
@@ -27,7 +28,7 @@ public class LevelSelect {
             // TODO: once have access to player profile i can do this.
 //            if (MainMenu.getCurrentProfile().getLevel() > Integer.parseInt(i.substring(0, 1))){
             // TODO Make this set the button to do nothing.
-////                  levelSelectButton.setOnAction();
+//                  levelSelectButton.setDisable(true);
 //            } else {
                 levelSelectButton.setOnAction(event -> {
                     try {
@@ -42,7 +43,7 @@ public class LevelSelect {
         }
     }
 
-    public void playPressed(ActionEvent event) throws IOException {
+    private void playPressed(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();

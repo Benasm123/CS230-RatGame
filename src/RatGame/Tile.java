@@ -9,9 +9,12 @@
 package RatGame;
 import javafx.scene.image.Image;
 
+// your toString returns "" if the tile type isnt one of the ones in the enum and this isnt ever possible,
+// and if it does happen better to throw an error than do that as this could break otehr things otherwise.
 public class Tile {
-    private static final int TILE_HEIGHT = 50;
-    private static final int TILE_WIDTH = 50;
+    // Ive made this public so we can use it throughout the project instead of all needing to set this.
+    public static final int TILE_HEIGHT = 50;
+    public static final int TILE_WIDTH = 50;
 
     private float xPos;
     private float yPos;

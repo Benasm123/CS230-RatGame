@@ -13,9 +13,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+// In new file you have a .txt at the end of the save, but you don't need to save it as a text document
+// Can remove that part and it will work just as well i believe, and makes searching for files easier.
+// Youve used casting and the lectures state we need to put a space between cast and variable eg- "(int) variable"
+// Not "(int)variable". Not sure why this makes it a lot more ugly and less readable but thats whats asked
+
+// TODO: When a profile is saved, set the MainMenu playerProfile variable to the profile.
 public class PlayerProfile implements Comparable<PlayerProfile> {
 	private String name;
 	private int score;
+    // I would rename this to highestLevel or something similar to be more clear.
 	private int level;
 
 	/**

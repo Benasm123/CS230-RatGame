@@ -1,20 +1,17 @@
 package RatGame;
 
-import com.sun.javafx.geom.RectangularShape;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -34,10 +31,13 @@ import java.util.*;
 
 // TODO: Add Game timer and Expected time to the save and load.
 
+/**
+ * This class is the level that the game is played on and controls all elements of the game whilst it runs.
+ * @author Benas Montrimas.
+ */
 public class Level {
     // Constant Variables
-    private static final int TILE_HEIGHT = 50;
-    private static final int TILE_WIDTH = 50;
+    // TODO: can make these public and allow people to use these for tile size.
     private static final int NUMBER_OF_ITEMS = 8;
 
     private static final float FPS_REFRESH_INTERVAL = 0.1f;
@@ -101,6 +101,7 @@ public class Level {
     private ImageView itemBeingDragged;
 
     // All FXML variables.
+    // TODO: Refactor all these to have lowercase first letters.
     @FXML
     private AnchorPane GameScreen;
 
@@ -140,6 +141,7 @@ public class Level {
     @FXML
     private Text ScoreText;
 
+    // TODO: Reorder all methods in order: Public protected, private
     /**
      * Called once the level is loaded and initialized the scene.
      */
@@ -247,9 +249,9 @@ public class Level {
             } else if (item.getType() == ItemType.BOMB){
                 if (((Bomb) item).isExploding()){
                     ArrayList<Pair<Integer, Integer>> tilesToClear = ((Bomb) item).getBombTiles(levelGrid);
-                    for (Pair<Integer, Integer> coord : tilesToClear){
-                        Integer xPos = coord.getKey();
-                        Integer yPos = coord.getValue();
+                    for (Pair<Integer, Integer> coordinate : tilesToClear){
+                        Integer xPos = coordinate.getKey();
+                        Integer yPos = coordinate.getValue();
                         for (Rat rat : rats){
                             if ((int)rat.getxPos() == xPos && (int)rat.getyPos() == yPos){
                                 rat.die();
@@ -561,8 +563,8 @@ public class Level {
         levelHeight = Integer.parseInt(levelDimensionsSplit[1]);
 
         // Create the 2d array that holds tile positions.
-        GameBoard.setHeight(TILE_HEIGHT * levelHeight);
-        GameBoard.setWidth(TILE_WIDTH * levelWidth);
+        GameBoard.setHeight(Tile.TILE_HEIGHT * levelHeight);
+        GameBoard.setWidth(Tile.TILE_WIDTH * levelWidth);
 
         levelGrid = new Tile[levelWidth][levelHeight];
         for (int row = 0; row < levelHeight; row++) {
@@ -681,7 +683,7 @@ public class Level {
     private void drawTiles(){
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
-                levelGraphicsContext.drawImage(levelGrid[col][row].getTexture(), col * TILE_HEIGHT, row * TILE_WIDTH);
+                levelGraphicsContext.drawImage(levelGrid[col][row].getTexture(), col * Tile.TILE_HEIGHT, row * Tile.TILE_WIDTH);
             }
         }
     }
@@ -696,8 +698,8 @@ public class Level {
                 if (levelGrid[col][row].getType() == TileType.Tunnel || levelGrid[col][row].getType() == TileType.VerticalTunnel) {
                     ImageView tunnel =  new ImageView();
                     tunnel.setImage(levelGrid[col][row].getTexture());
-                    tunnel.setTranslateX(col * TILE_WIDTH);
-                    tunnel.setTranslateY(row * TILE_HEIGHT);
+                    tunnel.setTranslateX(col * Tile.TILE_WIDTH);
+                    tunnel.setTranslateY(row * Tile.TILE_HEIGHT);
                     levelPane.getChildren().add(tunnel);
                     tunnels.add(tunnel);
                 }
@@ -940,8 +942,8 @@ public class Level {
         }
         double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
         double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
-        double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/TILE_WIDTH);
-        double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelPane.getTranslateY()))/TILE_HEIGHT);
+        double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/Tile.TILE_WIDTH);
+        double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelPane.getTranslateY()))/Tile.TILE_HEIGHT);
         int gridX = (int) droppedGridXPos;
         int gridY = (int) droppedGridYPos;
 
@@ -978,8 +980,8 @@ public class Level {
                 Item itemUsed = itemsInInventory.get(itemType.getArrayPos()).pop();
                 itemUsed.setXPos(gridX);
                 itemUsed.setYPos(gridY);
-                itemUsed.getImageView().setTranslateX(itemUsed.getXPos() * TILE_WIDTH);
-                itemUsed.getImageView().setTranslateY(itemUsed.getYPos() * TILE_HEIGHT);
+                itemUsed.getImageView().setTranslateX(itemUsed.getXPos() * Tile.TILE_WIDTH);
+                itemUsed.getImageView().setTranslateY(itemUsed.getYPos() * Tile.TILE_HEIGHT);
                 levelPane.getChildren().add(itemUsed.getImageView());
                 itemUsed.use();
                 itemsInPlay.add(itemUsed);
