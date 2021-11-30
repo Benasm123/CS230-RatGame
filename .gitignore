@@ -29,3 +29,4 @@ hs_err_pid*
 
 # Save files 
 src/Saves/*
+src/Profiles/Benas.txt
