@@ -94,7 +94,7 @@ public class Gas extends Item{
 
     private void createGasSpreadImageView(int xPos, int yPos) {
         ImageView gasSpreadImageView = new ImageView();
-        Image gasSpreadImage = new Image("Assets/GasSpreading.png");
+        Image gasSpreadImage = new Image("Assets/GasSpreadingTest.png");
         gasSpreadImageView.setImage(gasSpreadImage);
         gasSpreadImageView.setTranslateX(xPos * Tile.TILE_WIDTH);
         gasSpreadImageView.setTranslateY(yPos * Tile.TILE_HEIGHT);

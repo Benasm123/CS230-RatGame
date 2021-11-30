@@ -269,7 +269,6 @@ public class Level {
                 Gas gasItem = (Gas) item;
                 gasItem.checkIfRatsInGas(rats);
                 if (gasItem.isSpreadingGas()){
-                    System.out.println("Hello");
                     gasItem.spreadGas(levelGrid);
                     for (ImageView imageView : ((Gas) item).getGasImageViews()){
                         if (!levelPane.getChildren().contains(imageView)){
