@@ -14,35 +14,39 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * This class is the changeProfile class allows player to switch profiles.
+ * @author Ahmed Almahari.
+ */
 public class ChangeProfile {
     @FXML
     VBox profiles;
     public void initialize(){
         String[] allProfiles = new File("src/Profiles").list();
         // Instead of an assert, you can create the profiles folder here, as ithink thats the only time this would evaluate false
-        assert allProfiles != null;
+
 
         for (String i : allProfiles){
-            Button levelSelectButton = new Button(i);
-            levelSelectButton.setOnAction(event -> {
+            Button changeProfileButton = new Button(i);
+            changeProfileButton.setOnAction(event -> {
                 try {
                     playPressed(event);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
-            profiles.getChildren().add(levelSelectButton);
+            profiles.getChildren().add(changeProfileButton);
         }
     }
+
     // Make sure to include a single line between methods and also if the fxml allows it these can be private but im not
     // to sure if they need to be public for javaFX.
     // Tested it seems like it needs to be public if accessing through scene builder, if accessing from java can make private
     public void playPressed(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/changeProfile.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/levelSelect.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(loader.load());
-
 
     }
 
