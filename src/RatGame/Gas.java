@@ -113,16 +113,21 @@ public class Gas extends Item{
 
     public void checkIfRatsInGas(ArrayList<Rat> rats) {
         for (Rat rat : rats) {
-            int ratX = (int) rat.getxPos();
-            int ratY = (int) rat.getyPos();
-            for (Pair<Integer, Integer> position : gasSpreadPositions) {
-                int gasX = position.getKey();
-                int gasY = position.getValue();
-                if (gasX == ratX && gasY == ratY) {
-//                rat.isPoisoned = true;
-                } else {
-//                rat.isPoisoned = false;
-                }
+            setRatsBeingGassed(rat);
+        }
+    }
+
+    private void setRatsBeingGassed(Rat rat) {
+        int ratX = (int) rat.getxPos();
+        int ratY = (int) rat.getyPos();
+        for (Pair<Integer, Integer> position : gasSpreadPositions) {
+            int gasX = position.getKey();
+            int gasY = position.getValue();
+            if (gasX == ratX && gasY == ratY) {
+                rat.setIsPoisoned(true);
+                return;
+            } else {
+                rat.setIsPoisoned(false);
             }
         }
     }

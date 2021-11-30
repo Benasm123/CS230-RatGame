@@ -80,7 +80,7 @@ public class Rat {
     float timer3= 5.0f;
     private float movementSpeed = adultSpeed;
 
-    int points=0;
+    int points=10;
 
     private float xVel=0.0f;
     private float yVel=0.0f;
@@ -136,6 +136,8 @@ public class Rat {
         lastX =-1;
         lastY =-1;
 
+        timeTillDiesOfPoison = 3.0f;
+        isPoisoned = false;
 
         isPregnant=false;
         isDead=false;
@@ -269,13 +271,14 @@ public class Rat {
     public void update(float deltaTime, Tile[][] levelGrid){
         if(isPoisoned) {
             totalTimePoisoned += deltaTime;
-            if(totalTimePoisoned > timeTillDiesOfPoison){
+            if(totalTimePoisoned >= timeTillDiesOfPoison){
+                System.out.println("Hello");
                 die();
             }
         }else{
-            totalTimePoisoned-=deltaTime;
-            if(totalTimePoisoned<0){
-                totalTimePoisoned=0;
+            totalTimePoisoned -= deltaTime;
+            if(totalTimePoisoned < 0){
+                totalTimePoisoned = 0;
             }
         }
 
@@ -458,11 +461,11 @@ public class Rat {
         return isPoisoned;
     }
 
-    public void setIsPoisoned(){
-        isPoisoned=false;
+    public void setIsPoisoned(boolean isPoisoned){
+        this.isPoisoned = isPoisoned;
     }
 
-    public int getPoints(Rat rat){
+    public int getPoints(){
         return points;
     }
 

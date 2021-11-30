@@ -397,7 +397,7 @@ public class Level {
         while (ratIterator.hasNext()){
             Rat rat = ratIterator.next();
             if (rat.getIsDead()){
-//                score += rat.getScore();
+                score += rat.getPoints();
                 levelPane.getChildren().remove(rat.img);
                 ratIterator.remove();
             } else if (rat.getIsGivingBirth()){
@@ -708,6 +708,8 @@ public class Level {
     private Rat createRat(Rat.ratType type, int xPos, int yPos, boolean isBaby){
         Rat rat = new Rat(type, xPos, yPos, isBaby);
         levelPane.getChildren().add(rat.img);
+        rat.img.toBack();
+        GameBoard.toBack();
         return rat;
     }
 
