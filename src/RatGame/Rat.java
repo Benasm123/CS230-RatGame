@@ -397,22 +397,12 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(sexTimer<timer){
-                havingSex=true;
-                otherRat.havingSex=true;
-            }else{
-                havingSex=false;
-                otherRat.havingSex=false;
-            }
+            otherRat.havingSex=true;
+            havingSex=true;
             isPregnant = true;
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(sexTimer<timer){
-                havingSex=true;
-                otherRat.havingSex=true;
-            }else{
-                havingSex=false;
-                otherRat.havingSex=false;
-            }
+            havingSex=true;
+            otherRat.havingSex=true;
             otherRat.isPregnant = true;
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
