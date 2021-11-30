@@ -18,13 +18,16 @@ import java.util.Objects;
 // TODO: Add functionality to settings
 // TODO: Add player profile selection and changing
 public class MainMenu {
-    private static PlayerProfile currentProfile;
 
     private static final String MESSAGE_URL = "http://cswebcat.swansea.ac.uk/puzzle";
     private static final String SOLUTION_URL = "http://cswebcat.swansea.ac.uk/message?solution=";
 
+    private static PlayerProfile currentProfile;
+
     @FXML
     private Text messageDay;
+    @FXML
+    private Text selectedProfile;
 
     /**
      * Set up the main menu when loaded.
@@ -32,14 +35,27 @@ public class MainMenu {
     public void initialize(){
         updateMessage();
     }
-
+    
+    
     /**
      * Used to exit the game from the main menu when pressing the exit button.
      */
     @FXML protected void quitProgram() {
         System.exit(0);
     }
-
+    /**
+     * shows current profile
+     */
+    private void updateSelectedProfile()
+    {
+    	if (currentProfile == null)
+    	{
+    		selectedProfile.setText("No profile selected");
+    	} else
+    	{
+    		selectedProfile.setText("Profile: " + currentProfile.getName());
+    	}
+    }
     /**
      * gives a message everytime the game started
      */

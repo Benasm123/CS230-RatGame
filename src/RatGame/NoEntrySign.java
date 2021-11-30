@@ -2,8 +2,10 @@ package RatGame;
 
 import javafx.scene.image.Image;
 
+// Curly brackets need to be on same level as the statement, and you use both ways here.
 public class NoEntrySign extends Item 
 {
+    // Maybe make this a bit more meaningful, like STARTING_HEALTH or something
 	private static final int HP = 5;
 	private int hpLeft;
 	

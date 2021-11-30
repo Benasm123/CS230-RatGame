@@ -7,8 +7,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
+// Lots of unused import statements.
 public abstract class Item {
 
+    // Can make these all private and add getters and setter that are public.
+    // TODO: in all items need to set variables using setters and use make this private.
     protected ItemType type;
     protected Image texture;
     protected ImageView imageView;

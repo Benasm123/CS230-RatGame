@@ -33,6 +33,9 @@ public class FemaleSexChange extends Item {
      */
     @Override
     public void steppedOn(Rat rat) {
+        // Space after if and before condition. and beteen brackets before and after else
+        // You can just set expired to true after the if statement and also just have 1 if, checkiing if its not a death rat
+        // tidies it up.
         if(rat.type==Rat.ratType.DEATHRAT){
             expired = true;
         }else{

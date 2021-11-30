@@ -19,7 +19,7 @@ public class ChangeProfile {
     VBox profiles;
     public void initialize(){
         String[] allProfiles = new File("src/Profiles").list();
-
+        // Instead of an assert, you can create the profiles folder here, as ithink thats the only time this would evaluate false
         assert allProfiles != null;
 
         for (String i : allProfiles){
@@ -34,6 +34,9 @@ public class ChangeProfile {
             profiles.getChildren().add(levelSelectButton);
         }
     }
+    // Make sure to include a single line between methods and also if the fxml allows it these can be private but im not
+    // to sure if they need to be public for javaFX.
+    // Tested it seems like it needs to be public if accessing through scene builder, if accessing from java can make private
     public void playPressed(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/changeProfile.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();

@@ -16,14 +16,13 @@ public class Main extends Application {
     private static final int WINDOW_WIDTH = 1200;
     private static final int WINDOW_HEIGHT = 800;
 
-    Rectangle2D screenSize = Screen.getPrimary().getBounds();
-
     //test
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         primaryStage.setTitle("Rat Game");
 
+        Rectangle2D screenSize = Screen.getPrimary().getBounds();
         primaryStage.setScene(new Scene(root, Math.min(WINDOW_WIDTH, screenSize.getWidth() - 100), Math.min(WINDOW_HEIGHT, screenSize.getHeight() - 100)));
         primaryStage.show();
     }

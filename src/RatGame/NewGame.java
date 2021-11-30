@@ -25,6 +25,7 @@ public class NewGame
         Scene scene = stage.getScene();
         scene.setRoot(root);
     }
+    // Line between Methods please.
     public void switchToMainMenu(ActionEvent event) throws IOException
     {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));

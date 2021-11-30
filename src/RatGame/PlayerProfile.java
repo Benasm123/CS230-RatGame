@@ -13,10 +13,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+// In new file you have a .txt at the end of the save, but you don't need to save it as a text document
+// Can remove that part and it will work just as well i believe, and makes searching for files easier.
+// Youve used casting and the lectures state we need to put a space between cast and variable eg- "(int) variable"
+// Not "(int)variable". Not sure why this makes it a lot more ugly and less readable but thats whats asked
+
+// TODO: When a profile is saved, set the MainMenu playerProfile variable to the profile.
 public class PlayerProfile implements Comparable<PlayerProfile> {
 	private String name;
-	private int score;
-	private int level;
+	private int highScore;
+    // I would rename this to highestLevel or something similar to be more clear.
+	private int highestLevel;
 
 	/**
 	 * creates an instance of a profile with a name using setName method
@@ -46,32 +53,32 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 *
 	 * @return the score related to a profile
 	 */
-	public int getScore() {
-		return score;
+	public int getHighScore() {
+		return highScore;
 	}
 
 	/**
 	 * ??
-	 * @param score
+	 * @param highScore
 	 */
-	public void setScore(int score) {
-		this.score = score;
+	public void setHighScore(int highScore) {
+		this.highScore = highScore;
 	}
 
 	/**
 	 *
 	 * @return the level obtained by a profile
 	 */
-	public int getLevel() {
-		return level;
+	public int getHighestLevel() {
+		return highestLevel;
 	}
 
 	/**
 	 * ??
-	 * @param level
+	 * @param highestLevel
 	 */
-	public void setLevel(int level) {
-		this.level = level;
+	public void setHighestLevel(int highestLevel) {
+		this.highestLevel = highestLevel;
 	}
 
 	/**
@@ -104,7 +111,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		newFile(name);
 		try {
 			FileWriter writer = new FileWriter("src//Profiles//" + name + ".txt");
-			writer.write(name + "\n" + score + "\n" + level);
+			writer.write(name + "\n" + highScore + "\n" + highestLevel);
 			writer.close();
 			System.out.println("Saved");
 		}
@@ -138,8 +145,8 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		      Scanner in = new Scanner(myObj);
 		      
 		      name = in.nextLine();
-		      score = Integer.parseInt(in.nextLine());
-		      level = Integer.parseInt(in.nextLine());
+		      highScore = Integer.parseInt(in.nextLine());
+		      highestLevel = Integer.parseInt(in.nextLine());
 		      
 		      in.close();
 		}
@@ -157,7 +164,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 */
 	@Override
     public int compareTo(PlayerProfile profile) {
-        return (int)(profile.getScore() - this.score);
+        return (int)(profile.getHighScore() - this.highScore);
     }
 
 	/**
@@ -166,6 +173,12 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 */
 	@Override
 	public String toString() {
-		return name + " -  Score: " + score + " - LV: " + level;
+		return name + " -  Score: " + highScore + " - LV: " + highestLevel;
 	}
+
+    public void levelComplete(int level, int score) {
+        this.highestLevel = Math.max(this.highestLevel, level);
+        this.highScore = Math.max(this.highScore, score);
+        save();
+    }
 }

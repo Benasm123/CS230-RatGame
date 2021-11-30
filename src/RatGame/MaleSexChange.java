@@ -33,6 +33,7 @@ public class MaleSexChange extends Item {
      */
     @Override
     public void steppedOn(Rat rat) {
+        // Same comments as in female sex change here, you can even move everytthing into the changeSex method
         if(rat.type == Rat.ratType.DEATHRAT){
             expired =true;
         }else{
