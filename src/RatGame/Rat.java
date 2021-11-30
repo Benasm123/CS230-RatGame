@@ -90,7 +90,7 @@ public class Rat {
     int lastY;
     boolean isSterile=false;
 
-    private int sexTimer=0;
+    private float sexTimer=0.0f;
     private boolean isBaby;
     private boolean havingSex=false;
     private boolean isPregnant = false;
@@ -98,6 +98,9 @@ public class Rat {
     private float birthTime = 0.0f;
     private float growUpTime = 0.0f;
     private boolean isDead = false;
+    private boolean isPoisoned;
+    private float totalTimePoisoned;
+    private float timeTillDiesOfPoison;
 
     Random rnd = new Random();
     int spawnNumber=rnd.nextInt(3)+2;
@@ -189,13 +192,10 @@ public class Rat {
     /*
     * @param deltaTime
     * @param levelGrid
-    * method controls the movement of rats'
+    * method controls the movement of rats
     * */
     public void move(float deltaTime, Tile[][] levelGrid){
-        if(sexTimer>=timer3){
-            havingSex=false;
-            sexTimer=0;
-        }
+
         if(havingSex==true){
             sexTimer+=deltaTime;
             return;
@@ -267,13 +267,22 @@ public class Rat {
     * provides update on the rats
     * */
     public void update(float deltaTime, Tile[][] levelGrid){
-        if(havingSex==true){
-            sexTimer+=deltaTime;
+        if(isPoisoned) {
+            totalTimePoisoned += deltaTime;
+            if(totalTimePoisoned > timeTillDiesOfPoison){
+                die();
+            }
+        }else{
+            totalTimePoisoned-=deltaTime;
+            if(totalTimePoisoned<0){
+                totalTimePoisoned=0;
+            }
         }
+
         growUpTime += deltaTime;
         this.move(deltaTime, levelGrid);
+        this.sex(deltaTime);
         this.setGetRotation(img);
-
         if(growUpTime>=timer){
             growUp();
         }
@@ -354,11 +363,19 @@ public class Rat {
         if (isPregnant==true){
             birthTime += deltaTime;
             if(birthTime>=timer2){
-                havingSex=false;
                 isGivingBirth = true;
                 spawns+=1;
                 birthTime=0;
             }
+        }
+    }
+    private void sex(float deltaTime){
+        if(havingSex==true){
+            sexTimer+=deltaTime;
+        }
+        if(sexTimer>=timer3){
+            havingSex=false;
+            sexTimer=0;
         }
     }
 
@@ -400,7 +417,7 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(isPregnant==false && otherRat.havingSex==false){
+            if(havingSex==false && otherRat.havingSex==false){
                 otherRat.havingSex=true;
                 havingSex=true;
             }else{
@@ -408,7 +425,7 @@ public class Rat {
             }
 
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(otherRat.isPregnant==false && havingSex==false){
+            if(otherRat.havingSex==false && havingSex==false){
                 havingSex=true;
                 otherRat.havingSex=true;
             }else{
@@ -436,6 +453,13 @@ public class Rat {
                 otherRat.isDead = true;
             }
         }
+    }
+    public boolean getIsPoisoned(){
+        return isPoisoned;
+    }
+
+    public void setIsPoisoned(){
+        isPoisoned=false;
     }
 
     public int getPoints(Rat rat){
