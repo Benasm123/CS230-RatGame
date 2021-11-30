@@ -189,7 +189,7 @@ public class Rat {
     /*
     * @param deltaTime
     * @param levelGrid
-    * method controls the movement of rats
+    * method controls the movement of rats'
     * */
     public void move(float deltaTime, Tile[][] levelGrid){
         if(sexTimer>=timer3){
