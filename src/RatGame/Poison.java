@@ -1,24 +1,27 @@
-/**
- * This class allows for the creation of Poison items.
- * The poison item kills rats as soon as they step on it.
- *
- * @author CS-230 Group13 (21/22)
- * @version 1.0
- *
- */
 package RatGame;
 
 import javafx.scene.image.Image;
 
+/**
+ * This class allows for the creation of Poison items.
+ * The poison item kills rats as soon as they step on it.
+ *
+ * @author Ephraim Okonji
+ * @version 1.0
+ *
+ */
 public class Poison extends Item {
 
+    /**
+     * Creates an instance of an item of type poison
+     */
     public Poison() {
         texture =  new Image("Assets/Poison.png");
+        type = ItemType.POISON;
     }
 
     /**
-     * method inherited from the parent class
-     *
+     * method inherited from the parent class, called when the item is used
      */
     @Override
     public void use() {
@@ -39,7 +42,7 @@ public class Poison extends Item {
 
     /**
      *
-     * @param deltaTime
+     * @param deltaTime The time since the last frame in seconds.
      */
     @Override
     public void update(float deltaTime) {

@@ -1,13 +1,8 @@
 package RatGame;
 
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 
-// Lots of unused import statements.
 public abstract class Item {
 
     // Can make these all private and add getters and setter that are public.

@@ -1,14 +1,14 @@
-/**
- * This enum class allows for the creation of various tile types.
- *
- * @author CS-230 Group13 (21/22)
- * @version 1.0
- *
- */
 package RatGame;
 
 import javafx.scene.image.Image;
 
+/**
+ * This enum class allows for the creation of various tile types.
+ *
+ * @author Ephraim Okonji
+ * @version 1.0
+ *
+ */
 public enum TileType {
     Grass (new Image("Assets/Grass.png"), false),
     Path(new Image("Assets/Path.png"),true),

@@ -1,18 +1,16 @@
+package RatGame;
+
+import javafx.scene.image.Image;
+
 /**
  * This class creates instances of tiles that are used in the map of the game.
  * It is implemented in the level class which spawns tiles according to the level format.
  *
- * @author CS-230 Group13 (21/22)
+ * @author Ephraim Okonji
  * @version 1.0
  *
  */
-package RatGame;
-import javafx.scene.image.Image;
-
-// your toString returns "" if the tile type isnt one of the ones in the enum and this isnt ever possible,
-// and if it does happen better to throw an error than do that as this could break otehr things otherwise.
 public class Tile {
-    // Ive made this public so we can use it throughout the project instead of all needing to set this.
     public static final int TILE_HEIGHT = 50;
     public static final int TILE_WIDTH = 50;
 
@@ -27,7 +25,6 @@ public class Tile {
      * @param yPos y-position of the tile
      * @param type the type of the tile
      */
-
     public Tile(float xPos, float yPos, TileType type) {
         this.xPos = xPos;
         this.yPos = yPos;
@@ -66,6 +63,6 @@ public class Tile {
         else if (TileType.VerticalTunnel == type) {
             return "V";
         }
-        else return "";
+        else return "not a type of tile in the level";
     }
 }
