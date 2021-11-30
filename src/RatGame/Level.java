@@ -243,7 +243,8 @@ public class Level {
             Item item = itemIterator.next();
             if (item.getType() == ItemType.DEATH_RAT){
                 if (((DeathRat) item).getSpawning()){
-                    spawnRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
+                    Rat deathRat = createRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
+                    rats.add(deathRat);
                     ((DeathRat) item).setSpawning(false);
                 }
             } else if (item.getType() == ItemType.BOMB){
@@ -264,8 +265,25 @@ public class Level {
                         }
                     }
                 }
+            } else if (item.getType() == ItemType.GAS){
+                Gas gasItem = (Gas) item;
+                gasItem.checkIfRatsInGas(rats);
+                if (gasItem.isSpreadingGas()){
+                    System.out.println("Hello");
+                    gasItem.spreadGas(levelGrid);
+                    for (ImageView imageView : ((Gas) item).getGasImageViews()){
+                        if (!levelPane.getChildren().contains(imageView)){
+                            levelPane.getChildren().add(imageView);
+                            imageView.toFront();
+                        }
+                    }
+                    gasItem.setIsSpreadingGas(false);
+                }
             }
             if (item.expired){
+                if (item.getType() == ItemType.GAS){
+                    levelPane.getChildren().removeAll(((Gas) item).getGasImageViews());
+                }
                 levelPane.getChildren().remove(item.imageView);
                 itemIterator.remove();
             }
@@ -273,6 +291,9 @@ public class Level {
         for (Item item : itemsInPlay){
             item.update(deltaTime);
         }
+
+        // Update tunnel after every rat spawns so that tunnels are always on top.
+        updateTunnels();
     }
 
     /**
@@ -368,6 +389,7 @@ public class Level {
     private void updateRats(float deltaTime){
         // Using an iterator to allow removal of rats from the list as we loop.
         Iterator<Rat> ratIterator = rats.iterator();
+        ArrayList<Rat> ratsToAdd = new ArrayList<>();
         while (ratIterator.hasNext()){
             Rat rat = ratIterator.next();
             if (rat.getIsDead()){
@@ -383,7 +405,8 @@ public class Level {
                 } else {
                     type = Rat.ratType.FEMALE;
                 }
-                spawnRat(type, (int)rat.getxPos(), (int)rat.getyPos(),true);
+                Rat babyRat = createRat(type, (int)rat.getxPos(), (int)rat.getyPos(),true);
+                ratsToAdd.add(babyRat);
                 rat.setIsGivingBirth();
             } else {
                 rat.update(deltaTime, levelGrid);
@@ -396,6 +419,11 @@ public class Level {
                 }
             }
         }
+        rats.addAll(ratsToAdd);
+
+
+        // Update tunnel after every rat spawns so that tunnels are always on top.
+        updateTunnels();
     }
 
     /**
@@ -642,8 +670,13 @@ public class Level {
             int yPos = Integer.parseInt(ratToSpawnSplit[2]);
             boolean isBaby = ratToSpawnSplit[3].equals("T");
 
-            spawnRat(type, xPos, yPos, isBaby);
+            Rat newRat = createRat(type, xPos, yPos, isBaby);
+            rats.add(newRat);
         }
+
+
+        // Update tunnel after every rat spawns so that tunnels are always on top.
+        updateTunnels();
     }
 
     /**
@@ -668,13 +701,10 @@ public class Level {
      * @param xPos The X position of the rat to be spawned.
      * @param yPos The Y position of the rat to be spawned.
      */
-    private void spawnRat(Rat.ratType type, int xPos, int yPos, boolean isBaby){
+    private Rat createRat(Rat.ratType type, int xPos, int yPos, boolean isBaby){
         Rat rat = new Rat(type, xPos, yPos, isBaby);
         levelPane.getChildren().add(rat.img);
-        rats.add(rat);
-
-        // Update tunnel after every rat spawns so that tunnels are always on top.
-        updateTunnels();
+        return rat;
     }
 
     /**
