@@ -45,7 +45,7 @@ public class Sterilisation extends Item {
             for (int j = -SPREAD_RADIUS; j <= SPREAD_RADIUS; j++) {
                 int x = this.xPos + i;
                 int y = this.yPos + j;
-                if ((x >= 0 && x < levelGrid.length) && (y >= 0 && y < levelGrid.length)) {
+                if ((x >= 0 && x < levelGrid.length) && (y >= 0 && y < levelGrid[0].length)) {
                     sterilizedTiles.add(new Pair<>(x,y));
                     sterileTilesImageViews(x,y);
                 }
