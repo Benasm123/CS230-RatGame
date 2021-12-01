@@ -19,8 +19,10 @@ import java.util.Objects;
  * @author Ahmed Almahari.
  */
 public class ChangeProfile {
+
     @FXML
     VBox profiles;
+
     public void initialize(){
         String[] allProfiles = new File("src/Profiles").list();
         // Instead of an assert, you can create the profiles folder here, as ithink thats the only time this would evaluate false
@@ -50,7 +52,7 @@ public class ChangeProfile {
     public void playPressed(ActionEvent event) throws IOException {
         loadProfile(((Button) event.getTarget()).getText());
 
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/levelSelect.fxml")));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);

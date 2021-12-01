@@ -9,22 +9,29 @@ import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Objects;
+import java.util.Scanner;
 
 // TODO: Add functionality to settings
 // TODO: Add player profile selection and changing
+
+/**
+ * The main menu scene controller. Controls all main menu functionality.
+ * @author Benas Montrimas.
+ */
 public class MainMenu {
 
+    // Constants
     private static final String MESSAGE_URL = "http://cswebcat.swansea.ac.uk/puzzle";
     private static final String SOLUTION_URL = "http://cswebcat.swansea.ac.uk/message?solution=";
 
+    // Holds which profile is currently selected.
     private static PlayerProfile currentProfile;
 
+    // FXML variables.
     @FXML
     private Text messageDay;
     @FXML
@@ -35,9 +42,27 @@ public class MainMenu {
      */
     public void initialize(){
         updateMessage();
+        loadLastProfile();
         updateSelectedProfile();
-        if (!(new File("src//Config//ConfigFile").exists())){
+    }
+
+    /**
+     * Will load the last used profile.
+     */
+    private void loadLastProfile(){
+        File configFile = new File("src//Config//ConfigFile");
+        if (!configFile.exists()){
             createConfigFile();
+        } else {
+            try {
+                Scanner reader = new Scanner(configFile);
+                String profileName = reader.nextLine();
+                PlayerProfile playerProfile = new PlayerProfile(profileName);
+                playerProfile.load(profileName);
+                currentProfile = playerProfile;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -48,6 +73,7 @@ public class MainMenu {
     @FXML protected void quitProgram() {
         System.exit(0);
     }
+
     /**
      * shows current profile
      */
@@ -61,6 +87,7 @@ public class MainMenu {
     		selectedProfile.setText("Profile: " + currentProfile.getName());
     	}
     }
+
     /**
      * gives a message everytime the game started
      */
@@ -160,13 +187,21 @@ public class MainMenu {
         scene.setRoot(root);
     }
 
-    public void switchToNewGame(ActionEvent event) throws IOException {
+    /**
+     * Loads the new game scene and switches to it.
+     * @param event The event which triggered this action.
+     * @throws IOException Throws an error if FXML file cannot be found.
+     */
+    public void onNewGamePressed(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/newGame.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
     }
 
+    /**
+     * Creates the config folder and files, if they do not already exist.
+     */
     private void createConfigFile(){
         new File("src/Config").mkdir();
         File myObj = new File("src//Config//ConfigFile");
@@ -179,11 +214,35 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Updates config file to save profile loaded.
+     */
+    public static void updateConfig(){
+        File myObj = new File("src//Config//ConfigFile");
+        try {
+            FileWriter writer = new FileWriter(myObj);
+            writer.write(MainMenu.getCurrentProfile().getName());
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Seems like the file cant be written to!");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Get the current profile loaded.
+     * @return The current profile which is currently loaded.
+     */
     public static PlayerProfile getCurrentProfile() {
         return currentProfile;
     }
 
-    public static void setCurrentProfile(PlayerProfile pp){
-        currentProfile = pp;
+    /**
+     * Sets the current profile to a new one.
+     * @param profile The profile which you want to set as the current profile.
+     */
+    public static void setCurrentProfile(PlayerProfile profile){
+        currentProfile = profile;
+        updateConfig();
     }
 }

@@ -1,3 +1,9 @@
+package RatGame;
+
+import javafx.scene.image.Image;
+import javafx.util.Pair;
+import java.util.ArrayList;
+
 /**
  * This class allows for the creation of Sterilisation items.
  * The sterilisation item makes rats within a small radius sterile.
@@ -6,29 +12,30 @@
  * @version 1.0
  *
  */
-
-
-package RatGame;
-
-import javafx.scene.image.Image;
-import javafx.util.Pair;
-
-import java.util.ArrayList;
-
 public class Sterilisation extends Item {
 
     private static final int LIFE_DURATION = 4;
     private static final int SPREAD_RADIUS = 2;
 
     private float timeSincePlaced;
-    ArrayList<Pair<Integer, Integer>> sterilizedTiles;
+    private ArrayList<Pair<Integer, Integer>> sterilizedTiles;
+    private boolean isSterileTilesGot;
 
+    /**
+     *
+     */
     public Sterilisation() {
         texture = new Image("Assets/Sterilisation.png");
         type = ItemType.STERILISATION;
         sterilizedTiles = new ArrayList<>();
+        isSterileTilesGot = false;
     }
 
+    /**
+     *
+     * @param levelGrid
+     * @return
+     */
     public ArrayList<Pair<Integer, Integer>> getSterilizedTiles(Tile[][] levelGrid) {
         int startX = xPos + SPREAD_RADIUS;
         int startY = yPos + SPREAD_RADIUS;
@@ -47,9 +54,22 @@ public class Sterilisation extends Item {
             startX++;
             startY++;
         }
+        isSterileTilesGot = true;
         return sterilizedTiles;
+
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    public boolean isSterileTilesGot() {
+        return isSterileTilesGot;
+    }
+
+    /**
+     *
+     */
     @Override
     public void use() {
         timeSincePlaced = 0;

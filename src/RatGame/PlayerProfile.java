@@ -131,7 +131,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 * @param save
 	 */
 	public void deleteSave(String save) {
-		File myObj = new File("src//Profiles//" + save + ".txt");
+		File myObj = new File("src//Profiles//" + save);
 		if (myObj.delete()) {
 			System.out.println("Save deleted");
 		}
@@ -144,9 +144,12 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 * attempts to load the file saved the player
 	 * @param save
 	 */
-	public void load(String save) {
+	public boolean load(String save) {
 		try {
 		      File myObj = new File("src//Profiles//" + save);
+              if (!myObj.exists()) {
+                  return false;
+              }
 		      Scanner in = new Scanner(myObj);
 		      
 		      name = in.nextLine();
@@ -160,6 +163,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		      e.printStackTrace();
 		}
         MainMenu.setCurrentProfile(this);
+        return true;
 	}
 
 	/**
@@ -182,6 +186,11 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		return name + " -  Score: " + highScore + " - LV: " + highestLevel;
 	}
 
+    /**
+     * Updates the profiles highest level and high score and saves it.
+     * @param level The level number that has been cleared.
+     * @param score The score achieved from the level.
+     */
     public void levelComplete(int level, int score) {
         this.highestLevel = Math.max(this.highestLevel, level);
         this.highScore = Math.max(this.highScore, score);
