@@ -40,6 +40,8 @@ public class Main extends Application {
             if (Objects.requireNonNull(profile.list()).length == 0) {
                 root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/newGame.fxml")));
             }
+        } else {
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/newGame.fxml")));
         }
 
         primaryStage.setTitle("Rat Game");
