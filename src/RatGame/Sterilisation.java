@@ -21,6 +21,7 @@ public class Sterilisation extends Item {
     private float timeSincePlaced;
     private ArrayList<Pair<Integer, Integer>> sterilizedTiles;
     private boolean isSterileTilesGot;
+    private ArrayList<ImageView> sterileImageViews;
 
     /**
      *
@@ -30,6 +31,7 @@ public class Sterilisation extends Item {
         type = ItemType.STERILISATION;
         sterilizedTiles = new ArrayList<>();
         isSterileTilesGot = false;
+        sterileImageViews = new ArrayList<>();
     }
 
     /**
@@ -38,31 +40,14 @@ public class Sterilisation extends Item {
      * @return
      */
     public ArrayList<Pair<Integer, Integer>> getSterilizedTiles(Tile[][] levelGrid) {
-      /*  int startX = xPos + SPREAD_RADIUS;
-        int startY = yPos + SPREAD_RADIUS;
-        boolean check = startX != xPos && startY != yPos;
 
-        while (inSterileRadius(levelGrid,startX,startY) && check) {
-            sterilizedTiles.add(new Pair<>(startX,startY));
-            startX--;
-            startY--;
-        }
-        startX = xPos - SPREAD_RADIUS;
-        startY = yPos - SPREAD_RADIUS;
-
-        while (inSterileRadius(levelGrid,startX,startY) && check) {
-            sterilizedTiles.add(new Pair<>(startX, startY));
-            startX++;
-            startY++;
-        }*/
-        for (int i = -SPREAD_RADIUS; i < levelGrid.length; i++) {
-            for (int j = -SPREAD_RADIUS; i < levelGrid.length; i++) {
-                if ((i >= 0 || i < levelGrid.length) || (j >= 0 || j < levelGrid.length)) {
+      for (int i = -SPREAD_RADIUS; i < SPREAD_RADIUS; i++) {
+            for (int j = -SPREAD_RADIUS; j < SPREAD_RADIUS; j++) {
+                if ((i >= 0 && i < levelGrid.length) && (j >= 0 && j < levelGrid.length)) {
                     int x = this.xPos + i;
-                    int y = this.yPos + i;
-                    while (inSterileRadius(levelGrid, x, y)) {
-                        sterilizedTiles.add(new Pair<>(x,y));
-                    }
+                    int y = this.yPos + j;
+                    sterilizedTiles.add(new Pair<>(x,y));
+                    sterileTilesImageViews(x,y);
                 }
             }
         }
@@ -101,8 +86,6 @@ public class Sterilisation extends Item {
 
             if (sterileX == ratX && sterileY == ratY) {
                 rat.setIsSterile();
-                //for testing
-                System.out.println("Rat is STERILE");
             }
         }
     }
@@ -119,14 +102,15 @@ public class Sterilisation extends Item {
         }
     }
 
-    /**
-     *
-     * @param levelGrid
-     * @param xPos
-     * @param yPos
-     * @return
-     */
-    private boolean inSterileRadius(Tile[][] levelGrid, int xPos, int yPos) {
-        return levelGrid[xPos][yPos].getType().isTraversable;
+    public ArrayList<ImageView> getSterileImageViews() {
+        return sterileImageViews;
+    }
+
+    private void sterileTilesImageViews(int xPos, int yPos) {
+        ImageView sterileTileSpread = new ImageView();
+        sterileTileSpread.setImage(new Image("Assets/GasSpreadingTest.png"));
+        sterileTileSpread.setTranslateX(xPos * Tile.TILE_WIDTH);
+        sterileTileSpread.setTranslateY(yPos * Tile.TILE_HEIGHT);
+        sterileImageViews.add(sterileTileSpread);
     }
 }
