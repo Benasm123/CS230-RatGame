@@ -57,7 +57,7 @@ public class MainMenu {
                 String profileName = reader.nextLine();
                 PlayerProfile playerProfile = new PlayerProfile(profileName);
                 playerProfile.load(profileName);
-                currentProfile = playerProfile;
+                setCurrentProfile(playerProfile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
