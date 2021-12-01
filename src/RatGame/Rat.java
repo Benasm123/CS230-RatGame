@@ -289,6 +289,7 @@ public class Rat {
         if(growUpTime>=timer){
             growUp();
         }
+        sterile();
         timeToBirth(deltaTime);
    }
 
@@ -362,6 +363,7 @@ public class Rat {
     private void timeToBirth(float deltaTime){
         if(spawns==spawnNumber){
             isPregnant=false;
+            spawns=0;
         }
         if (isPregnant==true){
             birthTime += deltaTime;
@@ -380,6 +382,11 @@ public class Rat {
             havingSex=false;
             isPregnant=true;
             sexTimer=0;
+        }
+    }
+    private void sterile(){
+        if(isSterile==true){
+            isPregnant=false;
         }
     }
 
