@@ -68,6 +68,9 @@ import java.util.Random;
 // protected
 // then private.
 public class Rat {
+
+    private static final int SCORE = 10;
+
     Image texture;
     ImageView img;
 
@@ -79,8 +82,6 @@ public class Rat {
     float timer2= 5.0f;
     float timer3= 5.0f;
     private float movementSpeed = adultSpeed;
-
-    int points=10;
 
     private float xVel=0.0f;
     private float yVel=0.0f;
@@ -460,20 +461,12 @@ public class Rat {
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
             deathRatKills +=1;
-            if(isPregnant == true){
-                otherRat.points+=(10*spawnNumber)-(10*spawns);
-            }
-            points +=10;
             if(deathRatKills==5){
                 isDead = true;
             }
         }else if (otherRat.type == ratType.DEATHRAT) {
             isDead = true;
             otherRat.deathRatKills +=1;
-            if(isPregnant == true){
-                otherRat.points+=(10*spawnNumber)-(10*spawns);
-            }
-            otherRat.points+=10;
             if(otherRat.deathRatKills==5){
                 otherRat.isDead = true;
             }
@@ -487,8 +480,18 @@ public class Rat {
         this.isPoisoned = isPoisoned;
     }
 
-    public int getPoints(){
-        return points;
+    public int getScore(){
+        if (type == ratType.DEATHRAT){
+            return 0;
+        } else if (type == ratType.MALE) {
+            return SCORE;
+        } else {
+            if (isPregnant) {
+                return SCORE + (spawnNumber - spawns) * SCORE;
+            } else {
+                return SCORE;
+            }
+        }
     }
 
     public float getxVel() {
