@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.Objects;
 
 
@@ -19,7 +20,18 @@ public class Main extends Application {
     //test
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
+        Parent root;
+
+        File profile = new File("src/Profiles");
+
+        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
+
+        if (profile.exists()) {
+            if (Objects.requireNonNull(profile.list()).length == 0) {
+                root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/newGame.fxml")));
+            }
+        }
+
         primaryStage.setTitle("Rat Game");
 
         Rectangle2D screenSize = Screen.getPrimary().getBounds();

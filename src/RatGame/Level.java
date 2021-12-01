@@ -344,7 +344,7 @@ public class Level {
     private void checkWinLoseCondition() {
         boolean isGameFinished = false;
         boolean hasWon = false;
-        // TODO: Add lose mechanic
+
         if (rats.size() > numberOfRatsToLose){
             isPaused = true;
             isGameFinished = true;
@@ -358,19 +358,20 @@ public class Level {
             System.out.println("You Win!");
         }
 
-        if (getNumberOfFemaleRatsAlive() == 0){
-            isPaused = true;
-            isGameFinished = true;
-            hasWon = true;
-            System.out.println("You win only males alive and cannot reproduce!");
-        }
-
-        if (getNumberOfMaleRatsAlive() == 0){
-            isPaused = true;
-            isGameFinished = true;
-            hasWon = true;
-            System.out.println("You win only female alive and cannot reproduce!");
-        }
+        // Spec says you win when all rats are dead. So removing this.
+//        if (getNumberOfFemaleRatsAlive() == 0){
+//            isPaused = true;
+//            isGameFinished = true;
+//            hasWon = true;
+//            System.out.println("You win only males alive and cannot reproduce!");
+//        }
+//
+//        if (getNumberOfMaleRatsAlive() == 0){
+//            isPaused = true;
+//            isGameFinished = true;
+//            hasWon = true;
+//            System.out.println("You win only female alive and cannot reproduce!");
+//        }
 
         if (isGameFinished){
             if (hasWon){

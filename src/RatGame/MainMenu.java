@@ -9,12 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Objects;
+import java.util.Scanner;
 
 // TODO: Add functionality to settings
 // TODO: Add player profile selection and changing
@@ -35,9 +34,24 @@ public class MainMenu {
      */
     public void initialize(){
         updateMessage();
+        loadLastProfile();
         updateSelectedProfile();
-        if (!(new File("src//Config//ConfigFile").exists())){
+    }
+
+    private void loadLastProfile(){
+        File configFile = new File("src//Config//ConfigFile");
+        if (!configFile.exists()){
             createConfigFile();
+        } else {
+            try {
+                Scanner reader = new Scanner(configFile);
+                String profileName = reader.nextLine();
+                PlayerProfile playerProfile = new PlayerProfile(profileName);
+                playerProfile.load(profileName);
+                currentProfile = playerProfile;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -160,7 +174,7 @@ public class MainMenu {
         scene.setRoot(root);
     }
 
-    public void switchToNewGame(ActionEvent event) throws IOException {
+    public void onNewGamePressed(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/newGame.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
@@ -179,11 +193,24 @@ public class MainMenu {
         }
     }
 
+    public static void updateConfig(){
+        File myObj = new File("src//Config//ConfigFile");
+        try {
+            FileWriter writer = new FileWriter(myObj);
+            writer.write(MainMenu.getCurrentProfile().getName());
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Seems like the file cant be written to!");
+            e.printStackTrace();
+        }
+    }
+
     public static PlayerProfile getCurrentProfile() {
         return currentProfile;
     }
 
-    public static void setCurrentProfile(PlayerProfile pp){
-        currentProfile = pp;
+    public static void setCurrentProfile(PlayerProfile profile){
+        currentProfile = profile;
+        updateConfig();
     }
 }
