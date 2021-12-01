@@ -304,9 +304,20 @@ public class Level {
      * Updates the text for how many rats are alive.
      */
     private void updateRatsAliveText() {
-        ratsAlive.setText("Rats alive: " + rats.size());
+
+        ratsAlive.setText("Rats alive: " + getNumberOfRatsAlive());
         maleRatsAlive.setText("Males alive: " + getNumberOfMaleRatsAlive());
         femaleRatsAlive.setText("Females alive: " + getNumberOfFemaleRatsAlive());
+    }
+
+    private int getNumberOfRatsAlive(){
+        int numberOfRatsAlive = 0;
+        for (Rat rat : rats){
+            if (rat.type != Rat.ratType.DEATHRAT){
+                numberOfRatsAlive++;
+            }
+        }
+        return numberOfRatsAlive;
     }
 
     /**
@@ -344,13 +355,13 @@ public class Level {
         boolean isGameFinished = false;
         boolean hasWon = false;
 
-        if (rats.size() > numberOfRatsToLose){
+        if (getNumberOfRatsAlive() > numberOfRatsToLose){
             isPaused = true;
             isGameFinished = true;
             System.out.println("You Lose!");
         }
 
-        if (rats.size() < numberOfRatsToWin){
+        if (getNumberOfRatsAlive() <= 0){
             isPaused = true;
             isGameFinished = true;
             hasWon = true;
@@ -403,7 +414,7 @@ public class Level {
         while (ratIterator.hasNext()){
             Rat rat = ratIterator.next();
             if (rat.getIsDead()){
-                score += rat.getPoints();
+                score += rat.getScore();
                 levelPane.getChildren().remove(rat.img);
                 ratIterator.remove();
             } else if (rat.getIsGivingBirth()){
