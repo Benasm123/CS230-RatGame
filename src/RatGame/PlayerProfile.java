@@ -114,7 +114,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	public void save() {
 		newFile(name);
 		try {
-			FileWriter writer = new FileWriter("src//Profiles//" + name + ".txt");
+			FileWriter writer = new FileWriter("src//Profiles//" + name);
 			writer.write(name + "\n" + highScore + "\n" + highestLevel);
 			writer.close();
 			System.out.println("Saved");
@@ -145,7 +145,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 */
 	public void load(String save) {
 		try {
-		      File myObj = new File("src//Profiles//" + save + ".txt");
+		      File myObj = new File("src//Profiles//" + save);
 		      Scanner in = new Scanner(myObj);
 		      
 		      name = in.nextLine();
@@ -158,6 +158,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		      System.out.println("An error occurred.");
 		      e.printStackTrace();
 		}
+        MainMenu.setCurrentProfile(this);
 	}
 
 	/**

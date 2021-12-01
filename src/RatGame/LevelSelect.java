@@ -24,24 +24,28 @@ public class LevelSelect {
 
         assert allLevels != null;
 
-        for (String i : allLevels){
+        for (String i : allLevels) {
 
             Button levelSelectButton = new Button(i);
             // TODO: once have access to player profile i can do this.
-//            if (MainMenu.getCurrentProfile().getLevel() > Integer.parseInt(i.substring(0, 1))){
-            // TODO Make this set the button to do nothing.
-//                  levelSelectButton.setDisable(true);
-//            } else {
-                levelSelectButton.setOnAction(event -> {
-                    try {
-                        playPressed(event);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-//            }
-            LevelButtons.getChildren().add(levelSelectButton);
+            levelSelectButton.setOnAction(event -> {
+                try {
+                    playPressed(event);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
 
+            if (MainMenu.getCurrentProfile() != null) {
+                try {
+                    if (MainMenu.getCurrentProfile().getHighestLevel() + 1 < Integer.parseInt(i.substring(0, 1))) {
+                        levelSelectButton.setDisable(true);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Level: " + i + " doesnt start with a digit");
+                }
+            }
+            LevelButtons.getChildren().add(levelSelectButton);
         }
     }
 
