@@ -237,17 +237,17 @@ public class Level {
      * Checks if any items need removing, and updates the item.
      * @param deltaTime The time in seconds since the last frame.
      */
-    private void updateItemsInPlay(float deltaTime){
+    private void updateItemsInPlay(float deltaTime) {
         Iterator<Item> itemIterator = itemsInPlay.iterator();
         while (itemIterator.hasNext()){
             Item item = itemIterator.next();
-            if (item.getType() == ItemType.DEATH_RAT){
+            if (item.getType() == ItemType.DEATH_RAT) {
                 if (((DeathRat) item).getSpawning()){
                     Rat deathRat = createRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
                     rats.add(deathRat);
                     ((DeathRat) item).setSpawning(false);
                 }
-            } else if (item.getType() == ItemType.BOMB){
+            } else if (item.getType() == ItemType.BOMB) {
                 if (((Bomb) item).isExploding()){
                     ArrayList<Pair<Integer, Integer>> tilesToClear = ((Bomb) item).getBombTiles(levelGrid);
                     for (Pair<Integer, Integer> coordinate : tilesToClear){
@@ -265,7 +265,7 @@ public class Level {
                         }
                     }
                 }
-            } else if (item.getType() == ItemType.GAS){
+            } else if (item.getType() == ItemType.GAS) {
                 Gas gasItem = (Gas) item;
                 gasItem.checkIfRatsInGas(rats);
                 if (gasItem.isSpreadingGas()){
@@ -277,6 +277,12 @@ public class Level {
                         }
                     }
                     gasItem.setIsSpreadingGas(false);
+                }
+            } else if (item.getType() == ItemType.STERILISATION) {
+                Sterilisation sterilisationItem = (Sterilisation) item;
+                // TODO Sterilisation
+                if (!sterilisationItem.isSterileTilesGot()) {
+                    sterilisationItem.getSterilizedTiles(levelGrid);
                 }
             }
             if (item.expired){
