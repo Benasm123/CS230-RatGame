@@ -34,6 +34,7 @@ public class MainMenu {
      */
     public void initialize(){
         updateMessage();
+        updateSelectedProfile();
     }
     
     

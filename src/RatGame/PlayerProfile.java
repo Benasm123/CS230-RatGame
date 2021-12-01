@@ -85,7 +85,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 * attempts to create a file as any name that the player would want
 	 * @param file
 	 */
-	public void newFile(String file) {
+	private void newFile(String file) {
 		try {
 			new File("src/Profiles").mkdir();
 			File myObj = new File("src//Profiles//" + file + ".txt");
