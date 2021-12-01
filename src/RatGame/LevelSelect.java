@@ -15,15 +15,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * The level select screen class. Manages all levels available to the player and shows all levels.
+ * @author Benas Montrimas.
+ */
 public class LevelSelect {
 
+    // FXML variables.
     @FXML
     VBox LevelButtons;
     @FXML
     VBox LeaderboardButtons;
     @FXML
 	private Text top10;
-    
+
+    /**
+     * Initializes the level select, getting all levels and showing them to the player.
+     */
     public void initialize(){
         String[] allLevels = new File("src/Levels/").list();
 
@@ -74,19 +82,17 @@ public class LevelSelect {
         {
 
             Button leaderboardSelectButton = new Button(j);
-            leaderboardSelectButton.setOnAction(event -> 
-            {
-                try {
-                    displayPressed(event);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            leaderboardSelectButton.setOnAction(this::displayPressed);
 //                }
             LeaderboardButtons.getChildren().add(leaderboardSelectButton);
         }
     }
 
+    /**
+     * Loads the level and switches to it.
+     * @param event The event which triggered this action.
+     * @throws IOException If the FXML file is not found will throw an error.
+     */
     private void playPressed(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -96,14 +102,24 @@ public class LevelSelect {
         Level controller = loader.getController();
         controller.createLevel(((Button)event.getSource()).getText());
     }
-    
+
+    /**
+     * Loads the main menu when and switches to it.
+     * @param event The event which triggered this action.
+     * @throws IOException If the FXML file is not found will throw an error.
+     */
     public void switchToMainMenu(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
     }
-    public void displayPressed(ActionEvent event)throws IOException {
+
+    /**
+     * Loads the leaderboard and displays it to the screen.
+     * @param event The event triggering this action.
+     */
+    public void displayPressed(ActionEvent event){
         Leaderboard board = new Leaderboard();
         int lvl = Integer.parseInt(String.valueOf(((Button)event.getSource()).getText().charAt(0)));
         board.load(lvl);

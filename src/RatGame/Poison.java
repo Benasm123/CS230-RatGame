@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
  * This class allows for the creation of Poison items.
  * The poison item kills rats as soon as they step on it.
  *
- * @author Ephraim Okonji
+ * @author Ephraim Okonji, Benas Montrimas
  * @version 1.0
  *
  */

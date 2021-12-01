@@ -186,6 +186,11 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		return name + " -  Score: " + highScore + " - LV: " + highestLevel;
 	}
 
+    /**
+     * Updates the profiles highest level and high score and saves it.
+     * @param level The level number that has been cleared.
+     * @param score The score achieved from the level.
+     */
     public void levelComplete(int level, int score) {
         this.highestLevel = Math.max(this.highestLevel, level);
         this.highScore = Math.max(this.highScore, score);
