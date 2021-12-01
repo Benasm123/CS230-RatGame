@@ -280,7 +280,7 @@ public class Level {
             } else if (item.getType() == ItemType.STERILISATION) {
                 Sterilisation sterilisationItem = (Sterilisation) item;
                 // TODO Sterilisation
-                if (!sterilisationItem.isSterileTilesGot()) {
+                if (!sterilisationItem.sterileTilesGot()) {
                     sterilisationItem.getSterilizedTiles(levelGrid);
                 }
             }

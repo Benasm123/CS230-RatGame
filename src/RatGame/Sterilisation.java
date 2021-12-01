@@ -20,8 +20,8 @@ public class Sterilisation extends Item {
 
     private float timeSincePlaced;
     private ArrayList<Pair<Integer, Integer>> sterilizedTiles;
-    private boolean isSterileTilesGot;
-    private ArrayList<ImageView> sterileImageViews;
+    private boolean sterileTilesGot;
+    private ArrayList<ImageView> sterileTilesImages;
 
     /**
      *
@@ -30,8 +30,8 @@ public class Sterilisation extends Item {
         texture = new Image("Assets/Sterilisation.png");
         type = ItemType.STERILISATION;
         sterilizedTiles = new ArrayList<>();
-        isSterileTilesGot = false;
-        sterileImageViews = new ArrayList<>();
+        sterileTilesGot = false;
+        sterileTilesImages = new ArrayList<>();
     }
 
     /**
@@ -51,7 +51,7 @@ public class Sterilisation extends Item {
                 }
             }
         }
-        isSterileTilesGot = true;
+        sterileTilesGot = true;
         return sterilizedTiles;
     }
 
@@ -59,8 +59,8 @@ public class Sterilisation extends Item {
      *
      * @return
      */
-    public boolean isSterileTilesGot() {
-        return isSterileTilesGot;
+    public boolean sterileTilesGot() {
+        return sterileTilesGot;
     }
 
     /**
@@ -102,15 +102,15 @@ public class Sterilisation extends Item {
         }
     }
 
-    public ArrayList<ImageView> getSterileImageViews() {
-        return sterileImageViews;
+    public ArrayList<ImageView> getSterileTilesImages() {
+        return sterileTilesImages;
     }
 
     private void sterileTilesImageViews(int xPos, int yPos) {
-        ImageView sterileTileSpread = new ImageView();
-        sterileTileSpread.setImage(new Image("Assets/Sterelisationspread.png"));
-        sterileTileSpread.setTranslateX(xPos * Tile.TILE_WIDTH);
-        sterileTileSpread.setTranslateY(yPos * Tile.TILE_HEIGHT);
-        sterileImageViews.add(sterileTileSpread);
+        ImageView sterileTileSpreadImg = new ImageView();
+        sterileTileSpreadImg.setImage(new Image("Assets/Sterelisationspread.png"));
+        sterileTileSpreadImg.setTranslateX(xPos * Tile.TILE_WIDTH);
+        sterileTileSpreadImg.setTranslateY(yPos * Tile.TILE_HEIGHT);
+        sterileTilesImages.add(sterileTileSpreadImg);
     }
 }
