@@ -421,13 +421,13 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(havingSex==false && otherRat.havingSex==false){
+            if(havingSex==false && otherRat.havingSex==false && isPregnant==false){
                 otherRat.havingSex=true;
                 havingSex=true;
             }
 
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(otherRat.havingSex==false && havingSex==false){
+            if(otherRat.havingSex==false && havingSex==false && otherRat.isPregnant==false){
                 havingSex=true;
                 otherRat.havingSex=true;
             }
