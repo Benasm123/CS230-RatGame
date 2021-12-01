@@ -39,14 +39,21 @@ public class ChangeProfile {
         }
     }
 
+    private void loadProfile(String name){
+        PlayerProfile profile = new PlayerProfile(name);
+        profile.load(name);
+    }
+
     // Make sure to include a single line between methods and also if the fxml allows it these can be private but im not
     // to sure if they need to be public for javaFX.
     // Tested it seems like it needs to be public if accessing through scene builder, if accessing from java can make private
     public void playPressed(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/levelSelect.fxml"));
+        loadProfile(((Button) event.getTarget()).getText());
+
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/levelSelect.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
-        scene.setRoot(loader.load());
+        scene.setRoot(root);
 
     }
 
