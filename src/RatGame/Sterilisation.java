@@ -1,6 +1,7 @@
 package RatGame;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Pair;
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class Sterilisation extends Item {
      * @return
      */
     public ArrayList<Pair<Integer, Integer>> getSterilizedTiles(Tile[][] levelGrid) {
-        int startX = xPos + SPREAD_RADIUS;
+      /*  int startX = xPos + SPREAD_RADIUS;
         int startY = yPos + SPREAD_RADIUS;
         boolean check = startX != xPos && startY != yPos;
 
@@ -53,10 +54,20 @@ public class Sterilisation extends Item {
             sterilizedTiles.add(new Pair<>(startX, startY));
             startX++;
             startY++;
+        }*/
+        for (int i = -SPREAD_RADIUS; i < levelGrid.length; i++) {
+            for (int j = -SPREAD_RADIUS; i < levelGrid.length; i++) {
+                if ((i >= 0 || i < levelGrid.length) || (j >= 0 || j < levelGrid.length)) {
+                    int x = this.xPos + i;
+                    int y = this.yPos + i;
+                    while (inSterileRadius(levelGrid, x, y)) {
+                        sterilizedTiles.add(new Pair<>(x,y));
+                    }
+                }
+            }
         }
         isSterileTilesGot = true;
         return sterilizedTiles;
-
     }
 
     /**
@@ -90,6 +101,8 @@ public class Sterilisation extends Item {
 
             if (sterileX == ratX && sterileY == ratY) {
                 rat.setIsSterile();
+                //for testing
+                System.out.println("Rat is STERILE");
             }
         }
     }
