@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -18,7 +19,7 @@
       <RowConstraints maxHeight="272.0" minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <TextFlow prefHeight="200.0" prefWidth="200.0" textAlignment="CENTER" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <TextFlow maxWidth="800.0" minHeight="0.0" minWidth="200.0" prefHeight="200.0" prefWidth="800.0" textAlignment="CENTER" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <children>
             <Text fx:id="messageDay" strokeType="OUTSIDE" strokeWidth="0.0" text="Message of the day!!!" textAlignment="CENTER" wrappingWidth="800.0">
                <font>
@@ -26,6 +27,12 @@
                </font>
             </Text>
          </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets left="200.0" right="200.0" top="50.0" />
+         </GridPane.margin>
       </TextFlow>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="RATS!" textAlignment="CENTER" wrappingWidth="400.85938715934753" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <font>
