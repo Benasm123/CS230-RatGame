@@ -284,12 +284,13 @@ public class Rat {
 
         growUpTime += deltaTime;
         this.sex(deltaTime);
+        sterile();
         this.setGetRotation(img);
         this.move(deltaTime, levelGrid);
         if(growUpTime>=timer){
             growUp();
         }
-        sterile();
+
         timeToBirth(deltaTime);
    }
 
@@ -401,6 +402,7 @@ public class Rat {
     * */
     private void sterile(){
         if(isSterile==true){
+            havingSex=false;
             isPregnant=false;
         }
     }
