@@ -237,17 +237,17 @@ public class Level {
      * Checks if any items need removing, and updates the item.
      * @param deltaTime The time in seconds since the last frame.
      */
-    private void updateItemsInPlay(float deltaTime){
+    private void updateItemsInPlay(float deltaTime) {
         Iterator<Item> itemIterator = itemsInPlay.iterator();
         while (itemIterator.hasNext()){
             Item item = itemIterator.next();
-            if (item.getType() == ItemType.DEATH_RAT){
+            if (item.getType() == ItemType.DEATH_RAT) {
                 if (((DeathRat) item).getSpawning()){
                     Rat deathRat = createRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
                     rats.add(deathRat);
                     ((DeathRat) item).setSpawning(false);
                 }
-            } else if (item.getType() == ItemType.BOMB){
+            } else if (item.getType() == ItemType.BOMB) {
                 if (((Bomb) item).isExploding()){
                     ArrayList<Pair<Integer, Integer>> tilesToClear = ((Bomb) item).getBombTiles(levelGrid);
                     for (Pair<Integer, Integer> coordinate : tilesToClear){
@@ -265,7 +265,7 @@ public class Level {
                         }
                     }
                 }
-            } else if (item.getType() == ItemType.GAS){
+            } else if (item.getType() == ItemType.GAS) {
                 Gas gasItem = (Gas) item;
                 gasItem.checkIfRatsInGas(rats);
                 if (gasItem.isSpreadingGas()){
@@ -276,7 +276,12 @@ public class Level {
                             imageView.toFront();
                         }
                     }
-                    gasItem.setIsSpreadingGas(false);
+                }
+            } else if (item.getType() == ItemType.STERILISATION) {
+                Sterilisation sterilisationItem = (Sterilisation) item;
+                // TODO Sterilisation
+                if (!sterilisationItem.isSterileTilesGot()) {
+                    sterilisationItem.getSterilizedTiles(levelGrid);
                 }
             }
             if (item.expired){
@@ -338,7 +343,7 @@ public class Level {
     private void checkWinLoseCondition() {
         boolean isGameFinished = false;
         boolean hasWon = false;
-        // TODO: Add lose mechanic
+
         if (rats.size() > numberOfRatsToLose){
             isPaused = true;
             isGameFinished = true;
@@ -352,19 +357,20 @@ public class Level {
             System.out.println("You Win!");
         }
 
-        if (getNumberOfFemaleRatsAlive() == 0){
-            isPaused = true;
-            isGameFinished = true;
-            hasWon = true;
-            System.out.println("You win only males alive and cannot reproduce!");
-        }
-
-        if (getNumberOfMaleRatsAlive() == 0){
-            isPaused = true;
-            isGameFinished = true;
-            hasWon = true;
-            System.out.println("You win only female alive and cannot reproduce!");
-        }
+        // Spec says you win when all rats are dead. So removing this.
+//        if (getNumberOfFemaleRatsAlive() == 0){
+//            isPaused = true;
+//            isGameFinished = true;
+//            hasWon = true;
+//            System.out.println("You win only males alive and cannot reproduce!");
+//        }
+//
+//        if (getNumberOfMaleRatsAlive() == 0){
+//            isPaused = true;
+//            isGameFinished = true;
+//            hasWon = true;
+//            System.out.println("You win only female alive and cannot reproduce!");
+//        }
 
         if (isGameFinished){
             if (hasWon){
@@ -835,13 +841,13 @@ public class Level {
     private void writeItemSpawns(FileWriter fileWriter) throws IOException {
         StringBuilder itemsHeld = new StringBuilder();
         for (ItemType type : ItemType.values()){
-            itemsHeld.append(itemsInInventory.get(type.getArrayPos()).size()).append(FILE_DELIMITER);
+            itemsHeld.append(itemsInInventory.get(type.getIndex()).size()).append(FILE_DELIMITER);
         }
         fileWriter.write(itemsHeld + "\n");
 
         StringBuilder itemsSpawns = new StringBuilder();
         for (ItemType type : ItemType.values()){
-            itemsSpawns.append(itemSpawnTime[type.getArrayPos()]).append(FILE_DELIMITER);
+            itemsSpawns.append(itemSpawnTime[type.getIndex()]).append(FILE_DELIMITER);
         }
         fileWriter.write(itemsSpawns + "\n");
 
@@ -880,10 +886,10 @@ public class Level {
      */
     private void updateItems(float deltaTime){
         for (ItemType type : ItemType.values()){
-            timeSinceItemSpawn[type.getArrayPos()] += deltaTime;
-            if (timeSinceItemSpawn[type.getArrayPos()] > itemSpawnTime[type.getArrayPos()]){
+            timeSinceItemSpawn[type.getIndex()] += deltaTime;
+            if (timeSinceItemSpawn[type.getIndex()] > itemSpawnTime[type.getIndex()]){
                 spawnItem(type);
-                timeSinceItemSpawn[type.getArrayPos()] = 0;
+                timeSinceItemSpawn[type.getIndex()] = 0;
             }
         }
     }
@@ -895,10 +901,10 @@ public class Level {
     private void removeItem(ItemType type){
         inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class &&
                 ((ImageView) node).getImage().getUrl().endsWith(type.getTexture()));
-        for (int i = 0; i < itemsInInventory.get(type.getArrayPos()).size(); i++){
-            Item item = itemsInInventory.get(type.getArrayPos()).get(i);
+        for (int i = 0; i < itemsInInventory.get(type.getIndex()).size(); i++){
+            Item item = itemsInInventory.get(type.getIndex()).get(i);
             ImageView itemIcon = createImageIcon(item);
-            inventoryGrid.add(itemIcon, i, type.getArrayPos() + INVENTORY_GRID_OFFSET);
+            inventoryGrid.add(itemIcon, i, type.getIndex() + INVENTORY_GRID_OFFSET);
         }
     }
 
@@ -924,7 +930,7 @@ public class Level {
      * @param type The type of item that we want to spawn into the inventory.
      */
     private void spawnItem(ItemType type){
-        if (itemsInInventory.get(type.getArrayPos()).size() >= ITEM_MAX_STACK){
+        if (itemsInInventory.get(type.getIndex()).size() >= ITEM_MAX_STACK){
             return;
         }
 
@@ -932,8 +938,8 @@ public class Level {
 
         item.setTexture(new Image(type.getTexture()));
         ImageView itemIcon = createImageIcon(item);
-        inventoryGrid.add(itemIcon, itemsInInventory.get(type.getArrayPos()).size(), type.getArrayPos() + INVENTORY_GRID_OFFSET);
-        itemsInInventory.get(type.getArrayPos()).add(item);
+        inventoryGrid.add(itemIcon, itemsInInventory.get(type.getIndex()).size(), type.getIndex() + INVENTORY_GRID_OFFSET);
+        itemsInInventory.get(type.getIndex()).add(item);
     }
 
     /**
@@ -1013,7 +1019,7 @@ public class Level {
                 // TODO: TESTING ONLY DELETE
                 System.out.println("X: " + gridX + " Y: " + gridY);
 
-                Item itemUsed = itemsInInventory.get(itemType.getArrayPos()).pop();
+                Item itemUsed = itemsInInventory.get(itemType.getIndex()).pop();
                 itemUsed.setXPos(gridX);
                 itemUsed.setYPos(gridY);
                 itemUsed.getImageView().setTranslateX(itemUsed.getXPos() * Tile.TILE_WIDTH);
@@ -1027,6 +1033,11 @@ public class Level {
         itemBeingDragged = null;
     }
 
+    /**
+     * Reloads the level when the play again button is pressed.
+     * @param event The action that triggered the event.
+     * @throws IOException If the FXML file can not be found will throw an exception.
+     */
     public void playAgainPressed(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();

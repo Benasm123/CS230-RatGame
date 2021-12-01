@@ -19,8 +19,10 @@ import java.util.Objects;
  * @author Ahmed Almahari.
  */
 public class ChangeProfile {
+
     @FXML
     VBox profiles;
+
     public void initialize(){
         String[] allProfiles = new File("src/Profiles").list();
         // Instead of an assert, you can create the profiles folder here, as ithink thats the only time this would evaluate false
