@@ -282,12 +282,18 @@ public class Level {
                 // TODO Sterilisation
                 if (!sterilisationItem.sterileTilesGot()) {
                     sterilisationItem.getSterilizedTiles(levelGrid);
+                    levelPane.getChildren().addAll(((Sterilisation) item).getSterileTilesImages());
                 }
             }
             if (item.expired){
                 if (item.getType() == ItemType.GAS){
                     levelPane.getChildren().removeAll(((Gas) item).getGasImageViews());
                 }
+
+                if (item.getType() == ItemType.STERILISATION){
+                    levelPane.getChildren().removeAll(((Sterilisation) item).getSterileTilesImages());
+                }
+
                 levelPane.getChildren().remove(item.imageView);
                 itemIterator.remove();
             }
