@@ -283,9 +283,9 @@ public class Rat {
         }
 
         growUpTime += deltaTime;
-        this.move(deltaTime, levelGrid);
         this.sex(deltaTime);
         this.setGetRotation(img);
+        this.move(deltaTime, levelGrid);
         if(growUpTime>=timer){
             growUp();
         }
@@ -378,6 +378,7 @@ public class Rat {
         }
         if(sexTimer>=timer3){
             havingSex=false;
+            isPregnant=true;
             sexTimer=0;
         }
     }
@@ -423,16 +424,12 @@ public class Rat {
             if(havingSex==false && otherRat.havingSex==false){
                 otherRat.havingSex=true;
                 havingSex=true;
-            }else{
-                isPregnant = true;
             }
 
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
             if(otherRat.havingSex==false && havingSex==false){
                 havingSex=true;
                 otherRat.havingSex=true;
-            }else{
-                otherRat.isPregnant = true;
             }
 
         }else if (type == ratType.DEATHRAT){
