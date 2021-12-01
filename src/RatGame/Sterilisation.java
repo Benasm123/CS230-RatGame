@@ -11,25 +11,48 @@
 package RatGame;
 
 import javafx.scene.image.Image;
+import javafx.util.Pair;
 
-public class Sterilisation extends Item{
+import java.util.ArrayList;
 
-    private static final int lifeDuration = 4;
-    private static final int spreadRadius = 5;
-    private float remainingTime;
+public class Sterilisation extends Item {
+
+    private static final int LIFE_DURATION = 4;
+    private static final int SPREAD_RADIUS = 2;
+
+    private float timeSincePlaced;
+    ArrayList<Pair<Integer, Integer>> sterilizedTiles;
 
     public Sterilisation() {
         texture = new Image("Assets/Sterilisation.png");
-        remainingTime = lifeDuration;
+        type = ItemType.STERILISATION;
+        sterilizedTiles = new ArrayList<>();
     }
 
-    public void makeSterile(){
+    public ArrayList<Pair<Integer, Integer>> getSterilizedTiles(Tile[][] levelGrid) {
+        int startX = xPos + SPREAD_RADIUS;
+        int startY = yPos + SPREAD_RADIUS;
+        boolean check = startX != xPos && startY != yPos;
 
+        while (inSterileRadius(levelGrid,startX,startY) && check) {
+            sterilizedTiles.add(new Pair<>(startX,startY));
+            startX--;
+            startY--;
+        }
+        startX = xPos - SPREAD_RADIUS;
+        startY = yPos - SPREAD_RADIUS;
+
+        while (inSterileRadius(levelGrid,startX,startY) && check) {
+            sterilizedTiles.add(new Pair<>(startX, startY));
+            startX++;
+            startY++;
+        }
+        return sterilizedTiles;
     }
     
     @Override
     public void use() {
-
+        timeSincePlaced = 0;
     }
 
     /**
@@ -38,7 +61,17 @@ public class Sterilisation extends Item{
      */
     @Override
     public void steppedOn(Rat rat) {
+        int ratX = (int) rat.getxPos();
+        int ratY = (int) rat.getyPos();
 
+        for (int i = 0; i < sterilizedTiles.size(); i++) {
+            int sterileX = sterilizedTiles.get(i).getKey();
+            int sterileY = sterilizedTiles.get(i).getValue();
+
+            if (sterileX == ratX && sterileY == ratY) {
+                rat.setIsSterile();
+            }
+        }
     }
 
     /**
@@ -47,11 +80,20 @@ public class Sterilisation extends Item{
      */
     @Override
     public void update(float deltaTime) {
-
-        remainingTime -= deltaTime;
-        makeSterile();
-        if (remainingTime == 0) {
+        timeSincePlaced += deltaTime;
+        if (timeSincePlaced >= LIFE_DURATION) {
             expired = true;
         }
+    }
+
+    /**
+     *
+     * @param levelGrid
+     * @param xPos
+     * @param yPos
+     * @return
+     */
+    private boolean inSterileRadius(Tile[][] levelGrid, int xPos, int yPos) {
+        return levelGrid[xPos][yPos].getType().isTraversable;
     }
 }
