@@ -118,6 +118,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 			writer.write(name + "\n" + highScore + "\n" + highestLevel);
 			writer.close();
 			System.out.println("Saved");
+            load(name);
 		}
 		catch (IOException e) {
 			System.out.println("An error occurred.");
