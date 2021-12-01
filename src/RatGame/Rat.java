@@ -367,7 +367,7 @@ public class Rat {
             if(birthTime>=timer2){
                 isGivingBirth = true;
                 spawns+=1;
-                birthTime=0;
+                birthTime=0.0f;
                 if(spawns==spawnNumber){
                     isPregnant=false;
                     spawns=0;
@@ -376,11 +376,17 @@ public class Rat {
         }
     }
     private void sex(float deltaTime){
-        if(havingSex==true){
+        if(havingSex==true && type==ratType.FEMALE){
             sexTimer+=deltaTime;
             if(sexTimer>=timer3){
                 havingSex=false;
                 isPregnant=true;
+                sexTimer=0;
+            }
+        }else if(havingSex==true){
+            sexTimer+=deltaTime;
+            if(sexTimer>=timer3){
+                havingSex=false;
                 sexTimer=0;
             }
         }
