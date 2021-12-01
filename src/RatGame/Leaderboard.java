@@ -32,8 +32,10 @@ public class Leaderboard {
 		LVL = lvl;
 		save();
 	}
-	
-
+	public Leaderboard()
+	{
+		leaderboard = new ArrayList<>();
+	}
 	/**
 	 * adds a player profile to the leaderboard and sorts it automatically
 	 * @param profile

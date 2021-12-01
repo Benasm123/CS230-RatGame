@@ -20,4 +20,20 @@
    <bottom>
       <Button fx:id="back" mnemonicParsing="false" onAction="#switchToMainMenu" text="Back" BorderPane.alignment="TOP_CENTER" />
    </bottom>
+   <right>
+      <VBox fx:id="LeaderboardButtons" prefHeight="500.0" prefWidth="298.0" BorderPane.alignment="CENTER">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="LEADERBOARDS">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <BorderPane prefHeight="200.0" prefWidth="200.0">
+               <center>
+                  <Text fx:id="top10" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="RIGHT" BorderPane.alignment="BOTTOM_RIGHT" />
+               </center>
+            </BorderPane>
+         </children>
+      </VBox>
+   </right>
 </BorderPane>
