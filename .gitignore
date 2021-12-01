@@ -30,3 +30,4 @@ hs_err_pid*
 # Save files 
 src/Saves/*
 src/Profiles/*
+src/Config/ConfigFile

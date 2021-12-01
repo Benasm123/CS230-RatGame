@@ -88,7 +88,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	private void newFile(String file) {
 		try {
 			new File("src/Profiles").mkdir();
-			File myObj = new File("src//Profiles//" + file + ".txt");
+			File myObj = new File("src//Profiles//" + file);
 			if (myObj.exists())
 			{
 				deleteSave(file);

@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -35,6 +36,9 @@ public class MainMenu {
     public void initialize(){
         updateMessage();
         updateSelectedProfile();
+        if (!(new File("src//Config//ConfigFile").exists())){
+            createConfigFile();
+        }
     }
     
     
@@ -161,6 +165,18 @@ public class MainMenu {
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
+    }
+
+    private void createConfigFile(){
+        new File("src/Config").mkdir();
+        File myObj = new File("src//Config//ConfigFile");
+        try {
+            if (myObj.createNewFile()) {
+                System.out.println("Config Created!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static PlayerProfile getCurrentProfile() {
