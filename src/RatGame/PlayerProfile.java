@@ -89,6 +89,10 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		try {
 			new File("src/Profiles").mkdir();
 			File myObj = new File("src//Profiles//" + file + ".txt");
+			if (myObj.exists())
+			{
+				deleteSave(file);
+			}
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
 				System.out.println("Absolute path: " + myObj.getAbsolutePath());
