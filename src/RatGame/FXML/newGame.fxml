@@ -16,7 +16,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <Button mnemonicParsing="false" onAction="#switchToMainMenu" text="cancel" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+        <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#switchToMainMenu" text="cancel" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
         <SplitPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
             <items>
                 <Label alignment="CENTER" prefHeight="132.0" prefWidth="427.0" text="New Game" textAlignment="CENTER" textOverrun="CENTER_ELLIPSIS">
@@ -27,6 +27,6 @@
             </items>
         </SplitPane>
         <TextField fx:id="username" promptText="name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Button mnemonicParsing="false" onAction="#newGame" text="Create" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+        <Button fx:id="createButton" mnemonicParsing="false" onAction="#newGame" text="Create" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
     </children>
 </GridPane>

@@ -1,14 +1,20 @@
 package RatGame;
 
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import javafx.scene.control.TextField;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -17,19 +23,49 @@ import java.util.Objects;
  */
 public class NewGame
 {
+    private static final String[] ILLEGAL_CHARACTERS_IN_FILE_NAME = {"<", ">", ":", "\"", "/", "\\", "|", "?", "*"};
+
+    @FXML
     public TextField username;
+
+    @FXML
+    public Button cancelButton;
+
+    @FXML
+    public Button createButton;
+
+    public void initialize() {
+        File profileFolder = new File("src/Profiles");
+        if (profileFolder.exists()) {
+            if (Objects.requireNonNull(profileFolder.list()).length == 0) {
+                cancelButton.setDisable(true);
+            }
+        } else {
+            cancelButton.setDisable(true);
+        }
+    }
 
     /**
      * Called when the Create button is pressed in New Game screen, and creates a new profile.
      * @param event The action event that triggered this method.
      * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
      */
-    public void newGame(ActionEvent event) throws IOException
-    {
+    public void newGame(ActionEvent event) throws IOException {
+        if (username.getText().isEmpty() || username.getText().length() > 20) {
+            return;
+        }
+
+        for (String i : ILLEGAL_CHARACTERS_IN_FILE_NAME){
+            if (username.getText().contains(i)){
+                return;
+            }
+        }
+
         PlayerProfile player = new PlayerProfile(username.getText());
         player.save();
 
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
+        Parent root = null;
+        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);

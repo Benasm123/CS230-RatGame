@@ -375,6 +375,10 @@ public class Rat {
             }
         }
     }
+    /*
+    *@param deltaTime
+    * sets timer for a rat to become pregnant after having sex
+    * */
     private void sex(float deltaTime){
         if(havingSex==true && type==ratType.FEMALE){
             sexTimer+=deltaTime;
@@ -392,6 +396,9 @@ public class Rat {
         }
 
     }
+    /*
+    * prevents sterile rats from becoming pregnant
+    * */
     private void sterile(){
         if(isSterile==true){
             isPregnant=false;
@@ -401,6 +408,7 @@ public class Rat {
     /*
     * @param deltaTime
     * makes baby rat an adult after some time
+    * alters speed of rats to make them slower as adults
     * */
     private void growUp(){
         isBaby = false;
