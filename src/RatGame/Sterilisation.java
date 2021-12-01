@@ -108,7 +108,7 @@ public class Sterilisation extends Item {
 
     private void sterileTilesImageViews(int xPos, int yPos) {
         ImageView sterileTileSpread = new ImageView();
-        sterileTileSpread.setImage(new Image("Assets/GasSpreadingTest.png"));
+        sterileTileSpread.setImage(new Image("Assets/Sterelisationspread.png"));
         sterileTileSpread.setTranslateX(xPos * Tile.TILE_WIDTH);
         sterileTileSpread.setTranslateY(yPos * Tile.TILE_HEIGHT);
         sterileImageViews.add(sterileTileSpread);
