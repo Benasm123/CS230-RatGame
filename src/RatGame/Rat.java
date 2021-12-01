@@ -361,28 +361,30 @@ public class Rat {
     * timer for pregnant rat to give birth
     * */
     private void timeToBirth(float deltaTime){
-        if(spawns==spawnNumber){
-            isPregnant=false;
-            spawns=0;
-        }
+
         if (isPregnant==true){
             birthTime += deltaTime;
             if(birthTime>=timer2){
                 isGivingBirth = true;
                 spawns+=1;
                 birthTime=0;
+                if(spawns==spawnNumber){
+                    isPregnant=false;
+                    spawns=0;
+                }
             }
         }
     }
     private void sex(float deltaTime){
         if(havingSex==true){
             sexTimer+=deltaTime;
+            if(sexTimer>=timer3){
+                havingSex=false;
+                isPregnant=true;
+                sexTimer=0;
+            }
         }
-        if(sexTimer>=timer3){
-            havingSex=false;
-            isPregnant=true;
-            sexTimer=0;
-        }
+
     }
     private void sterile(){
         if(isSterile==true){
