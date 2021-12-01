@@ -9,6 +9,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -33,6 +34,8 @@ public class Main extends Application {
 
         root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
 
+        createConfigFile();
+
         if (profile.exists()) {
             if (Objects.requireNonNull(profile.list()).length == 0) {
                 root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/newGame.fxml")));
@@ -44,6 +47,21 @@ public class Main extends Application {
         Rectangle2D screenSize = Screen.getPrimary().getBounds();
         primaryStage.setScene(new Scene(root, Math.min(WINDOW_WIDTH, screenSize.getWidth() - 100), Math.min(WINDOW_HEIGHT, screenSize.getHeight() - 100)));
         primaryStage.show();
+    }
+
+    /**
+     * Creates the config folder and files, if they do not already exist.
+     */
+    private void createConfigFile(){
+        new File("src/Config").mkdir();
+        File myObj = new File("src//Config//ConfigFile");
+        try {
+            if (myObj.createNewFile()) {
+                System.out.println("Config Created!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

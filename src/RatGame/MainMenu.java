@@ -51,9 +51,7 @@ public class MainMenu {
      */
     private void loadLastProfile(){
         File configFile = new File("src//Config//ConfigFile");
-        if (!configFile.exists()){
-            createConfigFile();
-        } else {
+        if (configFile.exists()){
             try {
                 Scanner reader = new Scanner(configFile);
                 String profileName = reader.nextLine();
@@ -199,20 +197,7 @@ public class MainMenu {
         scene.setRoot(root);
     }
 
-    /**
-     * Creates the config folder and files, if they do not already exist.
-     */
-    private void createConfigFile(){
-        new File("src/Config").mkdir();
-        File myObj = new File("src//Config//ConfigFile");
-        try {
-            if (myObj.createNewFile()) {
-                System.out.println("Config Created!");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     /**
      * Updates config file to save profile loaded.
