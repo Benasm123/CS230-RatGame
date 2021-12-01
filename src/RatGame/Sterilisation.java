@@ -77,15 +77,21 @@ public class Sterilisation extends Item {
      */
     @Override
     public void steppedOn(Rat rat) {
-        int ratX = (int) rat.getxPos();
-        int ratY = (int) rat.getyPos();
 
-        for (int i = 0; i < sterilizedTiles.size(); i++) {
-            int sterileX = sterilizedTiles.get(i).getKey();
-            int sterileY = sterilizedTiles.get(i).getValue();
+    }
 
-            if (sterileX == ratX && sterileY == ratY) {
-                rat.setIsSterile();
+    public void checkIfRatOnSterileTile(ArrayList<Rat> rats){
+        for (Rat rat : rats){
+            int ratX = (int) rat.getxPos();
+            int ratY = (int) rat.getyPos();
+
+            for (Pair<Integer, Integer> sterilizedTile : sterilizedTiles) {
+                int sterileX = sterilizedTile.getKey();
+                int sterileY = sterilizedTile.getValue();
+
+                if (sterileX == ratX && sterileY == ratY) {
+                    rat.setIsSterile();
+                }
             }
         }
     }

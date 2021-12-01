@@ -270,7 +270,7 @@ public class Level {
                 gasItem.checkIfRatsInGas(rats);
                 if (gasItem.isSpreadingGas()){
                     gasItem.spreadGas(levelGrid);
-                    for (ImageView imageView : ((Gas) item).getGasImageViews()){
+                    for (ImageView imageView : gasItem.getGasImageViews()){
                         if (!levelPane.getChildren().contains(imageView)){
                             levelPane.getChildren().add(imageView);
                             imageView.toFront();
@@ -279,10 +279,10 @@ public class Level {
                 }
             } else if (item.getType() == ItemType.STERILISATION) {
                 Sterilisation sterilisationItem = (Sterilisation) item;
-                // TODO Sterilisation
+                sterilisationItem.checkIfRatOnSterileTile(rats);
                 if (!sterilisationItem.sterileTilesGot()) {
                     sterilisationItem.getSterilizedTiles(levelGrid);
-                    levelPane.getChildren().addAll(((Sterilisation) item).getSterileTilesImages());
+                    levelPane.getChildren().addAll(sterilisationItem.getSterileTilesImages());
                 }
             }
             if (item.expired){
