@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  */
 public class Bomb extends Item {
-    private static final int COUNTDOWN = 4;
+    private static final int TIMER = 4;
 
     private float timeSincePlaced;
     private boolean isExploding;
@@ -92,14 +92,15 @@ public class Bomb extends Item {
     @Override
     public void update(float deltaTime) {
         timeSincePlaced += deltaTime;
-        if (timeSincePlaced >= COUNTDOWN) {
+        bombTimerImageView(timeSincePlaced);
+        if (timeSincePlaced >= TIMER) {
             isExploding = true;
             expired = true;
         }
     }
 
     /**
-     *
+     * method which determines if a position is in the bomb's range
      * @param levelGrid
      * @param xPos
      * @param yPos
@@ -107,5 +108,29 @@ public class Bomb extends Item {
      */
     private boolean canExplodeHere(Tile[][] levelGrid, int xPos, int yPos) {
         return levelGrid[xPos][yPos].getType().isTraversable;
+    }
+
+    /**
+     * works with the delta time in update method to give a visual countdown of the bomb
+     * @param timeSincePlaced
+     */
+    private void bombTimerImageView(float timeSincePlaced) {
+        Image bombAt4 = new Image("Assets/Bombcountdown/Bomb4.png");
+        Image bombAt3 = new Image("Assets/Bombcountdown/Bomb3.png");
+        Image bombAt2 = new Image("Assets/Bombcountdown/Bomb2.png");
+        Image bombAt1 = new Image("Assets/Bombcountdown/Bomb1.png");
+
+        if (timeSincePlaced > TIMER - 4 && timeSincePlaced <= TIMER - 3) {
+            getImageView().setImage(bombAt4);
+        }
+        else if (timeSincePlaced > TIMER - 3 && timeSincePlaced <= TIMER - 2) {
+            getImageView().setImage(bombAt3);
+        }
+        else if (timeSincePlaced > TIMER - 2 && timeSincePlaced <= TIMER - 1) {
+            getImageView().setImage(bombAt2);
+        }
+        else if (timeSincePlaced > TIMER - 1 && timeSincePlaced <= TIMER) {
+            getImageView().setImage(bombAt1);
+        }
     }
 }
