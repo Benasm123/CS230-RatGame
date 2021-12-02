@@ -17,18 +17,13 @@ public class NoEntrySign extends Item {
     public void use() {
         System.out.println("Stop sign used?");
     }
-    
-<<<<<<< Updated upstream
+
     private void updateImage(int hp) {
-    	getImageView().setImage(new Image("Assets/brokenstop/brokenstop" + hp + ".png"));
-=======
-    private void updateImage(int hp)
-    {
         if (hp > 0) {
             getImageView().setImage(new Image("Assets/brokenstop/brokenstop" + hp + ".png"));
         }
->>>>>>> Stashed changes
     }
+
     @Override
     public void steppedOn(Rat rat) {
         hpLeft--;
