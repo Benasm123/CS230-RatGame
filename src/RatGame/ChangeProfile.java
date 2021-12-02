@@ -23,10 +23,11 @@ public class ChangeProfile {
     @FXML
     VBox profiles;
 
+    /**
+     * Initializes the change profile, getting all profiles and shows them to player.
+     */
     public void initialize(){
         String[] allProfiles = new File("src/Profiles").list();
-        // Instead of an assert, you can create the profiles folder here, as ithink thats the only time this would evaluate false
-
 
         for (String i : allProfiles){
             Button changeProfileButton = new Button(i);
@@ -41,14 +42,11 @@ public class ChangeProfile {
         }
     }
 
-    private void loadProfile(String name){
-        PlayerProfile profile = new PlayerProfile(name);
-        profile.load(name);
-    }
-
-    // Make sure to include a single line between methods and also if the fxml allows it these can be private but im not
-    // to sure if they need to be public for javaFX.
-    // Tested it seems like it needs to be public if accessing through scene builder, if accessing from java can make private
+    /**
+     * Loads the main menu as newly chosen profile and switches to it.
+     * @param event The event which triggered this action.
+     * @throws IOException If the FXML file is not found will throw an error.
+     */
     public void playPressed(ActionEvent event) throws IOException {
         loadProfile(((Button) event.getTarget()).getText());
 
@@ -59,11 +57,25 @@ public class ChangeProfile {
 
     }
 
+    /**
+     * Loads the main menu and switches to it.
+     * @param event The event which triggered this action.
+     * @throws IOException If the FXML file is not found will throw an error.
+     */
     public void switchToMain(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
+    }
+
+    /**
+     * Loads the player profile.
+     * @param name player profile
+     */
+    private void loadProfile(String name){
+        PlayerProfile profile = new PlayerProfile(name);
+        profile.load(name);
     }
 
 }
