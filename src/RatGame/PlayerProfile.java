@@ -1,10 +1,3 @@
-/**
- * This class creates a player profile.
- * The player profile is also responsible for saving, loading and deleting player profile files.
- * @author CS-230 Group13 (21/22)
- * @version 1.0
- *
- */
 package RatGame;
 
 import java.io.File;
@@ -17,7 +10,13 @@ import java.util.Scanner;
 // Can remove that part and it will work just as well i believe, and makes searching for files easier.
 // Youve used casting and the lectures state we need to put a space between cast and variable eg- "(int) variable"
 // Not "(int)variable". Not sure why this makes it a lot more ugly and less readable but thats whats asked
-
+/**
+ * This class creates a player profile.
+ * The player profile is also responsible for saving, loading and deleting player profile files.
+ * @author CS-230 Group13 (21/22)
+ * @version 1.0
+ *
+ */
 // TODO: When a profile is saved, set the MainMenu playerProfile variable to the profile.
 public class PlayerProfile implements Comparable<PlayerProfile> {
 	private String name;
@@ -89,8 +88,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		try {
 			new File("src/Profiles").mkdir();
 			File myObj = new File("src//Profiles//" + file);
-			if (myObj.exists())
-			{
+			if (myObj.exists()) {
 				deleteSave(file);
 			}
 			if (myObj.createNewFile()) {

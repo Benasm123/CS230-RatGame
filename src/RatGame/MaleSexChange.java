@@ -1,3 +1,7 @@
+package RatGame;
+
+import javafx.scene.image.Image;
+
 /**
  * This class allows for the creation of Male sex change items.
  * If they are of the opposite sex, this sex change item changes the rat's sex to male as soon as it's stepped on.
@@ -6,10 +10,6 @@
  * @version 1.0
  *
  */
-package RatGame;
-
-import javafx.scene.image.Image;
-
 public class MaleSexChange extends Item {
     public MaleSexChange()
 	{

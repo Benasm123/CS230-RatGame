@@ -1,11 +1,10 @@
 package RatGame;
 import javafx.scene.image.Image;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Random;
+
 
 // General notes: Careful with magic numbers, and make sure almost all variables are private and if we need to use them create getters
 // and setters.
@@ -195,11 +194,11 @@ public class Rat {
     /*
     * @param deltaTime
     * @param levelGrid
-    * method controls the movement of rats
+    * method controls the movement of a rat object
     * */
-    public void move(float deltaTime, Tile[][] levelGrid){
+    public void move(float deltaTime, Tile[][] levelGrid) {
 
-        if(havingSex==true){
+        if(havingSex==true) {
             sexTimer+=deltaTime;
             return;
         }
@@ -211,7 +210,7 @@ public class Rat {
         img.setTranslateX(xPos*50);
         img.setTranslateY(yPos*50);
 
-        if (xVel < 0){
+        if (xVel < 0) {
             if ((int)xPos+1 != lastX) {
                 xPos = (int)xPos+1;
                 yPos = (int)yPos;
@@ -234,7 +233,7 @@ public class Rat {
                 img.setRotate(180.0);
             }
         }else {
-            if((int)xPos != lastX || (int)yPos != lastY){
+            if((int)xPos != lastX || (int)yPos != lastY) {
                 xPos = (int)xPos;
                 yPos = (int)yPos;
                 Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
@@ -243,7 +242,6 @@ public class Rat {
                 lastX = (int) xPos;
                 lastY = (int) yPos;
             }
-
         }
     }
     /*
@@ -253,11 +251,14 @@ public class Rat {
     public float setGetRotation(ImageView img) {
         if (xVel < 0) {
             rotation = 90.0f;
-        } else if (xVel > 0) {
+        }
+        else if (xVel > 0) {
             rotation = 270.0f;
-        } else if (yVel > 0) {
+        }
+        else if (yVel > 0) {
             rotation = 0.0f ;
-        } else {
+        }
+        else {
             rotation = 180.0f;
         }
         img.setRotate(rotation);
@@ -269,16 +270,17 @@ public class Rat {
     * @levelGrid
     * provides update on the rats
     * */
-    public void update(float deltaTime, Tile[][] levelGrid){
+    public void update(float deltaTime, Tile[][] levelGrid) {
         if(isPoisoned) {
             totalTimePoisoned += deltaTime;
-            if(totalTimePoisoned >= timeTillDiesOfPoison){
+            if(totalTimePoisoned >= timeTillDiesOfPoison) {
                 System.out.println("Hello");
                 die();
             }
-        }else{
+        }
+        else {
             totalTimePoisoned -= deltaTime;
-            if(totalTimePoisoned < 0){
+            if(totalTimePoisoned < 0) {
                 totalTimePoisoned = 0;
             }
         }
@@ -299,7 +301,7 @@ public class Rat {
    * @rat
    * sets rat sex to Male
    * */
-   public void changeSexMale(Rat rat){
+   public void changeSexMale(Rat rat) {
         rat.type = ratType.MALE;
         if(rat.isBaby==false) {
             rat.texture = new Image("Assets/Male.png");
@@ -309,11 +311,11 @@ public class Rat {
    }
    /*
    * @rat
-   * sets rat sex to Male
+   * sets rat sex to Female
    * */
-   public void changeSexFemale(Rat rat){
+   public void changeSexFemale(Rat rat) {
         rat.type = ratType.FEMALE;
-        if(rat.isBaby==false){
+        if(rat.isBaby==false) {
             rat.texture = new Image("Assets/Female.png");
             rat.img.setImage(rat.texture);
         }
@@ -340,11 +342,13 @@ public class Rat {
         String stringOfType="";
         String stringOfBaby="";
         String properties ="";
-        if(type == ratType.MALE){
+        if(type == ratType.MALE) {
             stringOfType += "M";
-        }else if(type == ratType.FEMALE){
+        }
+        else if(type == ratType.FEMALE) {
             stringOfType += "F";
-        }else{
+        }
+        else {
             stringOfType += "D";
         }
 

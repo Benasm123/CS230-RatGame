@@ -1,3 +1,7 @@
+package RatGame;
+
+import javafx.scene.image.Image;
+
 /**
  * This class allows for the creation of Female sex change items.
  * If they are of the opposite sex, this sex change item changes the rat's sex to female as soon as it's stepped on.
@@ -6,10 +10,6 @@
  * @version 1.0
  *
  */
-package RatGame;
-
-import javafx.scene.image.Image;
-
 public class FemaleSexChange extends Item {
     public FemaleSexChange()
 	{
@@ -36,9 +36,10 @@ public class FemaleSexChange extends Item {
         // Space after if and before condition. and beteen brackets before and after else
         // You can just set expired to true after the if statement and also just have 1 if, checkiing if its not a death rat
         // tidies it up.
-        if(rat.type==Rat.ratType.DEATHRAT){
+        if (rat.type==Rat.ratType.DEATHRAT) {
             expired = true;
-        }else{
+        }
+        else {
             rat.changeSexFemale(rat);
             expired = true;
         }

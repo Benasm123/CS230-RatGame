@@ -26,14 +26,13 @@ public class Leaderboard {
 	private static int LVL;
 	
 	public static ArrayList <PlayerProfile> leaderboard;
-	public Leaderboard(int lvl)
-	{
+
+	public Leaderboard(int lvl) {
 		leaderboard = new ArrayList<>();
 		LVL = lvl;
 		save();
 	}
-	public Leaderboard()
-	{
+	public Leaderboard() {
 		leaderboard = new ArrayList<>();
 	}
 	/**
@@ -43,8 +42,7 @@ public class Leaderboard {
 	public void addProfile(PlayerProfile profile) {
 		leaderboard.add(profile);
 		Collections.sort(leaderboard);
-		if(leaderboard.size() > 10)
-		{
+		if(leaderboard.size() > 10) {
 			leaderboard.remove(10);
 		}
 	}
@@ -61,13 +59,11 @@ public class Leaderboard {
 		return board;
 	}
 	
-	private void newFile() 
-	{
+	private void newFile() {
 		try {
 			new File("src/Leaderboards").mkdir();
 			File myObj = new File("src/Leaderboards/" + LVL + ". Leaderboard.txt");
-			if (myObj.exists())
-			{
+			if (myObj.exists()) {
 				deleteSave();
 			}
 			if (myObj.createNewFile()) {
@@ -84,13 +80,11 @@ public class Leaderboard {
 			e.printStackTrace();
 		}
 	}
-	public void save() 
-	{
+	public void save() {
 		newFile();
 		try {
 			FileWriter writer = new FileWriter("src/Leaderboards/" + LVL + ". Leaderboard.txt");
-			for (int i = 0; i < leaderboard.size(); i++)
-			{
+			for (int i = 0; i < leaderboard.size(); i++) {
 				writer.write(leaderboard.get(i).getName() + "," +  leaderboard.get(i).getHighScore() +"\n");
 			}
 			writer.close();
@@ -110,25 +104,21 @@ public class Leaderboard {
 			System.out.println("Failed to delete the file.");
 		}
 	}
-	public void load(int lvl) 
-	{
-		try 
-		{
+	public void load(int lvl) {
+		try {
 		      File myObj = new File("src/Leaderboards/" + lvl + ". Leaderboard.txt");
 		      Scanner in = new Scanner(myObj);
 		      
-		      while (in.hasNextLine())
-				{
+		      while (in.hasNextLine()) {
 		    	  	String line = in.nextLine();
 		    	  	String[] param = line.split(",");
 		    	  	PlayerProfile player = new PlayerProfile(param[0]);
 		    	  	player.setHighScore(Integer.parseInt(param[1]));
 					leaderboard.add(player);
-				}
+		      }
 		      in.close();
 		}
-		catch (FileNotFoundException e) 
-		{
+		catch (FileNotFoundException e) {
 		      System.out.println("An error occurred.");
 		      e.printStackTrace();
 		}

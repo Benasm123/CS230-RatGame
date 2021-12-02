@@ -12,17 +12,13 @@ import javafx.scene.control.TextField;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**
  * This class is the changeProfile class allows player to switch profiles.
  * @author José Mendes & Ahmed Almahari.
  */
-public class NewGame
-{
+public class NewGame {
     private static final String[] ILLEGAL_CHARACTERS_IN_FILE_NAME = {"<", ">", ":", "\"", "/", "\\", "|", "?", "*"};
 
     @FXML

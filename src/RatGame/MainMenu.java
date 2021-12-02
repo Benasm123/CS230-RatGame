@@ -49,9 +49,9 @@ public class MainMenu {
     /**
      * Will load the last used profile.
      */
-    private void loadLastProfile(){
+    private void loadLastProfile() {
         File configFile = new File("src//Config//ConfigFile");
-        if (configFile.exists()){
+        if (configFile.exists()) {
             try {
                 Scanner reader = new Scanner(configFile);
                 String profileName = reader.nextLine();
@@ -75,13 +75,10 @@ public class MainMenu {
     /**
      * shows current profile
      */
-    private void updateSelectedProfile()
-    {
-    	if (currentProfile == null)
-    	{
+    private void updateSelectedProfile() {
+    	if (currentProfile == null) {
     		selectedProfile.setText("No profile selected");
-    	} else
-    	{
+    	} else {
     		selectedProfile.setText("Profile: " + currentProfile.getName());
     	}
     }
@@ -202,7 +199,7 @@ public class MainMenu {
     /**
      * Updates config file to save profile loaded.
      */
-    public static void updateConfig(){
+    public static void updateConfig() {
         File myObj = new File("src//Config//ConfigFile");
         try {
             FileWriter writer = new FileWriter(myObj);
@@ -226,7 +223,7 @@ public class MainMenu {
      * Sets the current profile to a new one.
      * @param profile The profile which you want to set as the current profile.
      */
-    public static void setCurrentProfile(PlayerProfile profile){
+    public static void setCurrentProfile(PlayerProfile profile) {
         currentProfile = profile;
         updateConfig();
     }

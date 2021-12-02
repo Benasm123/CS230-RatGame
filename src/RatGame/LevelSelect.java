@@ -63,8 +63,7 @@ public class LevelSelect {
         
         String[] allLeaderboards = new File("src/Leaderboards/").list();
 
-        if (allLeaderboards == null)
-        {
+        if (allLeaderboards == null) {
         	new Leaderboard(0);
         	new Leaderboard(1);
         	new Leaderboard(2);
@@ -78,8 +77,7 @@ public class LevelSelect {
         	allLeaderboards = new File("src/Leaderboards/").list();
         }
 
-        for (String j : allLeaderboards)
-        {
+        for (String j : allLeaderboards) {
 
             Button leaderboardSelectButton = new Button(j);
             leaderboardSelectButton.setOnAction(this::displayPressed);
