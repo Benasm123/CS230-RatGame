@@ -37,9 +37,7 @@ import java.util.*;
  */
 public class Level {
     // Constant Variables
-    // TODO: can make these public and allow people to use these for tile size.
     private static final int NUMBER_OF_ITEMS = 8;
-
     private static final float FPS_REFRESH_INTERVAL = 0.1f;
 
     private static final double NANO_TO_SECOND = 1e9;
