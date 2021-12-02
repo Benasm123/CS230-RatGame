@@ -37,9 +37,7 @@ import java.util.*;
  */
 public class Level {
     // Constant Variables
-    // TODO: can make these public and allow people to use these for tile size.
     private static final int NUMBER_OF_ITEMS = 8;
-
     private static final float FPS_REFRESH_INTERVAL = 0.1f;
 
     private static final double NANO_TO_SECOND = 1e9;
@@ -145,7 +143,7 @@ public class Level {
     /**
      * Called once the level is loaded and initialized the scene.
      */
-    public void initialize(){
+    public void initialize() {
         firstLoop = true;
 
         levelGraphicsContext = GameBoard.getGraphicsContext2D();
@@ -158,7 +156,7 @@ public class Level {
                 GameOverBackground.setHeight(levelGameScreen.getHeight());
                 GameOverBackground.setWidth(levelGameScreen.getWidth());
 
-                if (firstLoop){
+                if (firstLoop) {
                     firstLoop = false;
                     lastFrameTime = now;
                     System.out.println(now);
@@ -167,7 +165,7 @@ public class Level {
                 float deltaTime = (float) ((now - lastFrameTime) / NANO_TO_SECOND);
                 lastFrameTime = now;
 
-                if (!isPaused){
+                if (!isPaused) {
                     update(deltaTime);
                 }
 
@@ -181,11 +179,11 @@ public class Level {
      * Calculates the fps of the game and displays it in game for the player to see.
      * @param deltaTime Represents the time since the last frame in seconds.
      */
-    public void updateFPSCount(float deltaTime){
+    public void updateFPSCount(float deltaTime) {
         timeSinceFPSRefreshed += deltaTime;
         pastDeltaTimes.addLast(deltaTime);
         // Only update fps at set intervals not every frame
-        if (timeSinceFPSRefreshed > FPS_REFRESH_INTERVAL){
+        if (timeSinceFPSRefreshed > FPS_REFRESH_INTERVAL) {
             float sum = 0;
             for (Float num : pastDeltaTimes){
                 sum += num;
@@ -200,7 +198,7 @@ public class Level {
     /**
      * Stops the game loop from running, stopping the level.
      */
-    private void stopGameLoop(){
+    private void stopGameLoop() {
         gameLoop.stop();
     }
 
@@ -208,7 +206,7 @@ public class Level {
      * Used to update aspect of the game every frame.
      * @param deltaTime The time in seconds since the last frame.
      */
-    public void update(float deltaTime){
+    public void update(float deltaTime) {
         totalTimeOnLevel += deltaTime;
 
         drawTiles();
@@ -223,10 +221,10 @@ public class Level {
     /**
      * Collision detection for rats and all items on the level. Triggers the item when a rat steps on it.
      */
-    private void checkSteppedOn(){
-        for (Rat rat : rats){
-            for (Item item : itemsInPlay){
-                if (rat.getxPos() == item.getXPos() && rat.getyPos() == item.getYPos()){
+    private void checkSteppedOn() {
+        for (Rat rat : rats) {
+            for (Item item : itemsInPlay) {
+                if (rat.getxPos() == item.getXPos() && rat.getyPos() == item.getYPos()) {
                     item.steppedOn(rat);
                 }
             }
@@ -239,10 +237,10 @@ public class Level {
      */
     private void updateItemsInPlay(float deltaTime) {
         Iterator<Item> itemIterator = itemsInPlay.iterator();
-        while (itemIterator.hasNext()){
+        while (itemIterator.hasNext()) {
             Item item = itemIterator.next();
             if (item.getType() == ItemType.DEATH_RAT) {
-                if (((DeathRat) item).getSpawning()){
+                if (((DeathRat) item).getSpawning()) {
                     Rat deathRat = createRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
                     rats.add(deathRat);
                     ((DeathRat) item).setSpawning(false);
@@ -250,16 +248,16 @@ public class Level {
             } else if (item.getType() == ItemType.BOMB) {
                 if (((Bomb) item).isExploding()){
                     ArrayList<Pair<Integer, Integer>> tilesToClear = ((Bomb) item).getBombTiles(levelGrid);
-                    for (Pair<Integer, Integer> coordinate : tilesToClear){
+                    for (Pair<Integer, Integer> coordinate : tilesToClear) {
                         Integer xPos = coordinate.getKey();
                         Integer yPos = coordinate.getValue();
-                        for (Rat rat : rats){
-                            if ((int)rat.getxPos() == xPos && (int)rat.getyPos() == yPos){
+                        for (Rat rat : rats) {
+                            if ((int)rat.getxPos() == xPos && (int)rat.getyPos() == yPos) {
                                 rat.die();
                             }
                         }
-                        for (Item i : itemsInPlay){
-                            if (i.getXPos() == xPos && i.getYPos() == yPos){
+                        for (Item i : itemsInPlay) {
+                            if (i.getXPos() == xPos && i.getYPos() == yPos) {
                                 i.setExpired(true);
                             }
                         }
@@ -268,10 +266,10 @@ public class Level {
             } else if (item.getType() == ItemType.GAS) {
                 Gas gasItem = (Gas) item;
                 gasItem.checkIfRatsInGas(rats);
-                if (gasItem.isSpreadingGas()){
+                if (gasItem.isSpreadingGas()) {
                     gasItem.spreadGas(levelGrid);
-                    for (ImageView imageView : gasItem.getGasImageViews()){
-                        if (!levelPane.getChildren().contains(imageView)){
+                    for (ImageView imageView : gasItem.getGasImageViews()) {
+                        if (!levelPane.getChildren().contains(imageView)) {
                             levelPane.getChildren().add(imageView);
                             imageView.toFront();
                         }
@@ -285,12 +283,12 @@ public class Level {
                     levelPane.getChildren().addAll(sterilisationItem.getSterileTilesImages());
                 }
             }
-            if (item.expired){
-                if (item.getType() == ItemType.GAS){
+            if (item.expired) {
+                if (item.getType() == ItemType.GAS) {
                     levelPane.getChildren().removeAll(((Gas) item).getGasImageViews());
                 }
 
-                if (item.getType() == ItemType.STERILISATION){
+                if (item.getType() == ItemType.STERILISATION) {
                     levelPane.getChildren().removeAll(((Sterilisation) item).getSterileTilesImages());
                 }
 
@@ -298,7 +296,7 @@ public class Level {
                 itemIterator.remove();
             }
         }
-        for (Item item : itemsInPlay){
+        for (Item item : itemsInPlay) {
             item.update(deltaTime);
         }
 
@@ -316,10 +314,10 @@ public class Level {
         femaleRatsAlive.setText("Females alive: " + getNumberOfFemaleRatsAlive());
     }
 
-    private int getNumberOfRatsAlive(){
+    private int getNumberOfRatsAlive() {
         int numberOfRatsAlive = 0;
-        for (Rat rat : rats){
-            if (rat.type != Rat.ratType.DEATHRAT){
+        for (Rat rat : rats) {
+            if (rat.type != Rat.ratType.DEATHRAT) {
                 numberOfRatsAlive++;
             }
         }
@@ -330,10 +328,10 @@ public class Level {
      * counts the number of female rats on the level and returns it.
      * @return The number of female rats alive on the level.
      */
-    private int getNumberOfFemaleRatsAlive(){
+    private int getNumberOfFemaleRatsAlive() {
         int counter = 0;
-        for (Rat rat : rats){
-            if (rat.type == Rat.ratType.FEMALE){
+        for (Rat rat : rats) {
+            if (rat.type == Rat.ratType.FEMALE) {
                 counter++;
             }
         }
@@ -344,10 +342,10 @@ public class Level {
      * counts the number of male rats on the level and returns it.
      * @return The number of male rats alive on the level.
      */
-    private int getNumberOfMaleRatsAlive(){
+    private int getNumberOfMaleRatsAlive() {
         int counter = 0;
-        for (Rat rat : rats){
-            if (rat.type == Rat.ratType.MALE){
+        for (Rat rat : rats) {
+            if (rat.type == Rat.ratType.MALE) {
                 counter++;
             }
         }
@@ -361,13 +359,13 @@ public class Level {
         boolean isGameFinished = false;
         boolean hasWon = false;
 
-        if (getNumberOfRatsAlive() > numberOfRatsToLose){
+        if (getNumberOfRatsAlive() > numberOfRatsToLose) {
             isPaused = true;
             isGameFinished = true;
             System.out.println("You Lose!");
         }
 
-        if (getNumberOfRatsAlive() <= 0){
+        if (getNumberOfRatsAlive() <= 0) {
             isPaused = true;
             isGameFinished = true;
             hasWon = true;
@@ -389,14 +387,14 @@ public class Level {
 //            System.out.println("You win only female alive and cannot reproduce!");
 //        }
 
-        if (isGameFinished){
-            if (hasWon){
+        if (isGameFinished) {
+            if (hasWon) {
                 System.out.println(MainMenu.getCurrentProfile() == null);
                 WinLoseText.setText("YOU WIN!");
-                if (totalTimeOnLevel < expectedTime){
+                if (totalTimeOnLevel < expectedTime) {
                     score += expectedTime - (int)totalTimeOnLevel;
                 }
-                if (MainMenu.getCurrentProfile() != null){
+                if (MainMenu.getCurrentProfile() != null) {
                     PlayerProfile player = MainMenu.getCurrentProfile();
                     player.levelComplete(Integer.parseInt(levelName.substring(0, 1)), score);
                 }
@@ -413,21 +411,21 @@ public class Level {
      * Updates the rats position and removes dead rats from the level.
      * @param deltaTime The time since the last frame in seconds.
      */
-    private void updateRats(float deltaTime){
+    private void updateRats(float deltaTime) {
         // Using an iterator to allow removal of rats from the list as we loop.
         Iterator<Rat> ratIterator = rats.iterator();
         ArrayList<Rat> ratsToAdd = new ArrayList<>();
-        while (ratIterator.hasNext()){
+        while (ratIterator.hasNext()) {
             Rat rat = ratIterator.next();
-            if (rat.getIsDead()){
+            if (rat.getIsDead()) {
                 score += rat.getScore();
                 levelPane.getChildren().remove(rat.img);
                 ratIterator.remove();
-            } else if (rat.getIsGivingBirth()){
+            } else if (rat.getIsGivingBirth()) {
                 Random rand = new Random();
                 int num = rand.nextInt(2);
                 Rat.ratType type;
-                if (num == 0){
+                if (num == 0) {
                     type = Rat.ratType.MALE;
                 } else {
                     type = Rat.ratType.FEMALE;
@@ -456,7 +454,7 @@ public class Level {
     /**
      * pauses the game loop.
      */
-    public void pauseLoop(){
+    public void pauseLoop() {
         isPaused = !isPaused;
     }
 
@@ -479,7 +477,7 @@ public class Level {
      * Stores the mouse position when pressed down.
      * @param event The mouse click event is stored here.
      */
-    public void getMousePosOnClicked(MouseEvent event){
+    public void getMousePosOnClicked(MouseEvent event) {
         lastMouseX = event.getX();
         lastMouseY = event.getY();
     }
@@ -488,7 +486,7 @@ public class Level {
      * moves the level around when dragging. Keeping in bounds of the screen.
      * @param event The mouse event is stored here.
      */
-    public void onDragLevel(MouseEvent event){
+    public void onDragLevel(MouseEvent event) {
         levelPane.setTranslateX(levelPane.getTranslateX() + (event.getX() - lastMouseX));
         levelPane.setTranslateY(levelPane.getTranslateY() + (event.getY() - lastMouseY));
         clampToGameScreen();
@@ -499,7 +497,7 @@ public class Level {
      * If level is bigger than screen the level will always be on screen and cannot be dragged off-screen.
      * If level is smaller than the level can be dragged around on the screen freely but not off-screen.
      */
-    public void clampToGameScreen(){
+    public void clampToGameScreen() {
         if (levelPane.getWidth() > GameScreen.getWidth() && levelPane.getHeight() > GameScreen.getHeight()) {
             if (levelPane.getTranslateX() > 0) {
                 levelPane.setTranslateX(0.0);
@@ -511,37 +509,37 @@ public class Level {
             } else if (levelPane.getTranslateY() < GameScreen.getHeight() - levelPane.getHeight()) {
                 levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
-        } else if (levelPane.getWidth() > GameScreen.getWidth()){
-            if (levelPane.getTranslateX() > 0){
+        } else if (levelPane.getWidth() > GameScreen.getWidth()) {
+            if (levelPane.getTranslateX() > 0) {
                 levelPane.setTranslateX(0.0);
-            } else if (levelPane.getTranslateX() < GameScreen.getWidth() - levelPane.getWidth() ){
+            } else if (levelPane.getTranslateX() < GameScreen.getWidth() - levelPane.getWidth() ) {
                 levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
             }
-            if (levelPane.getTranslateY() < 0){
+            if (levelPane.getTranslateY() < 0) {
                 levelPane.setTranslateY(0.0);
-            } else if (levelPane.getTranslateY() > GameScreen.getHeight() - levelPane.getHeight() ){
+            } else if (levelPane.getTranslateY() > GameScreen.getHeight() - levelPane.getHeight() ) {
                 levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
-        } else if (levelPane.getHeight() > GameScreen.getHeight()){
-            if (levelPane.getTranslateX() < 0){
+        } else if (levelPane.getHeight() > GameScreen.getHeight()) {
+            if (levelPane.getTranslateX() < 0) {
                 levelPane.setTranslateX(0.0);
-            } else if (levelPane.getTranslateX() > GameScreen.getWidth() - levelPane.getWidth() ){
+            } else if (levelPane.getTranslateX() > GameScreen.getWidth() - levelPane.getWidth() ) {
                 levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
             }
-            if (levelPane.getTranslateY() > 0){
+            if (levelPane.getTranslateY() > 0) {
                 levelPane.setTranslateY(0.0);
-            } else if (levelPane.getTranslateY() < GameScreen.getHeight() - levelPane.getHeight() ){
+            } else if (levelPane.getTranslateY() < GameScreen.getHeight() - levelPane.getHeight() ) {
                 levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
         } else {
-            if (levelPane.getTranslateY() < 0){
+            if (levelPane.getTranslateY() < 0) {
                 levelPane.setTranslateY(0.0);
-            } else if (levelPane.getTranslateY() + levelPane.getHeight() > GameScreen.getHeight()){
+            } else if (levelPane.getTranslateY() + levelPane.getHeight() > GameScreen.getHeight()) {
                 levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
             }
             if (levelPane.getTranslateX() < 0) {
                 levelPane.setTranslateX(0.0);
-            } else if (levelPane.getTranslateX() + levelPane.getWidth() > GameScreen.getWidth()){
+            } else if (levelPane.getTranslateX() + levelPane.getWidth() > GameScreen.getWidth()) {
                 levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
             }
         }
@@ -551,7 +549,7 @@ public class Level {
      * Sets up the level from the level file.
      * @param src The level file path that wants to be read.
      */
-    public void createLevel(String src){
+    public void createLevel(String src) {
         rats = new ArrayList<>();
         itemsInPlay = new ArrayList<>();
         timeSinceItemSpawn = new float[NUMBER_OF_ITEMS];
@@ -590,7 +588,7 @@ public class Level {
      * reads in the expected time for the level and sets it for the level.
      * @param fileReader The scanner which contains the information for the expected time.
      */
-    private void setupTimeLimit(Scanner fileReader){
+    private void setupTimeLimit(Scanner fileReader) {
         String expectedTimeString = fileReader.nextLine();
         expectedTime = Integer.parseInt(expectedTimeString);
     }
@@ -599,7 +597,7 @@ public class Level {
      * Reads in the win and lose conditions and sets them for the level.
      * @param fileReader The scanner which contains the information for the conditions.
      */
-    private void setupWinLoseCondition(Scanner fileReader){
+    private void setupWinLoseCondition(Scanner fileReader) {
         String winLoseCondition = fileReader.nextLine();
         String[] winLoseConditionSplit = winLoseCondition.split(" ");
         numberOfRatsToWin = Integer.parseInt(winLoseConditionSplit[0]);
@@ -610,7 +608,7 @@ public class Level {
      * Initializes the game grid.
      * @param fileReader The file reader containing the information for the level grid.
      */
-    private void setupLevelGrid(Scanner fileReader){
+    private void setupLevelGrid(Scanner fileReader) {
         // Read level dimensions
         String levelDimensions = fileReader.nextLine();
         String[] levelDimensionsSplit = levelDimensions.split(" ");
@@ -649,12 +647,12 @@ public class Level {
      * Initialize items and item spawns.
      * @param fileReader The file reader containing the information for the items.
      */
-    private void setupItems(Scanner fileReader){
+    private void setupItems(Scanner fileReader) {
 
         String itemsToStartWith = fileReader.nextLine();
         String[] itemsToStartWithSplit = itemsToStartWith.split(FILE_DELIMITER);
 
-        for (int i = 0; i < NUMBER_OF_ITEMS; i++){
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++) {
             for (int j = 0 ; j < Integer.parseInt(itemsToStartWithSplit[i]); j++) {
                 spawnItem(ItemType.values()[i]);
             }
@@ -664,7 +662,7 @@ public class Level {
         String itemSpawnTimes = fileReader.nextLine();
         String[] itemSpawnTimesSplit = itemSpawnTimes.split(FILE_DELIMITER);
 
-        for (int i = 0; i < NUMBER_OF_ITEMS; i++){
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++) {
             itemSpawnTime[i] = Integer.parseInt(itemSpawnTimesSplit[i]);
         }
     }
@@ -679,15 +677,15 @@ public class Level {
             if (ratToSpawn.equals("ITEMS")) {
                 return;
             }
-            if (ratToSpawn.equals("")){
+            if (ratToSpawn.equals("")) {
                 return;
             }
             String[] ratToSpawnSplit = ratToSpawn.split(FILE_DELIMITER);
 
             Rat.ratType type;
-            if (ratToSpawnSplit[0].equals("F")){
+            if (ratToSpawnSplit[0].equals("F")) {
                 type = Rat.ratType.FEMALE;
-            } else if (ratToSpawnSplit[0].equals("M")){
+            } else if (ratToSpawnSplit[0].equals("M")) {
                 type = Rat.ratType.MALE;
             } else {
                 type = Rat.ratType.FEMALE;
@@ -710,10 +708,10 @@ public class Level {
      * Setups the items on the board if this is loading from a save.
      * @param fileReader The scanner to read the save file from.
      */
-    private void setupItemsOnBoard(Scanner fileReader){
-        while (fileReader.hasNextLine()){
+    private void setupItemsOnBoard(Scanner fileReader) {
+        while (fileReader.hasNextLine()) {
             String itemToSpawn = fileReader.nextLine();
-            if (itemToSpawn.equals("")){
+            if (itemToSpawn.equals("")) {
                 return;
             }
 //            String[] itemToSpawnSplit = itemToSpawn.split(FILE_DELIMITER);
@@ -728,7 +726,7 @@ public class Level {
      * @param xPos The X position of the rat to be spawned.
      * @param yPos The Y position of the rat to be spawned.
      */
-    private Rat createRat(Rat.ratType type, int xPos, int yPos, boolean isBaby){
+    private Rat createRat(Rat.ratType type, int xPos, int yPos, boolean isBaby) {
         Rat rat = new Rat(type, xPos, yPos, isBaby);
         levelPane.getChildren().add(rat.img);
         rat.img.toBack();
@@ -750,7 +748,7 @@ public class Level {
     /**
      * Draws the tunnels onto the level, separate from other tiles as need to be on top of the rats.
      */
-    private void drawTunnels(){
+    private void drawTunnels() {
         tunnels = new ArrayList<>();
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
@@ -769,8 +767,8 @@ public class Level {
     /**
      * Sets all the tunnels in the level to the front of the level so that they appear above rats.
      */
-    private void updateTunnels(){
-        for (ImageView tunnel : tunnels){
+    private void updateTunnels() {
+        for (ImageView tunnel : tunnels) {
             tunnel.toFront();
         }
     }
@@ -778,9 +776,9 @@ public class Level {
     /**
      * Creates the inventory that holds all the items for the player.
      */
-    public void createInventory(){
+    public void createInventory() {
         itemsInInventory = new ArrayList<>(NUMBER_OF_ITEMS);
-        for (int i = 0; i < NUMBER_OF_ITEMS; i++){
+        for (int i = 0; i < NUMBER_OF_ITEMS; i++) {
             Stack<Item> itemStack = new Stack<>();
             itemsInInventory.add(itemStack);
         }
@@ -793,7 +791,7 @@ public class Level {
     /**
      * Saves the current level state, with all the rats, items in inventory.
      */
-    public void saveLevel(){
+    public void saveLevel() {
         try {
             createSaveFile();
 
@@ -857,13 +855,13 @@ public class Level {
      */
     private void writeItemSpawns(FileWriter fileWriter) throws IOException {
         StringBuilder itemsHeld = new StringBuilder();
-        for (ItemType type : ItemType.values()){
+        for (ItemType type : ItemType.values()) {
             itemsHeld.append(itemsInInventory.get(type.getIndex()).size()).append(FILE_DELIMITER);
         }
         fileWriter.write(itemsHeld + "\n");
 
         StringBuilder itemsSpawns = new StringBuilder();
-        for (ItemType type : ItemType.values()){
+        for (ItemType type : ItemType.values()) {
             itemsSpawns.append(itemSpawnTime[type.getIndex()]).append(FILE_DELIMITER);
         }
         fileWriter.write(itemsSpawns + "\n");
@@ -891,7 +889,7 @@ public class Level {
      * @throws IOException Throws an exception if you cannot write to the file.
      */
     private void writeRatSpawnGrid(FileWriter fileWriter) throws IOException {
-        for (Rat rat : rats){
+        for (Rat rat : rats) {
             fileWriter.write(rat.toString());
             fileWriter.write("\n");
         }
@@ -901,10 +899,10 @@ public class Level {
      * updates all the item timers which check whether an item is to spawn.
      * @param deltaTime The time since the last frame in seconds.
      */
-    private void updateItems(float deltaTime){
-        for (ItemType type : ItemType.values()){
+    private void updateItems(float deltaTime) {
+        for (ItemType type : ItemType.values()) {
             timeSinceItemSpawn[type.getIndex()] += deltaTime;
-            if (timeSinceItemSpawn[type.getIndex()] > itemSpawnTime[type.getIndex()]){
+            if (timeSinceItemSpawn[type.getIndex()] > itemSpawnTime[type.getIndex()]) {
                 spawnItem(type);
                 timeSinceItemSpawn[type.getIndex()] = 0;
             }
@@ -915,10 +913,10 @@ public class Level {
      * Removes an item from the inventory of the player.
      * @param type The type of item that we want to remove.
      */
-    private void removeItem(ItemType type){
+    private void removeItem(ItemType type) {
         inventoryGrid.getChildren().removeIf(node -> node.getClass() == ImageView.class &&
                 ((ImageView) node).getImage().getUrl().endsWith(type.getTexture()));
-        for (int i = 0; i < itemsInInventory.get(type.getIndex()).size(); i++){
+        for (int i = 0; i < itemsInInventory.get(type.getIndex()).size(); i++) {
             Item item = itemsInInventory.get(type.getIndex()).get(i);
             ImageView itemIcon = createImageIcon(item);
             inventoryGrid.add(itemIcon, i, type.getIndex() + INVENTORY_GRID_OFFSET);
@@ -946,8 +944,8 @@ public class Level {
      * Spawn an item into the inventory of the player, only if the player doesn't already have maximum items of that type.
      * @param type The type of item that we want to spawn into the inventory.
      */
-    private void spawnItem(ItemType type){
-        if (itemsInInventory.get(type.getIndex()).size() >= ITEM_MAX_STACK){
+    private void spawnItem(ItemType type) {
+        if (itemsInInventory.get(type.getIndex()).size() >= ITEM_MAX_STACK) {
             return;
         }
 
@@ -963,8 +961,8 @@ public class Level {
      * Initiates the dragging of the item from inventory to the level, getting the item dragged and setting the position to the mouse.
      * @param event The mouse event initiating the drag.
      */
-    public void onItemBeginDrag(MouseEvent event){
-        if (isPaused){
+    public void onItemBeginDrag(MouseEvent event) {
+        if (isPaused) {
             return;
         }
         lastMouseX = event.getSceneX();
@@ -981,7 +979,7 @@ public class Level {
      * Sets the dragged items position to be at the position of the cursor.
      * @param event The mouse event triggering the drag.
      */
-    public void onItemDrag(MouseEvent event){
+    public void onItemDrag(MouseEvent event) {
         if (itemBeingDragged != null) {
             itemBeingDragged.setTranslateX(itemBeingDragged.getTranslateX() + (event.getSceneX() - lastMouseX));
             itemBeingDragged.setTranslateY(itemBeingDragged.getTranslateY() + (event.getSceneY() - lastMouseY));
@@ -994,9 +992,9 @@ public class Level {
      * Checks where the item has been dropped and if it's on a path, then we want to use the item, otherwise return it to the player inventory.
      * @param event The mouse event releasing the drag.
      */
-    public void onItemDragFinished(MouseEvent event){
+    public void onItemDragFinished(MouseEvent event) {
         // If the game is paused we do not want items to be usable.
-        if (isPaused){
+        if (isPaused) {
             return;
         }
         double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
@@ -1008,7 +1006,7 @@ public class Level {
 
         // this gets the type of the item being dropped
         ItemType itemType = null;
-        for (ItemType type : ItemType.values()){
+        for (ItemType type : ItemType.values()) {
             if (type.getTexture().equals(itemBeingDragged.getImage().getUrl().substring(itemBeingDragged.getImage().getUrl().length() - type.getTexture().length()))){
                 itemType = type;
             }
@@ -1018,7 +1016,7 @@ public class Level {
         levelGameScreen.getChildren().remove(itemBeingDragged);
 
         // If item isn't found in the inventory we return, we do not want to use an item they do not own.
-        if (itemType == null){
+        if (itemType == null) {
             return;
         }
 
@@ -1027,8 +1025,8 @@ public class Level {
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
                 droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
-                for (Item item : itemsInPlay){
-                    if (item.xPos == gridX && item.yPos == gridY){
+                for (Item item : itemsInPlay) {
+                    if (item.xPos == gridX && item.yPos == gridY) {
                         return;
                     }
                 }

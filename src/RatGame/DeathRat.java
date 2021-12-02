@@ -4,28 +4,26 @@ import javafx.scene.image.Image;
 
 
 public class DeathRat extends Item {
-
-
-    private static final int TIMER = 2;
     private float timeLeft;
     private boolean isSpawning;
 
-    public DeathRat()
-    {
+    private static final int TIMER = 2;
+
+    public DeathRat() {
         timeLeft = TIMER;
         texture = new Image("Assets/Death.png");
         type = ItemType.DEATH_RAT;
     }
 
-    public void setSpawning(boolean spawning){
+    public void setSpawning(boolean spawning) {
         isSpawning = spawning;
     }
 
-    public boolean getSpawning(){
+    public boolean getSpawning() {
         return isSpawning;
     }
 
-    public void setType(ItemType type){
+    public void setType(ItemType type) {
     }
 
     @Override
@@ -41,11 +39,9 @@ public class DeathRat extends Item {
     @Override
     public void update(float deltaTime) {
         timeLeft -= deltaTime;
-        if (timeLeft <= 0)
-        {
+        if (timeLeft <= 0) {
             isSpawning = true;
             expired = true;
         }
-
     }
 }
