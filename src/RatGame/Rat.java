@@ -419,10 +419,10 @@ public class Rat {
         if(isSterile==true && type==ratType.MALE){
             havingSex=false;
             isPregnant=false;
-            texture = new Image("SterileRatFamily/SterileMale.png");
+            texture = new Image("Assets/SterileRatFamily/SterileMale.png");
             img.setImage(texture);
         }else if(isSterile==true && type==ratType.FEMALE){
-            texture = new Image("SterileRatFamily/SterileFemale.png");
+            texture = new Image("Assets/SterileRatFamily/SterileFemale.png");
             img.setImage(texture);
         }
     }
@@ -442,10 +442,10 @@ public class Rat {
             texture = new Image("Assets/Female.png");
             img.setImage(texture);
         }else if(type==ratType.FEMALE && isSterile==true){
-            texture = new Image("SterileRatFamily/SterileFemale.png");
+            texture = new Image("Assets/SterileRatFamily/SterileFemale.png");
             img.setImage(texture);
         }else if(type==ratType.MALE && isSterile==true){
-            texture = new Image("SterileRatFamily/SterileMale.png");
+            texture = new Image("Assets/SterileRatFamily/SterileMale.png");
             img.setImage(texture);
         }
     }
