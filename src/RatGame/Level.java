@@ -100,6 +100,7 @@ public class Level {
     @FXML private Text winLoseText;
     @FXML private Text scoreText;
     @FXML private StackPane pauseScreen;
+    @FXML private Text timeText;
 
     /**
      * Called once the level is loaded and initialized the scene.
@@ -430,6 +431,15 @@ public class Level {
         updateItemsInPlay(deltaTime);
         checkSteppedOn();
         checkWinLoseCondition();
+        updateTimeText(deltaTime);
+    }
+
+    int lastTimeStamp;
+
+    private void updateTimeText(float deltaTime) {
+        if ((int) totalTimeOnLevel != lastTimeStamp) {
+            timeText.setText("Time left: " + (expectedTime - (int) totalTimeOnLevel));
+        }
     }
 
     /**

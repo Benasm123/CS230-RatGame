@@ -33,12 +33,17 @@
                         <Font size="24.0" />
                      </font>
                   </Text>
-                  <Text fx:id="femaleRatsAliveText" strokeType="OUTSIDE" strokeWidth="0.0" text="Female rats:" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="20.0">
+                  <Text fx:id="femaleRatsAliveText" strokeType="OUTSIDE" strokeWidth="0.0" text="Female rats:" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="20.0">
                      <font>
                         <Font size="24.0" />
                      </font>
                   </Text>
-                  <Text fx:id="maleRatsAliveText" strokeType="OUTSIDE" strokeWidth="0.0" text="Male rats: " AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="20.0">
+                  <Text fx:id="maleRatsAliveText" strokeType="OUTSIDE" strokeWidth="0.0" text="Male rats: " AnchorPane.leftAnchor="600.0" AnchorPane.topAnchor="20.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="timeText" strokeType="OUTSIDE" strokeWidth="0.0" text="Expected Time: " AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="60.0">
                      <font>
                         <Font size="24.0" />
                      </font>

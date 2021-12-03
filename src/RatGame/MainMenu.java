@@ -49,6 +49,10 @@ public class MainMenu {
         loadConfigFile();
         updateSelectedProfile();
         checkIfPlayerHasSave();
+
+        if (currentProfile == null) {
+            playButton.setDisable(true);
+        }
     }
 
     public void loadConfigFile() {
@@ -58,8 +62,14 @@ public class MainMenu {
             try {
                 Scanner reader = new Scanner(configFile);
 
-                String profileName = reader.nextLine();
-                loadLastProfile(profileName);
+                if (reader.hasNextLine()) {
+                    String profileName = reader.nextLine();
+                    loadProfile(profileName);
+                } else {
+                    String[] allProfiles = new File("src/Profiles").list();
+                    assert allProfiles != null;
+                    loadProfile(allProfiles[0]);
+                }
 
                 if (reader.hasNextLine()) {
                     String stringShowFPS = reader.nextLine();
@@ -127,7 +137,7 @@ public class MainMenu {
     /**
      * Will load the last used profile.
      */
-    private void loadLastProfile(String profileName) {
+    private void loadProfile(String profileName) {
         PlayerProfile playerProfile = new PlayerProfile(profileName);
         playerProfile.load(profileName);
         setCurrentProfile(playerProfile);
