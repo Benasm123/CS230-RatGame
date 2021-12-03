@@ -14,6 +14,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -97,6 +99,7 @@ public class Level {
     @FXML private Text femaleRatsAliveText;
     @FXML private Text winLoseText;
     @FXML private Text scoreText;
+    @FXML private StackPane pauseScreen;
 
     /**
      * Called once the level is loaded and initialized the scene.
@@ -232,7 +235,7 @@ public class Level {
         Level controller = loader.getController();
 
         if (!isSave) {
-            controller.createLevel(levelName, true);
+            controller.createLevel(levelName, false);
         } else {
             String[] allLevels = new File("src/Levels/").list();
             assert allLevels != null;
@@ -249,6 +252,18 @@ public class Level {
      */
     public void pauseLoop() {
         isPaused = !isPaused;
+    }
+
+    public void pauseGame(KeyEvent e) {
+        if (KeyCode.ESCAPE == e.getCode()) {
+            pauseLoop();
+            pauseScreen.setVisible(isPaused);
+        }
+    }
+
+    public void continuePressed(ActionEvent e) {
+        pauseLoop();
+        pauseScreen.setVisible(isPaused);
     }
 
     /**
@@ -290,13 +305,24 @@ public class Level {
      */
     public void createLevel(String src, boolean isSave) {
         this.isSave = isSave;
-        levelName = src;
         rats = new ArrayList<>();
         itemsInPlay = new ArrayList<>();
         timeSinceItemSpawn = new float[NUMBER_OF_ITEM_TYPES];
         itemSpawnTime = new int[NUMBER_OF_ITEM_TYPES];
         pastDeltaTimes = new ArrayDeque<>();
         score = 0;
+
+        if (isSave) {
+            String[] allLevels = new File("src/Levels/").list();
+
+            for (String level : allLevels) {
+                if (level.charAt(0) == src.charAt(0)) {
+                    levelName = level;
+                }
+            }
+        } else {
+            levelName = src;
+        }
 
         createInventory();
 
@@ -438,7 +464,7 @@ public class Level {
                 }
             } else if (item.getType() == ItemType.GAS) {
                 Gas gasItem = (Gas) item;
-                gasItem.checkIfRatsInGas(rats);
+                gasItem.checkIfRatsInGas(deltaTime, rats);
                 if (gasItem.isSpreadingGas()) {
                     gasItem.spreadGas(levelGrid);
                     updateGasSpread(gasItem);
@@ -558,6 +584,9 @@ public class Level {
                     score += expectedTime - (int)totalTimeOnLevel;
                 }
                 if (MainMenu.getCurrentProfile() != null) {
+                    Leaderboard leaderboard = new Leaderboard(levelName);
+                    leaderboard.updateLeaderboard(levelName, MainMenu.getCurrentProfile().getName(), score);
+
                     PlayerProfile player = MainMenu.getCurrentProfile();
                     player.levelComplete(Integer.parseInt(levelName.substring(0, 1)), score);
                 }
@@ -897,12 +926,7 @@ public class Level {
             System.out.println("Created save folder at: " + SAVE_FOLDER_PATH);
         }
 
-        File levelSaveFile;
-        if (isSave) {
-            levelSaveFile = new File(SAVE_FOLDER_PATH + levelName);
-        } else {
-            levelSaveFile = new File(SAVE_FOLDER_PATH + levelName.charAt(0) + MainMenu.getCurrentProfile().getName());
-        }
+        File levelSaveFile = new File(SAVE_FOLDER_PATH + levelName.charAt(0) + MainMenu.getCurrentProfile().getName());
 
         if (levelSaveFile.delete()){
             System.out.println("Deleted previous save file: " + levelSaveFile.getName());
@@ -1060,7 +1084,7 @@ public class Level {
         itemIcon.setImage(item.getTexture());
         inventoryGrid.setAlignment(Pos.CENTER);
         GridPane.setHalignment(itemIcon, HPos.CENTER);
-        GridPane.setValignment(itemIcon, VPos.CENTER);
+        GridPane.setValignment(itemIcon, VPos.BOTTOM);
         itemIcon.setOnMousePressed(this::onItemBeginDrag);
         itemIcon.setOnMouseDragged(this::onItemDrag);
         itemIcon.setOnMouseReleased(this::onItemDragFinished);

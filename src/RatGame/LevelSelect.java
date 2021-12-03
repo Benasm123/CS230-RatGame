@@ -7,9 +7,13 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,18 +25,24 @@ import java.util.Objects;
  */
 public class LevelSelect {
 
+    Button selectedButton;
+
     // FXML variables.
     @FXML
     VBox LevelButtons;
     @FXML
-    VBox LeaderboardButtons;
+    VBox leaderboardScreen;
     @FXML
 	private Text top10;
+    @FXML
+    private Label entry1;
 
     /**
      * Initializes the level select, getting all levels and showing them to the player.
      */
     public void initialize(){
+        selectedButton = null;
+
         String[] allLevels = new File("src/Levels/").list();
 
         assert allLevels != null;
@@ -40,13 +50,9 @@ public class LevelSelect {
         for (String i : allLevels) {
 
             Button levelSelectButton = new Button(i);
-            levelSelectButton.setOnAction(event -> {
-                try {
-                    playPressed(event);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            levelSelectButton.setMinHeight(30);
+            levelSelectButton.setMaxWidth(500);
+            levelSelectButton.setOnAction(this::levelSelected);
 
             if (MainMenu.getCurrentProfile() != null) {
                 try {
@@ -59,30 +65,6 @@ public class LevelSelect {
             }
             LevelButtons.getChildren().add(levelSelectButton);
         }
-        
-        String[] allLeaderboards = new File("src/Leaderboards/").list();
-
-        if (allLeaderboards == null) {
-        	new Leaderboard(0);
-        	new Leaderboard(1);
-        	new Leaderboard(2);
-        	new Leaderboard(3);
-        	new Leaderboard(4);
-        	new Leaderboard(5);
-        	new Leaderboard(6);
-        	new Leaderboard(7);
-        	new Leaderboard(8);
-        	new Leaderboard(9);
-        	allLeaderboards = new File("src/Leaderboards/").list();
-        }
-
-        for (String j : allLeaderboards) {
-
-            Button leaderboardSelectButton = new Button(j);
-            leaderboardSelectButton.setOnAction(this::displayPressed);
-//                }
-            LeaderboardButtons.getChildren().add(leaderboardSelectButton);
-        }
     }
 
     /**
@@ -90,14 +72,34 @@ public class LevelSelect {
      * @param event The event which triggered this action.
      * @throws IOException If the FXML file is not found will throw an error.
      */
-    private void playPressed(ActionEvent event) throws IOException {
+    public void playPressed(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(loader.load());
 
         Level controller = loader.getController();
-        controller.createLevel(((Button)event.getSource()).getText(), false);
+        controller.createLevel(selectedButton.getText(), false);
+    }
+
+    private void levelSelected(ActionEvent event) {
+        if (selectedButton != null) {
+            selectedButton.getStyleClass().remove("selected");
+            leaderboardScreen.getChildren().removeIf(node -> node.getClass() == Label.class);
+        }
+
+        selectedButton = (Button) event.getTarget();
+
+        selectedButton.getStyleClass().add("selected");
+
+        Leaderboard lb = new Leaderboard(selectedButton.getText());
+
+        for (int i = 0 ; i < lb.getLb().size() ; i++) {
+            Label entryLabel = new Label(i + 1 + ". " + lb.getLb().get(i).getKey() + " " + lb.getLb().get(i).getValue());
+            Font font = new Font(entryLabel.getFont().getName(), 20);
+            entryLabel.setFont(font);
+            leaderboardScreen.getChildren().add(entryLabel);
+        }
     }
 
     /**

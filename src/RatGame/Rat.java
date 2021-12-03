@@ -69,6 +69,8 @@ import java.util.ArrayList;
 public class Rat {
 
     private static final int SCORE = 10;
+    private static final float TIME_TILL_DIES_OF_POISON = 2.0f;
+    private static final float POISON_RECOVERY_RATE = 0.1f;
 
     Image texture;
     ImageView img;
@@ -100,7 +102,6 @@ public class Rat {
     private boolean isDead = false;
     private boolean isPoisoned;
     private float totalTimePoisoned;
-    private float timeTillDiesOfPoison;
 
     Random rnd = new Random();
     int spawnNumber=rnd.nextInt(3)+2;
@@ -136,7 +137,6 @@ public class Rat {
         lastX =-1;
         lastY =-1;
 
-        timeTillDiesOfPoison = 3.0f;
         isPoisoned = false;
 
         isPregnant=false;
@@ -271,18 +271,13 @@ public class Rat {
     * provides update on the rats
     * */
     public void update(float deltaTime, Tile[][] levelGrid) {
-        if(isPoisoned) {
-            totalTimePoisoned += deltaTime;
-            if(totalTimePoisoned >= timeTillDiesOfPoison) {
-                System.out.println("Hello");
-                die();
-            }
+        if(totalTimePoisoned >= TIME_TILL_DIES_OF_POISON) {
+            die();
         }
-        else {
-            totalTimePoisoned -= deltaTime;
-            if(totalTimePoisoned < 0) {
-                totalTimePoisoned = 0;
-            }
+
+        totalTimePoisoned -= POISON_RECOVERY_RATE * deltaTime;
+        if(totalTimePoisoned < 0) {
+            totalTimePoisoned = 0;
         }
 
         growUpTime += deltaTime;
@@ -500,6 +495,10 @@ public class Rat {
 
     public void setIsPoisoned(boolean isPoisoned){
         this.isPoisoned = isPoisoned;
+    }
+
+    public void poison(float amount) {
+        totalTimePoisoned += amount;
     }
 
     public int getScore(){

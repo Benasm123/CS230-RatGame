@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.control.TextField;
 
@@ -19,7 +20,7 @@ import java.util.Objects;
  * @author José Mendes & Ahmed Almahari.
  */
 public class NewGame {
-    private static final String[] ILLEGAL_CHARACTERS_IN_FILE_NAME = {"<", ">", ":", "\"", "/", "\\", "|", "?", "*"};
+    private static final String[] ILLEGAL_CHARACTERS_IN_FILE_NAME = {"<", ">", ":", "\"", "/", "\\", "|", "?", "*", " ", ".", ","};
 
     @FXML
     public TextField username;
@@ -29,6 +30,9 @@ public class NewGame {
 
     @FXML
     public Button createButton;
+
+    @FXML
+    public Text invalidNameText;
 
     public void initialize() {
         File profileFolder = new File("src/Profiles");
@@ -48,11 +52,13 @@ public class NewGame {
      */
     public void newGame(ActionEvent event) throws IOException {
         if (username.getText().isEmpty() || username.getText().length() > 20) {
+            invalidNameText.setVisible(true);
             return;
         }
 
         for (String i : ILLEGAL_CHARACTERS_IN_FILE_NAME){
             if (username.getText().contains(i)){
+                invalidNameText.setVisible(true);
                 return;
             }
         }
