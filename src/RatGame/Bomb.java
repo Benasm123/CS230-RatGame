@@ -14,10 +14,19 @@ import java.util.ArrayList;
  *
  */
 public class Bomb extends Item {
+    // Constants
     private static final int TIMER = 4;
+    private static final Image BOMB_AT_4 = new Image("Assets/Bombcountdown/Bomb4.png");
+    private static final Image BOMB_AT_3 = new Image("Assets/Bombcountdown/Bomb3.png");
+    private static final Image BOMB_AT_2 = new Image("Assets/Bombcountdown/Bomb2.png");
+    private static final Image BOMB_AT_1 = new Image("Assets/Bombcountdown/Bomb1.png");
 
+    // Variables
     private float timeSincePlaced;
     private boolean isExploding;
+
+    // Collections
+    ArrayList<Pair<Integer, Integer>> bombTiles;
 
     /**
      * Creates an instance of an item of type bomb
@@ -26,34 +35,35 @@ public class Bomb extends Item {
         texture = new Image("Assets/Bomb.png");
         isExploding = false;
         type = ItemType.BOMB;
+        bombTiles = new ArrayList<>();
     }
 
     /**
-     * @param levelGrid
+     * @param levelGrid the level layout
      * @return the list of tiles that can be affected by the bomb
      */
     public ArrayList<Pair<Integer, Integer>> getBombTiles(Tile[][] levelGrid) {
         isExploding = false;
-        ArrayList<Pair<Integer, Integer>> bombTiles = new ArrayList<>();
+
         int lastCheckedX = xPos;
         int lastCheckedY = yPos;
 
-        while (canExplodeHere(levelGrid,lastCheckedX,yPos)) {
+        while (inBombRange(levelGrid,lastCheckedX,yPos)) {
             bombTiles.add(new Pair<>(lastCheckedX,yPos));
             lastCheckedX--;
         }
         lastCheckedY = yPos;
-        while (canExplodeHere(levelGrid,xPos,lastCheckedY)) {
+        while (inBombRange(levelGrid,xPos,lastCheckedY)) {
             bombTiles.add(new Pair<>(xPos,lastCheckedY));
             lastCheckedY++;
         }
         lastCheckedX = xPos;
-        while (canExplodeHere(levelGrid,lastCheckedX,yPos)) {
+        while (inBombRange(levelGrid,lastCheckedX,yPos)) {
             bombTiles.add(new Pair<>(lastCheckedX,yPos));
             lastCheckedX++;
         }
         lastCheckedY = yPos;
-        while (canExplodeHere(levelGrid,xPos,lastCheckedY)) {
+        while (inBombRange(levelGrid,xPos,lastCheckedY)) {
             bombTiles.add(new Pair<>(xPos,lastCheckedY));
             lastCheckedY--;
         }
@@ -61,7 +71,7 @@ public class Bomb extends Item {
     }
 
     /**
-     *
+     * method which returns if the bomb is exploding or not.
      * @return isExploding
      */
     public boolean isExploding() {
@@ -77,7 +87,8 @@ public class Bomb extends Item {
     }
 
     /**
-     *
+     * method inherited from the parent class that defines what happens when a particular rat steps on it
+     * Not used by the bomb
      * @param rat
      */
     @Override
@@ -101,12 +112,12 @@ public class Bomb extends Item {
 
     /**
      * method which determines if a position is in the bomb's range
-     * @param levelGrid
-     * @param xPos
-     * @param yPos
+     * @param levelGrid the level layout
+     * @param xPos x-position to check
+     * @param yPos y-position to check
      * @return
      */
-    private boolean canExplodeHere(Tile[][] levelGrid, int xPos, int yPos) {
+    private boolean inBombRange(Tile[][] levelGrid, int xPos, int yPos) {
         return levelGrid[xPos][yPos].getType().isTraversable;
     }
 
@@ -115,22 +126,17 @@ public class Bomb extends Item {
      * @param timeSincePlaced
      */
     private void bombTimerImageView(float timeSincePlaced) {
-        Image bombAt4 = new Image("Assets/Bombcountdown/Bomb4.png");
-        Image bombAt3 = new Image("Assets/Bombcountdown/Bomb3.png");
-        Image bombAt2 = new Image("Assets/Bombcountdown/Bomb2.png");
-        Image bombAt1 = new Image("Assets/Bombcountdown/Bomb1.png");
-
         if (timeSincePlaced > TIMER - 4 && timeSincePlaced <= TIMER - 3) {
-            getImageView().setImage(bombAt4);
+            getImageView().setImage(BOMB_AT_4);
         }
         else if (timeSincePlaced > TIMER - 3 && timeSincePlaced <= TIMER - 2) {
-            getImageView().setImage(bombAt3);
+            getImageView().setImage(BOMB_AT_3);
         }
         else if (timeSincePlaced > TIMER - 2 && timeSincePlaced <= TIMER - 1) {
-            getImageView().setImage(bombAt2);
+            getImageView().setImage(BOMB_AT_2);
         }
         else if (timeSincePlaced > TIMER - 1 && timeSincePlaced <= TIMER) {
-            getImageView().setImage(bombAt1);
+            getImageView().setImage(BOMB_AT_1);
         }
     }
 }

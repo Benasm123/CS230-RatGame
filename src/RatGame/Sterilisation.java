@@ -9,22 +9,25 @@ import java.util.ArrayList;
  * This class allows for the creation of Sterilisation items.
  * The sterilisation item makes rats within a small radius sterile.
  *
- * @author CS-230 Group13 (21/22)
+ * @author Ephraim Okonji, Benas Montrimas
  * @version 1.0
  *
  */
 public class Sterilisation extends Item {
-
+    // Constants
     private static final int LIFE_DURATION = 4;
-    private static final int SPREAD_RADIUS = 2;
+    private static final int SPREAD_RADIUS = 1;
 
+    // Variables
     private float timeSincePlaced;
-    private ArrayList<Pair<Integer, Integer>> sterilizedTiles;
     private boolean sterileTilesGot;
+
+    // Collections
     private ArrayList<ImageView> sterileTilesImages;
+    private ArrayList<Pair<Integer, Integer>> sterilizedTiles;
 
     /**
-     *
+     * Creates an instance of a Sterilisation item.
      */
     public Sterilisation() {
         texture = new Image("Assets/Sterilisation.png");
@@ -35,9 +38,9 @@ public class Sterilisation extends Item {
     }
 
     /**
-     *
+     * method which returns the list of sterilized tiles and sets check for tiles to true
      * @param levelGrid
-     * @return
+     * @return sterilized tiles
      */
     public ArrayList<Pair<Integer, Integer>> getSterilizedTiles(Tile[][] levelGrid) {
 
@@ -56,15 +59,14 @@ public class Sterilisation extends Item {
     }
 
     /**
-     *
-     * @return
+     * @return whether the sterilized tiles have been gotten or not
      */
     public boolean sterileTilesGot() {
         return sterileTilesGot;
     }
 
     /**
-     *
+     * method inherited from the parent class, called when the item is used
      */
     @Override
     public void use() {
@@ -72,7 +74,8 @@ public class Sterilisation extends Item {
     }
 
     /**
-     *
+     * method inherited from the parent class that defines what happens when a particular rat steps on it
+     * Not used by the bomb
      * @param rat
      */
     @Override
@@ -80,8 +83,12 @@ public class Sterilisation extends Item {
 
     }
 
-    public void checkIfRatOnSterileTile(ArrayList<Rat> rats){
-        for (Rat rat : rats){
+    /**
+     * method which checks if a rat has been on a sterile tile
+     * @param rats
+     */
+    public void checkIfRatOnSterileTile(ArrayList<Rat> rats) {
+        for (Rat rat : rats) {
             int ratX = (int) rat.getxPos();
             int ratY = (int) rat.getyPos();
 
@@ -97,8 +104,8 @@ public class Sterilisation extends Item {
     }
 
     /**
-     *
-     * @param deltaTime
+     * method which updates the item since last time frame in seconds
+     * @param deltaTime The time since the last frame in seconds.
      */
     @Override
     public void update(float deltaTime) {
@@ -108,10 +115,19 @@ public class Sterilisation extends Item {
         }
     }
 
+    /**
+     *
+     * @return the list of tiles to spread image to
+     */
     public ArrayList<ImageView> getSterileTilesImages() {
         return sterileTilesImages;
     }
 
+    /**
+     * method which spreads the sterilisation image to all tiles in radius
+     * @param xPos
+     * @param yPos
+     */
     private void sterileTilesImageViews(int xPos, int yPos) {
         ImageView sterileTileSpreadImg = new ImageView();
         sterileTileSpreadImg.setImage(new Image("Assets/Sterelisationspread.png"));
