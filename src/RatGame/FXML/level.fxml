@@ -21,28 +21,28 @@
                               <Canvas fx:id="levelGridCanvas" height="500.0" width="500.0" />
                            </children>
                         </StackPane>
-                        <Text fx:id="fpsCountText" layoutX="50.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="fps: ">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </Text>
-                        <Text fx:id="ratsAliveText" layoutX="200.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Rats alive:">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </Text>
-                        <Text fx:id="maleRatsAliveText" layoutX="400.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Male rats: ">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </Text>
-                        <Text fx:id="femaleRatsAliveText" layoutX="600.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Female rats:">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </Text>
                      </children>
                   </Pane>
+                  <Text fx:id="fpsCountText" strokeType="OUTSIDE" strokeWidth="0.0" text="fps: " AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="ratsAliveText" strokeType="OUTSIDE" strokeWidth="0.0" text="Rats alive:" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="femaleRatsAliveText" strokeType="OUTSIDE" strokeWidth="0.0" text="Female rats:" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="20.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Text>
+                  <Text fx:id="maleRatsAliveText" strokeType="OUTSIDE" strokeWidth="0.0" text="Male rats: " AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="20.0">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Text>
                </children>
             </AnchorPane>
           <AnchorPane prefHeight="800.0" prefWidth="400.0">

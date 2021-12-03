@@ -230,7 +230,18 @@ public class Level {
         scene.setRoot(loader.load());
 
         Level controller = loader.getController();
-        controller.createLevel(levelName, true);
+
+        if (!isSave) {
+            controller.createLevel(levelName, true);
+        } else {
+            String[] allLevels = new File("src/Levels/").list();
+            assert allLevels != null;
+            for (String level : allLevels) {
+                if (level.startsWith(levelName.substring(0, 1))){
+                    controller.createLevel(level, false);
+                }
+            }
+        }
     }
 
     /**
@@ -617,6 +628,8 @@ public class Level {
         loadLevelGrid(fileReader);
         loadRats(fileReader);
         loadItemsInPlay(fileReader);
+
+        fileReader.close();
     }
 
     /**
@@ -813,10 +826,10 @@ public class Level {
 
             if (item != null) {
                 item.getImageView().setImage(item.getTexture());
-                addItemToLevel(item);
                 if (item instanceof Gas) {
                     updateGasSpread((Gas) item);
                 }
+                addItemToLevel(item);
             }
         }
     }
@@ -892,7 +905,7 @@ public class Level {
         }
 
         if (levelSaveFile.delete()){
-            System.out.println("Deleted previous save file: " + levelName);
+            System.out.println("Deleted previous save file: " + levelSaveFile.getName());
         }
         System.out.println(levelSaveFile);
 
@@ -915,18 +928,17 @@ public class Level {
 
     private void deleteSave() {
         String[] allSaves = new File("src/Saves/").list();
-
+        System.out.println("HELLLO: " + getSaveFileName() + "HERLGRLG");
         if (allSaves != null) {
             for (String level : allSaves) {
-                if (level.equals(levelName)) {
-                    File oldSave = new File(SAVE_FOLDER_PATH + levelName);
-                    if (oldSave.delete()) {
-                        System.out.println("Old save file deleted.");
-                    }
-                } else if (level.equals(getSaveFileName())) {
+                System.out.println("BYRWWW: " + level + "DFSDFS");
+                if (level.equals(getSaveFileName())) {
+                    System.out.println("FREGFERGDRSFDGDFGSDFSGSFGD");
                     File oldSave = new File(SAVE_FOLDER_PATH + getSaveFileName());
                     if (oldSave.delete()) {
                         System.out.println("Old save file deleted.");
+                    } else {
+                        System.out.println(level + " is not the same as " + SAVE_FOLDER_PATH + getSaveFileName());
                     }
                 }
             }
