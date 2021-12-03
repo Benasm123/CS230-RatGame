@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -36,6 +37,8 @@ public class MainMenu {
     private Text messageDay;
     @FXML
     private Text selectedProfile;
+    @FXML
+    private Button playButton;
 
     /**
      * Set up the main menu when loaded.
@@ -44,6 +47,50 @@ public class MainMenu {
         updateMessage();
         loadLastProfile();
         updateSelectedProfile();
+
+        checkIfPlayerHasSave();
+    }
+
+    private void checkIfPlayerHasSave() {
+        String[] allSaves = new File("src/Saves/").list();
+
+        if (allSaves == null) {
+            return;
+        }
+
+        for (String save : allSaves) {
+            if (save.substring(1).startsWith(MainMenu.currentProfile.getName())) {
+                playButton.setText("Continue!");
+                playButton.setOnAction(event -> {
+                    try {
+                        continueGame(event);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+    }
+
+    public void continueGame(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(loader.load());
+
+        Level controller = loader.getController();
+
+        String[] allSaves = new File("src/Saves/").list();
+
+        String profileName = currentProfile.getName();
+        if (allSaves != null) {
+            for (String save : allSaves) {
+                if (save.substring(1).startsWith(profileName)) {
+                    controller.createLevel(save, true);
+                }
+            }
+        }
+
     }
 
     /**

@@ -48,6 +48,9 @@ public class Poison extends Item {
      */
     @Override
     public void steppedOn(Rat rat) {
+        if (this.expired){
+            return;
+        }
         rat.die();
         this.expired = true;
     }

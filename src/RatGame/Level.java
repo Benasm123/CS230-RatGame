@@ -29,7 +29,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-// TODO: Add Game timer and Expected time to the save and load.
 
 /**
  * This class is the level that the game is played on and controls all elements of the game whilst it runs.
@@ -37,14 +36,12 @@ import java.util.*;
  */
 public class Level {
     // Constant Variables
-    private static final int NUMBER_OF_ITEMS = 8;
+    private static final int NUMBER_OF_ITEM_TYPES = 8;
     private static final float FPS_REFRESH_INTERVAL = 0.1f;
-
     private static final double NANO_TO_SECOND = 1e9;
-
-    private static final String SAVE_FOLDER_PATH = "src/Saves/";
     private static final String MAIN_MENU_PATH = "FXML/mainMenu.fxml";
     private static final String LEVEL_FOLDER_PATH = "src/Levels/";
+    private static final String SAVE_FOLDER_PATH = "src/Saves/";
     private static final char GRASS_CHAR = 'G';
     private static final char PATH_CHAR = 'P';
     private static final char TUNNEL_CHAR = 'T';
@@ -63,99 +60,54 @@ public class Level {
     private boolean firstLoop;
 
     // Level setup variables
+    private boolean isSave;
     private AnimationTimer gameLoop;
-
     private String levelName;
     private int levelHeight;
     private int levelWidth;
-
-    private GraphicsContext levelGraphicsContext;
-
     private Tile[][] levelGrid;
     private ArrayList<ImageView> tunnels;
-
     private ArrayList<Rat> rats;
-
     private int numberOfRatsToLose;
     private int numberOfRatsToWin;
-
     private ArrayList<Stack<Item>> itemsInInventory;
     private ArrayList<Item> itemsInPlay;
-
     private float[] timeSinceItemSpawn;
-
     private int[] itemSpawnTime;
-
     private int score;
-
     private int expectedTime;
-
     private float totalTimeOnLevel;
 
     // Mouse variables
     private double lastMouseX;
     private double lastMouseY;
-
     private ImageView itemBeingDragged;
 
     // All FXML variables.
-    // TODO: Refactor all these to have lowercase first letters.
-    @FXML
-    private AnchorPane GameScreen;
+    @FXML private AnchorPane gameScreen;
+    @FXML private Canvas levelGridCanvas;
+    @FXML private StackPane levelGridStackPane;
+    @FXML private GridPane inventoryGrid;
+    @FXML private StackPane mainStackPane;
+    @FXML private StackPane gameOverScreen;
+    @FXML private Rectangle gameOverBackground;
+    @FXML private Text fpsCountText;
+    @FXML private Text ratsAliveText;
+    @FXML private Text maleRatsAliveText;
+    @FXML private Text femaleRatsAliveText;
+    @FXML private Text winLoseText;
+    @FXML private Text scoreText;
 
-    @FXML
-    private Canvas GameBoard;
-
-    @FXML
-    private StackPane levelPane;
-
-    @FXML
-    private Text fpsCount;
-
-    @FXML
-    private Text ratsAlive;
-
-    @FXML
-    private Text maleRatsAlive;
-
-    @FXML
-    private Text femaleRatsAlive;
-
-    @FXML
-    private GridPane inventoryGrid;
-
-    @FXML
-    private StackPane levelGameScreen;
-
-    @FXML
-    private StackPane GameOverScreen;
-
-    @FXML
-    private Rectangle GameOverBackground;
-
-    @FXML
-    private Text WinLoseText;
-
-    @FXML
-    private Text ScoreText;
-
-    // TODO: Reorder all methods in order: Public protected, private
     /**
      * Called once the level is loaded and initialized the scene.
      */
     public void initialize() {
         firstLoop = true;
 
-        levelGraphicsContext = GameBoard.getGraphicsContext2D();
-
         // Main game loop code, that sets up the timer.
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
-
-                GameOverBackground.setHeight(levelGameScreen.getHeight());
-                GameOverBackground.setWidth(levelGameScreen.getWidth());
-
                 if (firstLoop) {
                     firstLoop = false;
                     lastFrameTime = now;
@@ -170,45 +122,268 @@ public class Level {
                 }
 
                 updateFPSCount(deltaTime);
+
+                gameOverBackground.setHeight(mainStackPane.getHeight());
+                gameOverBackground.setWidth(mainStackPane.getWidth());
             }
         };
         gameLoop.start();
     }
 
     /**
-     * Calculates the fps of the game and displays it in game for the player to see.
-     * @param deltaTime Represents the time since the last frame in seconds.
+     * Initiates the dragging of the item from inventory to the level, getting the item dragged and setting the position to the mouse.
+     * @param event The mouse event initiating the drag.
      */
-    public void updateFPSCount(float deltaTime) {
-        timeSinceFPSRefreshed += deltaTime;
-        pastDeltaTimes.addLast(deltaTime);
-        // Only update fps at set intervals not every frame
-        if (timeSinceFPSRefreshed > FPS_REFRESH_INTERVAL) {
-            float sum = 0;
-            for (Float num : pastDeltaTimes){
-                sum += num;
-            }
-            fpsCount.setText("FPS: " + (int) (1/ (sum/ pastDeltaTimes.size())));
+    public void onItemBeginDrag(MouseEvent event) {
+        if (isPaused) {
+            return;
+        }
+        lastMouseX = event.getSceneX();
+        lastMouseY = event.getSceneY();
+        ImageView target = (ImageView) event.getTarget();
+        itemBeingDragged = new ImageView();
+        itemBeingDragged.setImage(target.getImage());
+        mainStackPane.getChildren().add(itemBeingDragged);
+        itemBeingDragged.setTranslateX(event.getSceneX() - itemBeingDragged.getImage().getWidth()/2);
+        itemBeingDragged.setTranslateY(event.getSceneY() - itemBeingDragged.getImage().getHeight()/2);
+    }
 
-            pastDeltaTimes.clear();
-            timeSinceFPSRefreshed = 0;
+    /**
+     * Sets the dragged items position to be at the position of the cursor.
+     * @param event The mouse event triggering the drag.
+     */
+    public void onItemDrag(MouseEvent event) {
+        if (itemBeingDragged != null) {
+            itemBeingDragged.setTranslateX(itemBeingDragged.getTranslateX() + (event.getSceneX() - lastMouseX));
+            itemBeingDragged.setTranslateY(itemBeingDragged.getTranslateY() + (event.getSceneY() - lastMouseY));
+            lastMouseX = event.getSceneX();
+            lastMouseY = event.getSceneY();
         }
     }
 
     /**
-     * Stops the game loop from running, stopping the level.
+     * Checks where the item has been dropped and if it's on a path, then we want to use the item, otherwise return it to the player inventory.
+     * @param event The mouse event releasing the drag.
      */
-    private void stopGameLoop() {
-        gameLoop.stop();
+    public void onItemDragFinished(MouseEvent event) {
+        // If the game is paused we do not want items to be usable.
+        if (isPaused) {
+            return;
+        }
+        double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
+        double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
+        double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelGridStackPane.getTranslateX()))/Tile.TILE_WIDTH);
+        double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelGridStackPane.getTranslateY()))/Tile.TILE_HEIGHT);
+        int gridX = (int) droppedGridXPos;
+        int gridY = (int) droppedGridYPos;
+
+        // this gets the type of the item being dropped
+        ItemType itemType = null;
+        for (ItemType type : ItemType.values()) {
+            if (type.getTexture().equals(itemBeingDragged.getImage().getUrl().substring(itemBeingDragged.getImage().getUrl().length() - type.getTexture().length()))){
+                itemType = type;
+            }
+        }
+
+        // Removes the item being dropped from the screen where it was being dragged.
+        mainStackPane.getChildren().remove(itemBeingDragged);
+
+        // If item isn't found in the inventory we return, we do not want to use an item they do not own.
+        if (itemType == null) {
+            return;
+        }
+
+        // Checks if it's on a path, and whether its on the screen, stopping player dropping an item to a path they cannot see.
+        if (droppedGridXPos < levelWidth && droppedGridXPos > 0 && droppedGridYPos < levelHeight && droppedGridYPos > 0 &&
+                droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < gameScreen.getWidth() &&
+                droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < gameScreen.getHeight()) {
+            if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
+                for (Item item : itemsInPlay) {
+                    if (item.xPos == gridX && item.yPos == gridY) {
+                        return;
+                    }
+                }
+
+                // TODO: TESTING ONLY DELETE
+                System.out.println("X: " + gridX + " Y: " + gridY);
+
+                Item itemUsed = itemsInInventory.get(itemType.getIndex()).pop();
+                itemUsed.setXPos(gridX);
+                itemUsed.setYPos(gridY);
+                addItemToLevel(itemUsed);
+                itemUsed.use();
+                removeItem(itemType);
+            }
+        }
+        itemBeingDragged = null;
+    }
+
+    /**
+     * Reloads the level when the play again button is pressed.
+     * @param event The action that triggered the event.
+     * @throws IOException If the FXML file can not be found will throw an exception.
+     */
+    public void playAgainPressed(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(loader.load());
+
+        Level controller = loader.getController();
+        controller.createLevel(levelName, true);
+    }
+
+    /**
+     * pauses the game loop.
+     */
+    public void pauseLoop() {
+        isPaused = !isPaused;
+    }
+
+    /**
+     * Return from the level to the main menu.
+     * @param event The action that triggered this.
+     * @throws IOException If the FXML file does not exist will throw exception.
+     */
+    public void exitPressed(ActionEvent event) throws IOException {
+        stopGameLoop();
+
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(MAIN_MENU_PATH)));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
+
+    /**
+     * Stores the mouse position when pressed down.
+     * @param event The mouse click event is stored here.
+     */
+    public void getMousePosOnClicked(MouseEvent event) {
+        lastMouseX = event.getX();
+        lastMouseY = event.getY();
+    }
+
+    /**
+     * moves the level around when dragging. Keeping in bounds of the screen.
+     * @param event The mouse event is stored here.
+     */
+    public void onDragLevel(MouseEvent event) {
+        levelGridStackPane.setTranslateX(levelGridStackPane.getTranslateX() + (event.getX() - lastMouseX));
+        levelGridStackPane.setTranslateY(levelGridStackPane.getTranslateY() + (event.getY() - lastMouseY));
+        clampToGameScreen();
+    }
+
+    /**
+     * Sets up the level from the level file.
+     * @param src The level file path that wants to be read.
+     */
+    public void createLevel(String src, boolean isSave) {
+        this.isSave = isSave;
+        levelName = src;
+        rats = new ArrayList<>();
+        itemsInPlay = new ArrayList<>();
+        timeSinceItemSpawn = new float[NUMBER_OF_ITEM_TYPES];
+        itemSpawnTime = new int[NUMBER_OF_ITEM_TYPES];
+        pastDeltaTimes = new ArrayDeque<>();
+        score = 0;
+
+        createInventory();
+
+        try {
+            if (isSave) {
+                loadLevelFile(SAVE_FOLDER_PATH + src);
+            } else {
+                loadLevelFile(LEVEL_FOLDER_PATH + src);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Can not find file: " + src);
+            e.printStackTrace();
+        }
+
+        drawTiles();
+    }
+
+    /**
+     * Saves the current level state, with all the rats, items in inventory.
+     */
+    public void saveLevel() {
+        try {
+            File saveFile = createSaveFile();
+
+            FileWriter fileWriter = new FileWriter(saveFile);
+
+            saveExpectedTime(fileWriter);
+            saveLoseConditions(fileWriter);
+            saveItemSpawns(fileWriter);
+            saveLevelGrid(fileWriter);
+            saveRatSpawnGrid(fileWriter);
+            saveItemsInPlay(fileWriter);
+
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Prevents player from dragging the level off the screen.
+     * If level is bigger than screen the level will always be on screen and cannot be dragged off-screen.
+     * If level is smaller than the level can be dragged around on the screen freely but not off-screen.
+     */
+    public void clampToGameScreen() {
+        if (levelGridStackPane.getWidth() > gameScreen.getWidth() && levelGridStackPane.getHeight() > gameScreen.getHeight()) {
+            if (levelGridStackPane.getTranslateX() > 0) {
+                levelGridStackPane.setTranslateX(0.0);
+            } else if (levelGridStackPane.getTranslateX() < gameScreen.getWidth() - levelGridStackPane.getWidth()) {
+                levelGridStackPane.setTranslateX(gameScreen.getWidth() - levelGridStackPane.getWidth());
+            }
+            if (levelGridStackPane.getTranslateY() > 0) {
+                levelGridStackPane.setTranslateY(0.0);
+            } else if (levelGridStackPane.getTranslateY() < gameScreen.getHeight() - levelGridStackPane.getHeight()) {
+                levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
+            }
+        } else if (levelGridStackPane.getWidth() > gameScreen.getWidth()) {
+            if (levelGridStackPane.getTranslateX() > 0) {
+                levelGridStackPane.setTranslateX(0.0);
+            } else if (levelGridStackPane.getTranslateX() < gameScreen.getWidth() - levelGridStackPane.getWidth() ) {
+                levelGridStackPane.setTranslateX(gameScreen.getWidth() - levelGridStackPane.getWidth());
+            }
+            if (levelGridStackPane.getTranslateY() < 0) {
+                levelGridStackPane.setTranslateY(0.0);
+            } else if (levelGridStackPane.getTranslateY() > gameScreen.getHeight() - levelGridStackPane.getHeight() ) {
+                levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
+            }
+        } else if (levelGridStackPane.getHeight() > gameScreen.getHeight()) {
+            if (levelGridStackPane.getTranslateX() < 0) {
+                levelGridStackPane.setTranslateX(0.0);
+            } else if (levelGridStackPane.getTranslateX() > gameScreen.getWidth() - levelGridStackPane.getWidth() ) {
+                levelGridStackPane.setTranslateX(gameScreen.getWidth() - levelGridStackPane.getWidth());
+            }
+            if (levelGridStackPane.getTranslateY() > 0) {
+                levelGridStackPane.setTranslateY(0.0);
+            } else if (levelGridStackPane.getTranslateY() < gameScreen.getHeight() - levelGridStackPane.getHeight() ) {
+                levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
+            }
+        } else {
+            if (levelGridStackPane.getTranslateY() < 0) {
+                levelGridStackPane.setTranslateY(0.0);
+            } else if (levelGridStackPane.getTranslateY() + levelGridStackPane.getHeight() > gameScreen.getHeight()) {
+                levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
+            }
+            if (levelGridStackPane.getTranslateX() < 0) {
+                levelGridStackPane.setTranslateX(0.0);
+            } else if (levelGridStackPane.getTranslateX() + levelGridStackPane.getWidth() > gameScreen.getWidth()) {
+                levelGridStackPane.setTranslateX(gameScreen.getWidth() - levelGridStackPane.getWidth());
+            }
+        }
     }
 
     /**
      * Used to update aspect of the game every frame.
      * @param deltaTime The time in seconds since the last frame.
      */
-    public void update(float deltaTime) {
+    private void update(float deltaTime) {
         totalTimeOnLevel += deltaTime;
-
         drawTiles();
         updateRats(deltaTime);
         updateRatsAliveText();
@@ -216,19 +391,6 @@ public class Level {
         updateItemsInPlay(deltaTime);
         checkSteppedOn();
         checkWinLoseCondition();
-    }
-
-    /**
-     * Collision detection for rats and all items on the level. Triggers the item when a rat steps on it.
-     */
-    private void checkSteppedOn() {
-        for (Rat rat : rats) {
-            for (Item item : itemsInPlay) {
-                if (rat.getxPos() == item.getXPos() && rat.getyPos() == item.getYPos()) {
-                    item.steppedOn(rat);
-                }
-            }
-        }
     }
 
     /**
@@ -268,31 +430,26 @@ public class Level {
                 gasItem.checkIfRatsInGas(rats);
                 if (gasItem.isSpreadingGas()) {
                     gasItem.spreadGas(levelGrid);
-                    for (ImageView imageView : gasItem.getGasImageViews()) {
-                        if (!levelPane.getChildren().contains(imageView)) {
-                            levelPane.getChildren().add(imageView);
-                            imageView.toFront();
-                        }
-                    }
+                    updateGasSpread(gasItem);
                 }
             } else if (item.getType() == ItemType.STERILISATION) {
                 Sterilisation sterilisationItem = (Sterilisation) item;
                 sterilisationItem.checkIfRatOnSterileTile(rats);
                 if (!sterilisationItem.sterileTilesGot()) {
                     sterilisationItem.addToSterilizedTiles(levelGrid);
-                    levelPane.getChildren().addAll(sterilisationItem.getSterileTilesImages());
+                    levelGridStackPane.getChildren().addAll(sterilisationItem.getSterileTilesImages());
                 }
             }
             if (item.expired) {
                 if (item.getType() == ItemType.GAS) {
-                    levelPane.getChildren().removeAll(((Gas) item).getGasImageViews());
+                    levelGridStackPane.getChildren().removeAll(((Gas) item).getGasImageViews());
                 }
 
                 if (item.getType() == ItemType.STERILISATION) {
-                    levelPane.getChildren().removeAll(((Sterilisation) item).getSterileTilesImages());
+                    levelGridStackPane.getChildren().removeAll(((Sterilisation) item).getSterileTilesImages());
                 }
 
-                levelPane.getChildren().remove(item.imageView);
+                levelGridStackPane.getChildren().remove(item.imageView);
                 itemIterator.remove();
             }
         }
@@ -304,14 +461,23 @@ public class Level {
         updateTunnels();
     }
 
+    private void updateGasSpread(Gas item){
+        for (ImageView imageView : item.getGasImageViews()) {
+            if (!levelGridStackPane.getChildren().contains(imageView)) {
+                levelGridStackPane.getChildren().add(imageView);
+                imageView.toFront();
+            }
+        }
+    }
+
     /**
      * Updates the text for how many rats are alive.
      */
     private void updateRatsAliveText() {
 
-        ratsAlive.setText("Rats alive: " + getNumberOfRatsAlive());
-        maleRatsAlive.setText("Males alive: " + getNumberOfMaleRatsAlive());
-        femaleRatsAlive.setText("Females alive: " + getNumberOfFemaleRatsAlive());
+        ratsAliveText.setText("Rats alive: " + getNumberOfRatsAlive());
+        maleRatsAliveText.setText("Males alive: " + getNumberOfMaleRatsAlive());
+        femaleRatsAliveText.setText("Females alive: " + getNumberOfFemaleRatsAlive());
     }
 
     private int getNumberOfRatsAlive() {
@@ -372,25 +538,11 @@ public class Level {
             System.out.println("You Win!");
         }
 
-        // Spec says you win when all rats are dead. So removing this.
-//        if (getNumberOfFemaleRatsAlive() == 0){
-//            isPaused = true;
-//            isGameFinished = true;
-//            hasWon = true;
-//            System.out.println("You win only males alive and cannot reproduce!");
-//        }
-//
-//        if (getNumberOfMaleRatsAlive() == 0){
-//            isPaused = true;
-//            isGameFinished = true;
-//            hasWon = true;
-//            System.out.println("You win only female alive and cannot reproduce!");
-//        }
-
         if (isGameFinished) {
+            deleteSave();
             if (hasWon) {
                 System.out.println(MainMenu.getCurrentProfile() == null);
-                WinLoseText.setText("YOU WIN!");
+                winLoseText.setText("YOU WIN!");
                 if (totalTimeOnLevel < expectedTime) {
                     score += expectedTime - (int)totalTimeOnLevel;
                 }
@@ -399,11 +551,11 @@ public class Level {
                     player.levelComplete(Integer.parseInt(levelName.substring(0, 1)), score);
                 }
             } else {
-                WinLoseText.setText("YOU LOSE!");
+                winLoseText.setText("YOU LOSE!");
             }
-            ScoreText.setText("You scored: " + score);
-            GameOverScreen.setVisible(true);
-            GameOverScreen.setDisable(false);
+            scoreText.setText("You scored: " + score);
+            gameOverScreen.setVisible(true);
+            gameOverScreen.setDisable(false);
         }
     }
 
@@ -419,7 +571,7 @@ public class Level {
             Rat rat = ratIterator.next();
             if (rat.getIsDead()) {
                 score += rat.getScore();
-                levelPane.getChildren().remove(rat.img);
+                levelGridStackPane.getChildren().remove(rat.img);
                 ratIterator.remove();
             } else if (rat.getIsGivingBirth()) {
                 Random rand = new Random();
@@ -452,144 +604,26 @@ public class Level {
     }
 
     /**
-     * pauses the game loop.
-     */
-    public void pauseLoop() {
-        isPaused = !isPaused;
-    }
-
-    // TODO: Add popup to ask whether user wants to save the level if leaving early.
-    /**
-     * Return from the level to the main menu.
-     * @param event The action that triggered this.
-     * @throws IOException If the FXML file does not exist will throw exception.
-     */
-    public void exitPressed(ActionEvent event) throws IOException {
-        stopGameLoop();
-
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(MAIN_MENU_PATH)));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.setRoot(root);
-    }
-
-    /**
-     * Stores the mouse position when pressed down.
-     * @param event The mouse click event is stored here.
-     */
-    public void getMousePosOnClicked(MouseEvent event) {
-        lastMouseX = event.getX();
-        lastMouseY = event.getY();
-    }
-
-    /**
-     * moves the level around when dragging. Keeping in bounds of the screen.
-     * @param event The mouse event is stored here.
-     */
-    public void onDragLevel(MouseEvent event) {
-        levelPane.setTranslateX(levelPane.getTranslateX() + (event.getX() - lastMouseX));
-        levelPane.setTranslateY(levelPane.getTranslateY() + (event.getY() - lastMouseY));
-        clampToGameScreen();
-    }
-
-    /**
-     * Prevents player from dragging the level off the screen.
-     * If level is bigger than screen the level will always be on screen and cannot be dragged off-screen.
-     * If level is smaller than the level can be dragged around on the screen freely but not off-screen.
-     */
-    public void clampToGameScreen() {
-        if (levelPane.getWidth() > GameScreen.getWidth() && levelPane.getHeight() > GameScreen.getHeight()) {
-            if (levelPane.getTranslateX() > 0) {
-                levelPane.setTranslateX(0.0);
-            } else if (levelPane.getTranslateX() < GameScreen.getWidth() - levelPane.getWidth()) {
-                levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
-            }
-            if (levelPane.getTranslateY() > 0) {
-                levelPane.setTranslateY(0.0);
-            } else if (levelPane.getTranslateY() < GameScreen.getHeight() - levelPane.getHeight()) {
-                levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
-            }
-        } else if (levelPane.getWidth() > GameScreen.getWidth()) {
-            if (levelPane.getTranslateX() > 0) {
-                levelPane.setTranslateX(0.0);
-            } else if (levelPane.getTranslateX() < GameScreen.getWidth() - levelPane.getWidth() ) {
-                levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
-            }
-            if (levelPane.getTranslateY() < 0) {
-                levelPane.setTranslateY(0.0);
-            } else if (levelPane.getTranslateY() > GameScreen.getHeight() - levelPane.getHeight() ) {
-                levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
-            }
-        } else if (levelPane.getHeight() > GameScreen.getHeight()) {
-            if (levelPane.getTranslateX() < 0) {
-                levelPane.setTranslateX(0.0);
-            } else if (levelPane.getTranslateX() > GameScreen.getWidth() - levelPane.getWidth() ) {
-                levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
-            }
-            if (levelPane.getTranslateY() > 0) {
-                levelPane.setTranslateY(0.0);
-            } else if (levelPane.getTranslateY() < GameScreen.getHeight() - levelPane.getHeight() ) {
-                levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
-            }
-        } else {
-            if (levelPane.getTranslateY() < 0) {
-                levelPane.setTranslateY(0.0);
-            } else if (levelPane.getTranslateY() + levelPane.getHeight() > GameScreen.getHeight()) {
-                levelPane.setTranslateY(GameScreen.getHeight() - levelPane.getHeight());
-            }
-            if (levelPane.getTranslateX() < 0) {
-                levelPane.setTranslateX(0.0);
-            } else if (levelPane.getTranslateX() + levelPane.getWidth() > GameScreen.getWidth()) {
-                levelPane.setTranslateX(GameScreen.getWidth() - levelPane.getWidth());
-            }
-        }
-    }
-
-    /**
-     * Sets up the level from the level file.
-     * @param src The level file path that wants to be read.
-     */
-    public void createLevel(String src) {
-        rats = new ArrayList<>();
-        itemsInPlay = new ArrayList<>();
-        timeSinceItemSpawn = new float[NUMBER_OF_ITEMS];
-        itemSpawnTime = new int[NUMBER_OF_ITEMS];
-        pastDeltaTimes = new ArrayDeque<>();
-        score = 0;
-
-        try {
-            readLevelFile(src);
-        } catch (FileNotFoundException e) {
-            System.out.println("Can not find file: " + src);
-            e.printStackTrace();
-            return;
-        }
-        drawTiles();
-        createInventory();
-    }
-
-    /**
      * Reads in a file and parses the data for the level.
      * @param src A path to the level wanting to be read.
      */
-    public void readLevelFile(String src) throws FileNotFoundException {
-        levelName = src;
-        File levelFile = new File(LEVEL_FOLDER_PATH + src);
+    private void loadLevelFile(String src) throws FileNotFoundException {
+        File levelFile = new File(src);
         Scanner fileReader = new Scanner(levelFile);
 
-        setupTimeLimit(fileReader);
-        setupWinLoseCondition(fileReader);
-        setupItems(fileReader);
-        setupLevelGrid(fileReader);
-        setupRatSpawns(fileReader);
-        setupItemsOnBoard(fileReader);
+        loadTimeLimit(fileReader);
+        loadLoseCondition(fileReader);
+        loadItems(fileReader);
+        loadLevelGrid(fileReader);
+        loadRats(fileReader);
+        loadItemsInPlay(fileReader);
     }
 
     /**
      * reads in the expected time for the level and sets it for the level.
      * @param fileReader The scanner which contains the information for the expected time.
      */
-    private void setupTimeLimit(Scanner fileReader) {
+    private void loadTimeLimit(Scanner fileReader) {
         String expectedTimeString = fileReader.nextLine();
         expectedTime = Integer.parseInt(expectedTimeString);
     }
@@ -598,7 +632,7 @@ public class Level {
      * Reads in the win and lose conditions and sets them for the level.
      * @param fileReader The scanner which contains the information for the conditions.
      */
-    private void setupWinLoseCondition(Scanner fileReader) {
+    private void loadLoseCondition(Scanner fileReader) {
         String winLoseCondition = fileReader.nextLine();
         String[] winLoseConditionSplit = winLoseCondition.split(" ");
         numberOfRatsToWin = Integer.parseInt(winLoseConditionSplit[0]);
@@ -609,7 +643,7 @@ public class Level {
      * Initializes the game grid.
      * @param fileReader The file reader containing the information for the level grid.
      */
-    private void setupLevelGrid(Scanner fileReader) {
+    private void loadLevelGrid(Scanner fileReader) {
         // Read level dimensions
         String levelDimensions = fileReader.nextLine();
         String[] levelDimensionsSplit = levelDimensions.split(" ");
@@ -617,8 +651,8 @@ public class Level {
         levelHeight = Integer.parseInt(levelDimensionsSplit[1]);
 
         // Create the 2d array that holds tile positions.
-        GameBoard.setHeight(Tile.TILE_HEIGHT * levelHeight);
-        GameBoard.setWidth(Tile.TILE_WIDTH * levelWidth);
+        levelGridCanvas.setHeight(Tile.TILE_HEIGHT * levelHeight);
+        levelGridCanvas.setWidth(Tile.TILE_WIDTH * levelWidth);
 
         levelGrid = new Tile[levelWidth][levelHeight];
         for (int row = 0; row < levelHeight; row++) {
@@ -648,12 +682,12 @@ public class Level {
      * Initialize items and item spawns.
      * @param fileReader The file reader containing the information for the items.
      */
-    private void setupItems(Scanner fileReader) {
+    private void loadItems(Scanner fileReader) {
 
         String itemsToStartWith = fileReader.nextLine();
         String[] itemsToStartWithSplit = itemsToStartWith.split(FILE_DELIMITER);
 
-        for (int i = 0; i < NUMBER_OF_ITEMS; i++) {
+        for (int i = 0; i < NUMBER_OF_ITEM_TYPES; i++) {
             for (int j = 0 ; j < Integer.parseInt(itemsToStartWithSplit[i]); j++) {
                 spawnItem(ItemType.values()[i]);
             }
@@ -663,7 +697,7 @@ public class Level {
         String itemSpawnTimes = fileReader.nextLine();
         String[] itemSpawnTimesSplit = itemSpawnTimes.split(FILE_DELIMITER);
 
-        for (int i = 0; i < NUMBER_OF_ITEMS; i++) {
+        for (int i = 0; i < NUMBER_OF_ITEM_TYPES; i++) {
             itemSpawnTime[i] = Integer.parseInt(itemSpawnTimesSplit[i]);
         }
     }
@@ -672,7 +706,7 @@ public class Level {
      * Initialize the rats and positions, spawning them into the level.
      * @param fileReader The file reader containing the information for the rats.
      */
-    private void setupRatSpawns(Scanner fileReader) {
+    private void loadRats(Scanner fileReader) {
         while (fileReader.hasNextLine()){
             String ratToSpawn = fileReader.nextLine();
             if (ratToSpawn.equals("ITEMS")) {
@@ -709,7 +743,7 @@ public class Level {
      * Setups the items on the board if this is loading from a save.
      * @param fileReader The scanner to read the save file from.
      */
-    private void setupItemsOnBoard(Scanner fileReader) {
+    private void loadItemsInPlay(Scanner fileReader) {
         while (fileReader.hasNextLine()) {
             String[] itemToSpawn = fileReader.nextLine().split(FILE_DELIMITER);
             if (itemToSpawn.length == 0) {
@@ -778,7 +812,11 @@ public class Level {
             }
 
             if (item != null) {
+                item.getImageView().setImage(item.getTexture());
                 addItemToLevel(item);
+                if (item instanceof Gas) {
+                    updateGasSpread((Gas) item);
+                }
             }
         }
     }
@@ -791,9 +829,9 @@ public class Level {
      */
     private Rat createRat(Rat.ratType type, int xPos, int yPos, boolean isBaby) {
         Rat rat = new Rat(type, xPos, yPos, isBaby);
-        levelPane.getChildren().add(rat.img);
+        levelGridStackPane.getChildren().add(rat.img);
         rat.img.toBack();
-        GameBoard.toBack();
+        levelGridCanvas.toBack();
         return rat;
     }
 
@@ -803,6 +841,7 @@ public class Level {
     private void drawTiles(){
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
+                GraphicsContext levelGraphicsContext = levelGridCanvas.getGraphicsContext2D();
                 levelGraphicsContext.drawImage(levelGrid[col][row].getTexture(), col * Tile.TILE_HEIGHT, row * Tile.TILE_WIDTH);
             }
         }
@@ -820,7 +859,7 @@ public class Level {
                     tunnel.setImage(levelGrid[col][row].getTexture());
                     tunnel.setTranslateX(col * Tile.TILE_WIDTH);
                     tunnel.setTranslateY(row * Tile.TILE_HEIGHT);
-                    levelPane.getChildren().add(tunnel);
+                    levelGridStackPane.getChildren().add(tunnel);
                     tunnels.add(tunnel);
                 }
             }
@@ -837,59 +876,55 @@ public class Level {
     }
 
     /**
+     * Creates the save file to store the level save in.
+     * @throws IOException If the file cannot be created will throw an error.
+     */
+    private File createSaveFile() throws IOException {
+        if (new File(SAVE_FOLDER_PATH).mkdirs()){
+            System.out.println("Created save folder at: " + SAVE_FOLDER_PATH);
+        }
+
+        File levelSaveFile;
+        if (isSave) {
+            levelSaveFile = new File(SAVE_FOLDER_PATH + levelName);
+        } else {
+            levelSaveFile = new File(SAVE_FOLDER_PATH + levelName.charAt(0) + MainMenu.getCurrentProfile().getName());
+        }
+
+        if (levelSaveFile.delete()){
+            System.out.println("Deleted previous save file: " + levelName);
+        }
+        System.out.println(levelSaveFile);
+
+        if (levelSaveFile.createNewFile()){
+            System.out.println("New save file created: " + levelName);
+        }
+        return levelSaveFile;
+    }
+
+    /**
      * Creates the inventory that holds all the items for the player.
      */
-    public void createInventory() {
-        itemsInInventory = new ArrayList<>(NUMBER_OF_ITEMS);
-        for (int i = 0; i < NUMBER_OF_ITEMS; i++) {
+    private void createInventory() {
+        itemsInInventory = new ArrayList<>(NUMBER_OF_ITEM_TYPES);
+        for (int i = 0; i < NUMBER_OF_ITEM_TYPES; i++) {
             Stack<Item> itemStack = new Stack<>();
             itemsInInventory.add(itemStack);
         }
     }
 
-    // TODO Once we have a player class store all saves for each player in the player folder instead.
-    // TODO If a level save is already active for a player we need to only let the player resume.
+    private void deleteSave() {
+        String[] allSaves = new File("src/Saves/").list();
 
-    // TODO Add a way to save and load items on the board.
-    /**
-     * Saves the current level state, with all the rats, items in inventory.
-     */
-    public void saveLevel() {
-        try {
-            createSaveFile();
-
-            FileWriter fileWriter = new FileWriter(SAVE_FOLDER_PATH + levelName);
-
-            writeExpectedTime(fileWriter);
-            writeWinLoseConditions(fileWriter);
-            writeItemSpawns(fileWriter);
-            writeLevelGrid(fileWriter);
-            writeRatSpawnGrid(fileWriter);
-            writeItemsInPlay(fileWriter);
-
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Creates the save file to store the level save in.
-     * @throws IOException If the file cannot be created will throw an error.
-     */
-    private void createSaveFile() throws IOException {
-        if (new File(SAVE_FOLDER_PATH).mkdirs()){
-            System.out.println("Created save folder at: " + SAVE_FOLDER_PATH);
-        }
-
-        // TODO: Can possibly add a popup to check if user wants to delete the save or not.
-        File levelSaveFile = new File(SAVE_FOLDER_PATH + levelName);
-        if (levelSaveFile.delete()){
-            System.out.println("Deleted previous save file: " + levelName);
-        }
-
-        if (levelSaveFile.createNewFile()){
-            System.out.println("New save file created: " + levelName);
+        if (allSaves != null) {
+            for (String level : allSaves) {
+                if (level.equals(levelName)) {
+                    File oldSave = new File(SAVE_FOLDER_PATH + levelName);
+                    if (oldSave.delete()) {
+                        System.out.println("Old save file deleted.");
+                    }
+                }
+            }
         }
     }
 
@@ -898,7 +933,7 @@ public class Level {
      * @param fileWriter The file writer containing the file we want to write to.
      * @throws IOException Throws an exception if you cannot write to the file.
      */
-    private void writeExpectedTime(FileWriter fileWriter) throws IOException {
+    private void saveExpectedTime(FileWriter fileWriter) throws IOException {
         fileWriter.write(expectedTime + "\n");
     }
 
@@ -907,7 +942,7 @@ public class Level {
      * @param fileWriter The file writer containing the file we want to write to.
      * @throws IOException Throws an exception if you cannot write to the file.
      */
-    private void writeWinLoseConditions(FileWriter fileWriter) throws IOException {
+    private void saveLoseConditions(FileWriter fileWriter) throws IOException {
         fileWriter.write(numberOfRatsToWin + " ");
         fileWriter.write(numberOfRatsToLose + "\n");
     }
@@ -917,7 +952,7 @@ public class Level {
      * @param fileWriter The file writer containing the file we want to write to.
      * @throws IOException Throws an exception if you cannot write to the file.
      */
-    private void writeItemSpawns(FileWriter fileWriter) throws IOException {
+    private void saveItemSpawns(FileWriter fileWriter) throws IOException {
         StringBuilder itemsHeld = new StringBuilder();
         for (ItemType type : ItemType.values()) {
             itemsHeld.append(itemsInInventory.get(type.getIndex()).size()).append(FILE_DELIMITER);
@@ -937,7 +972,7 @@ public class Level {
      * @param fileWriter The file writer containing the file we want to write to.
      * @throws IOException Throws an exception if you cannot write to the file.
      */
-    private void writeLevelGrid(FileWriter fileWriter) throws IOException {
+    private void saveLevelGrid(FileWriter fileWriter) throws IOException {
         fileWriter.write(levelWidth + FILE_DELIMITER + levelHeight + "\n");
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
@@ -952,14 +987,14 @@ public class Level {
      * @param fileWriter The file writer containing the file we want to write to.
      * @throws IOException Throws an exception if you cannot write to the file.
      */
-    private void writeRatSpawnGrid(FileWriter fileWriter) throws IOException {
+    private void saveRatSpawnGrid(FileWriter fileWriter) throws IOException {
         for (Rat rat : rats) {
-            fileWriter.write(rat.toString());
-            fileWriter.write("\n");
+            fileWriter.write(rat.toString() + "\n");
         }
+        fileWriter.write("ITEMS\n");
     }
 
-    private void writeItemsInPlay(FileWriter fileWriter) throws IOException {
+    private void saveItemsInPlay(FileWriter fileWriter) throws IOException {
         for (Item item : itemsInPlay) {
             fileWriter.write(item.toString());
             fileWriter.write("\n");
@@ -1028,113 +1063,50 @@ public class Level {
         itemsInInventory.get(type.getIndex()).add(item);
     }
 
-    /**
-     * Initiates the dragging of the item from inventory to the level, getting the item dragged and setting the position to the mouse.
-     * @param event The mouse event initiating the drag.
-     */
-    public void onItemBeginDrag(MouseEvent event) {
-        if (isPaused) {
-            return;
-        }
-        lastMouseX = event.getSceneX();
-        lastMouseY = event.getSceneY();
-        ImageView target = (ImageView) event.getTarget();
-        itemBeingDragged = new ImageView();
-        itemBeingDragged.setImage(target.getImage());
-        levelGameScreen.getChildren().add(itemBeingDragged);
-        itemBeingDragged.setTranslateX(event.getSceneX() - itemBeingDragged.getImage().getWidth()/2);
-        itemBeingDragged.setTranslateY(event.getSceneY() - itemBeingDragged.getImage().getHeight()/2);
-    }
-
-    /**
-     * Sets the dragged items position to be at the position of the cursor.
-     * @param event The mouse event triggering the drag.
-     */
-    public void onItemDrag(MouseEvent event) {
-        if (itemBeingDragged != null) {
-            itemBeingDragged.setTranslateX(itemBeingDragged.getTranslateX() + (event.getSceneX() - lastMouseX));
-            itemBeingDragged.setTranslateY(itemBeingDragged.getTranslateY() + (event.getSceneY() - lastMouseY));
-            lastMouseX = event.getSceneX();
-            lastMouseY = event.getSceneY();
-        }
-    }
-
-    /**
-     * Checks where the item has been dropped and if it's on a path, then we want to use the item, otherwise return it to the player inventory.
-     * @param event The mouse event releasing the drag.
-     */
-    public void onItemDragFinished(MouseEvent event) {
-        // If the game is paused we do not want items to be usable.
-        if (isPaused) {
-            return;
-        }
-        double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
-        double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
-        double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelPane.getTranslateX()))/Tile.TILE_WIDTH);
-        double droppedGridYPos = ((droppedAbsoluteYPos + (0 - levelPane.getTranslateY()))/Tile.TILE_HEIGHT);
-        int gridX = (int) droppedGridXPos;
-        int gridY = (int) droppedGridYPos;
-
-        // this gets the type of the item being dropped
-        ItemType itemType = null;
-        for (ItemType type : ItemType.values()) {
-            if (type.getTexture().equals(itemBeingDragged.getImage().getUrl().substring(itemBeingDragged.getImage().getUrl().length() - type.getTexture().length()))){
-                itemType = type;
-            }
-        }
-
-        // Removes the item being dropped from the screen where it was being dragged.
-        levelGameScreen.getChildren().remove(itemBeingDragged);
-
-        // If item isn't found in the inventory we return, we do not want to use an item they do not own.
-        if (itemType == null) {
-            return;
-        }
-
-        // Checks if it's on a path, and whether its on the screen, stopping player dropping an item to a path they cannot see.
-        if (droppedGridXPos < levelWidth && droppedGridXPos > 0 && droppedGridYPos < levelHeight && droppedGridYPos > 0 &&
-                droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < GameScreen.getWidth() &&
-                droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < GameScreen.getHeight()) {
-            if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
-                for (Item item : itemsInPlay) {
-                    if (item.xPos == gridX && item.yPos == gridY) {
-                        return;
-                    }
-                }
-
-                // TODO: TESTING ONLY DELETE
-                System.out.println("X: " + gridX + " Y: " + gridY);
-
-                Item itemUsed = itemsInInventory.get(itemType.getIndex()).pop();
-                itemUsed.setXPos(gridX);
-                itemUsed.setYPos(gridY);
-                addItemToLevel(itemUsed);
-                itemUsed.use();
-                removeItem(itemType);
-            }
-        }
-        itemBeingDragged = null;
-    }
-
     private void addItemToLevel(Item item){
         item.getImageView().setTranslateX(item.getXPos() * Tile.TILE_WIDTH);
         item.getImageView().setTranslateY(item.getYPos() * Tile.TILE_HEIGHT);
-        levelPane.getChildren().add(item.getImageView());
+        levelGridStackPane.getChildren().add(item.getImageView());
         itemsInPlay.add(item);
     }
 
     /**
-     * Reloads the level when the play again button is pressed.
-     * @param event The action that triggered the event.
-     * @throws IOException If the FXML file can not be found will throw an exception.
+     * Stops the game loop from running, stopping the level.
      */
-    public void playAgainPressed(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.setRoot(loader.load());
+    private void stopGameLoop() {
+        gameLoop.stop();
+    }
 
-        Level controller = loader.getController();
-        controller.createLevel(levelName);
+    /**
+     * Calculates the fps of the game and displays it in game for the player to see.
+     * @param deltaTime Represents the time since the last frame in seconds.
+     */
+    private void updateFPSCount(float deltaTime) {
+        timeSinceFPSRefreshed += deltaTime;
+        pastDeltaTimes.addLast(deltaTime);
+        // Only update fps at set intervals not every frame
+        if (timeSinceFPSRefreshed > FPS_REFRESH_INTERVAL) {
+            float sum = 0;
+            for (Float num : pastDeltaTimes){
+                sum += num;
+            }
+            fpsCountText.setText("FPS: " + (int) (1/ (sum/ pastDeltaTimes.size())));
+
+            pastDeltaTimes.clear();
+            timeSinceFPSRefreshed = 0;
+        }
+    }
+
+    /**
+     * Collision detection for rats and all items on the level. Triggers the item when a rat steps on it.
+     */
+    private void checkSteppedOn() {
+        for (Rat rat : rats) {
+            for (Item item : itemsInPlay) {
+                if (rat.getxPos() == item.getXPos() && rat.getyPos() == item.getYPos()) {
+                    item.steppedOn(rat);
+                }
+            }
+        }
     }
 }

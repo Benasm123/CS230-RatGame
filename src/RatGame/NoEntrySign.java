@@ -29,7 +29,9 @@ public class NoEntrySign extends Item {
         this.expired = expired;
         this.hpLeft = hpLeft;
 
-        updateImage();
+        if (hpLeft != MAX_HP) {
+            updateImage();
+        }
     }
     
     @Override
