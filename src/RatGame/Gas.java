@@ -180,7 +180,7 @@ public class Gas extends Item {
         for (Pair<Integer, Integer> position : gasSpreadPositions) {
             int gasX = position.getKey();
             int gasY = position.getValue();
-            if (gasX == ratX && gasY == ratY) {
+            if (gasX == ratX && gasY == ratY && !expired) {
                 rat.setIsPoisoned(true);
                 return;
             } else {
