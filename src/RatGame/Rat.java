@@ -303,8 +303,11 @@ public class Rat {
    * */
    public void changeSexMale(Rat rat) {
         rat.type = ratType.MALE;
-        if(rat.isBaby==false) {
+        if(rat.isBaby==false  && rat.isSterile==false) {
             rat.texture = new Image("Assets/Male.png");
+            rat.img.setImage(rat.texture);
+        }else if(rat.isBaby==false && rat.isSterile==true){
+            rat.texture = new Image("SterileRatFamily/SterileMale.png");
             rat.img.setImage(rat.texture);
         }
 
@@ -315,8 +318,11 @@ public class Rat {
    * */
    public void changeSexFemale(Rat rat) {
         rat.type = ratType.FEMALE;
-        if(rat.isBaby==false) {
+        if(rat.isBaby==false && rat.isSterile==false) {
             rat.texture = new Image("Assets/Female.png");
+            rat.img.setImage(rat.texture);
+        }else if(rat.isBaby==false && rat.isSterile==true){
+            rat.texture = new Image("SterileRatFamily/SterileFemale.png");
             rat.img.setImage(rat.texture);
         }
    }
@@ -376,6 +382,8 @@ public class Rat {
                 birthTime=0.0f;
                 if(spawns==spawnNumber){
                     isPregnant=false;
+                    texture = new Image("Assets/Female.png");
+                    img.setImage(texture);
                     spawns=0;
                 }
             }
@@ -391,6 +399,8 @@ public class Rat {
             if(sexTimer>=timer3){
                 havingSex=false;
                 isPregnant=true;
+                texture = new Image("Assets/FemalePregnant.png");
+                img.setImage(texture);
                 sexTimer=0;
             }
         }else if(havingSex==true){
@@ -406,9 +416,14 @@ public class Rat {
     * prevents sterile rats from becoming pregnant
     * */
     private void sterile(){
-        if(isSterile==true){
+        if(isSterile==true && type==ratType.MALE){
             havingSex=false;
             isPregnant=false;
+            texture = new Image("Assets/SterileRatFamily/SterileMale.png");
+            img.setImage(texture);
+        }else if(isSterile==true && type==ratType.FEMALE){
+            havingSex=false;
+            img.setImage(texture);
         }
     }
 
@@ -420,11 +435,17 @@ public class Rat {
     private void growUp(){
         isBaby = false;
         movementSpeed = adultSpeed;
-        if(type == ratType.MALE){
+        if(type == ratType.MALE && isSterile==false){
             texture = new Image("Assets/Male.png");
             img.setImage(texture);
-        }else if(type==ratType.FEMALE){
+        }else if(type==ratType.FEMALE && isSterile==false){
             texture = new Image("Assets/Female.png");
+            img.setImage(texture);
+        }else if(type==ratType.FEMALE && isSterile==true){
+            texture = new Image("Assets/SterileRatFamily/SterileFemale.png");
+            img.setImage(texture);
+        }else if(type==ratType.MALE && isSterile==true){
+            texture = new Image("Assets/SterileRatFamily/SterileMale.png");
             img.setImage(texture);
         }
     }
@@ -451,13 +472,13 @@ public class Rat {
     * */
     public void steppedOn(Rat otherRat) {
         if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(havingSex==false && otherRat.havingSex==false && isPregnant==false){
+            if(havingSex==false && otherRat.havingSex==false && isPregnant==false && isSterile==false && otherRat.isSterile==false){
                 otherRat.havingSex=true;
                 havingSex=true;
             }
 
         }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(otherRat.havingSex==false && havingSex==false && otherRat.isPregnant==false){
+            if(otherRat.havingSex==false && havingSex==false && otherRat.isPregnant==false && isSterile==false && otherRat.isSterile==false){
                 havingSex=true;
                 otherRat.havingSex=true;
             }
