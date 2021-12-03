@@ -419,11 +419,8 @@ public class Rat {
         if(isSterile==true && type==ratType.MALE){
             havingSex=false;
             isPregnant=false;
-            texture = new Image("Assets/SterileRatFamily/SterileMale.png");
-            img.setImage(texture);
         }else if(isSterile==true && type==ratType.FEMALE){
             havingSex=false;
-            img.setImage(texture);
         }
     }
 
