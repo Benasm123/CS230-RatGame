@@ -6,26 +6,22 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-// In new file you have a .txt at the end of the save, but you don't need to save it as a text document
-// Can remove that part and it will work just as well i believe, and makes searching for files easier.
-// Youve used casting and the lectures state we need to put a space between cast and variable eg- "(int) variable"
-// Not "(int)variable". Not sure why this makes it a lot more ugly and less readable but thats whats asked
 /**
  * This class creates a player profile.
  * The player profile is also responsible for saving, loading and deleting player profile files.
- * @author CS-230 Group13 (21/22)
+ * @author José
  * @version 1.0
  *
  */
-// TODO: When a profile is saved, set the MainMenu playerProfile variable to the profile.
 public class PlayerProfile implements Comparable<PlayerProfile> {
+
+	// Variables
 	private String name;
 	private int highScore;
-    // I would rename this to highestLevel or something similar to be more clear.
 	private int highestLevel;
 
 	/**
-	 * creates an instance of a profile with a name using setName method
+	 * creates an instance of the profile with a name using setName method
 	 * @param name
 	 */
 	public PlayerProfile(String name) {
@@ -33,7 +29,6 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	}
 
 	/**
-	 *
 	 * @return the name of a profile
 	 */
 	public String getName() {
@@ -41,7 +36,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	}
 
 	/**
-	 * sets the name of a profile
+	 * sets the name of the profile
 	 * @param name
 	 */
 	public void setName(String name) {
@@ -50,46 +45,45 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 
 	/**
 	 *
-	 * @return the score related to a profile
+	 * @return the score related to the profile
 	 */
 	public int getHighScore() {
 		return highScore;
 	}
 
 	/**
-	 * ??
-	 * @param highScore
+	 * set a new high score for the profile
+	 * @param score
 	 */
-	public void setHighScore(int highScore) {
-		this.highScore = highScore;
+	public void setHighScore(int score) {
+		highScore = score;
 	}
 
 	/**
 	 *
-	 * @return the level obtained by a profile
+	 * @return the highest level achieved by a profile
 	 */
 	public int getHighestLevel() {
 		return highestLevel;
 	}
 
 	/**
-	 * ??
-	 * @param highestLevel
+	 * set a new highest level achieved by the profile
+	 * @param level
 	 */
-	public void setHighestLevel(int highestLevel) {
-		this.highestLevel = highestLevel;
+	public void setHighestLevel(int level) {
+		highestLevel = level;
 	}
 
 	/**
-	 * attempts to create a file as any name that the player would want
-	 * @param file
+	 * attempts to create a file
 	 */
-	private void newFile(String file) {
+	private void newFile() {
 		try {
 			new File("src/Profiles").mkdir();
-			File myObj = new File("src//Profiles//" + file);
+			File myObj = new File("src//Profiles//" + name);
 			if (myObj.exists()) {
-				deleteSave(file);
+				deleteSave();
 			}
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
@@ -107,10 +101,10 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	}
 
 	/**
-	 * attempts to save/write the profile progress to the file
+	 * attempts to save the profile progress to the file
 	 */
 	public void save() {
-		newFile(name);
+		newFile();
 		try {
 			FileWriter writer = new FileWriter("src//Profiles//" + name);
 			writer.write(name + "\n" + highScore + "\n" + highestLevel);
@@ -128,8 +122,8 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 * attempts to delete the file saved by the player
 	 * @param save
 	 */
-	public void deleteSave(String save) {
-		File myObj = new File("src//Profiles//" + save);
+	public void deleteSave() {
+		File myObj = new File("src//Profiles//" + name);
 		if (myObj.delete()) {
 			System.out.println("Save deleted");
 		}
@@ -168,20 +162,20 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	 * This method allows player profiles to be compared by score
 	 * uses the difference to decide if the profile goes up or down on the leaderboard
 	 * @param profile
-	 * @return the difference between the score
+	 * @return the difference between the scores
 	 */
 	@Override
     public int compareTo(PlayerProfile profile) {
-        return (int)(profile.getHighScore() - this.highScore);
+        return (int) (profile.getHighScore() - this.highScore);
     }
 
 	/**
 	 *
-	 * @return player's name, score and level obtained as a string
+	 * @return player's name and score obtained as a string
 	 */
 	@Override
 	public String toString() {
-		return name + " -  Score: " + highScore + " - LV: " + highestLevel;
+		return name + " -  Score: " + highScore;
 	}
 
     /**
