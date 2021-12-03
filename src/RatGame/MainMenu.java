@@ -63,9 +63,7 @@ public class MainMenu {
 
                 if (reader.hasNextLine()) {
                     String stringShowFPS = reader.nextLine();
-                    System.out.println(stringShowFPS);
                     showFPS = stringShowFPS.charAt(0) == 't';
-                    System.out.println(stringShowFPS);
                 } else {
                     showFPS = false;
                 }
