@@ -52,6 +52,7 @@ public class Bomb extends Item {
     public Bomb(int x, int y, boolean expired, float timeSincePlaced, boolean isExploding) {
         this.type = ItemType.BOMB;
         this.texture = BOMB_TEXTURE;
+        this.bombTiles = new ArrayList<>();
 
         this.xPos = x;
         this.yPos = y;

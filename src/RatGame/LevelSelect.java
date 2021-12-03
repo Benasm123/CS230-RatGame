@@ -40,7 +40,6 @@ public class LevelSelect {
         for (String i : allLevels) {
 
             Button levelSelectButton = new Button(i);
-            // TODO: once have access to player profile i can do this.
             levelSelectButton.setOnAction(event -> {
                 try {
                     playPressed(event);
@@ -98,7 +97,7 @@ public class LevelSelect {
         scene.setRoot(loader.load());
 
         Level controller = loader.getController();
-        controller.createLevel(((Button)event.getSource()).getText());
+        controller.createLevel(((Button)event.getSource()).getText(), false);
     }
 
     /**
