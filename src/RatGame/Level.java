@@ -582,6 +582,7 @@ public class Level {
         setupItems(fileReader);
         setupLevelGrid(fileReader);
         setupRatSpawns(fileReader);
+        setupItemsOnBoard(fileReader);
     }
 
     /**
@@ -710,13 +711,75 @@ public class Level {
      */
     private void setupItemsOnBoard(Scanner fileReader) {
         while (fileReader.hasNextLine()) {
-            String itemToSpawn = fileReader.nextLine();
-            if (itemToSpawn.equals("")) {
+            String[] itemToSpawn = fileReader.nextLine().split(FILE_DELIMITER);
+            if (itemToSpawn.length == 0) {
                 return;
             }
-//            String[] itemToSpawnSplit = itemToSpawn.split(FILE_DELIMITER);
 
-            // TODO: find out how to save items, probably something like {TYPE X Y} would suffice.
+            String itemType = itemToSpawn[0];
+            int x = Integer.parseInt(itemToSpawn[1]);
+            int y = Integer.parseInt(itemToSpawn[2]);
+            boolean expired = Boolean.getBoolean(itemToSpawn[3]);
+
+            Item item = null;
+
+            switch (itemType) {
+                case "BMB":
+                    float timeSincePlaced = Float.parseFloat(itemToSpawn[4]);
+                    boolean exploding = Boolean.getBoolean(itemToSpawn[5]);
+                    item = new Bomb(x, y, expired, timeSincePlaced, exploding);
+                    break;
+                case "DTH":
+                    float timeLeft = Float.parseFloat(itemToSpawn[4]);
+                    boolean spawning = Boolean.getBoolean(itemToSpawn[5]);
+                    item = new DeathRat(x, y, expired, timeLeft, spawning);
+                    break;
+                case "FSX":
+                    item = new FemaleSexChange(x, y, expired);
+                    break;
+                case "MSX":
+                    item = new MaleSexChange(x, y, expired);
+                    break;
+                case "GAS":
+                    float timeTillSpread = Float.parseFloat(itemToSpawn[4]);
+                    float lifeRemaining = Float.parseFloat(itemToSpawn[5]);
+                    int currentRange = Integer.parseInt(itemToSpawn[6]);
+                    boolean spreading = Boolean.getBoolean(itemToSpawn[7]);
+
+                    ArrayList<Pair<Integer, Integer>> gasPositions = new ArrayList<>();
+                    for (int i = 8 ; i < itemToSpawn.length ; i += 2) {
+                        int gasX = Integer.parseInt(itemToSpawn[i]);
+                        int gasY = Integer.parseInt(itemToSpawn[i + 1]);
+                        gasPositions.add(new Pair<>(gasX, gasY));
+                    }
+
+                    item = new Gas(x, y, expired, timeTillSpread, lifeRemaining, currentRange, spreading, gasPositions);
+                    break;
+                case "STP":
+                    int hp = Integer.parseInt(itemToSpawn[4]);
+                    item = new NoEntrySign(x, y, expired, hp);
+                    break;
+                case "PSN":
+                    item = new Poison(x, y, expired);
+                    break;
+                case "STR":
+                    float sterileTimeSincePlaced = Float.parseFloat(itemToSpawn[4]);
+                    boolean sterileTilesGot = Boolean.getBoolean(itemToSpawn[5]);
+
+                    ArrayList<Pair<Integer, Integer>> sterilePositions = new ArrayList<>();
+                    for (int i = 6 ; i < itemToSpawn.length ; i += 2) {
+                        int sterileX = Integer.parseInt(itemToSpawn[i]);
+                        int sterileY = Integer.parseInt(itemToSpawn[i + 1]);
+                        sterilePositions.add(new Pair<>(sterileX, sterileY));
+                    }
+
+                    item = new Sterilisation(x, y, expired, sterileTimeSincePlaced, sterileTilesGot, sterilePositions);
+
+            }
+
+            if (item != null) {
+                addItemToLevel(item);
+            }
         }
     }
 
@@ -802,6 +865,7 @@ public class Level {
             writeItemSpawns(fileWriter);
             writeLevelGrid(fileWriter);
             writeRatSpawnGrid(fileWriter);
+            writeItemsInPlay(fileWriter);
 
             fileWriter.close();
         } catch (IOException e) {
@@ -891,6 +955,13 @@ public class Level {
     private void writeRatSpawnGrid(FileWriter fileWriter) throws IOException {
         for (Rat rat : rats) {
             fileWriter.write(rat.toString());
+            fileWriter.write("\n");
+        }
+    }
+
+    private void writeItemsInPlay(FileWriter fileWriter) throws IOException {
+        for (Item item : itemsInPlay) {
+            fileWriter.write(item.toString());
             fileWriter.write("\n");
         }
     }
@@ -1037,15 +1108,19 @@ public class Level {
                 Item itemUsed = itemsInInventory.get(itemType.getIndex()).pop();
                 itemUsed.setXPos(gridX);
                 itemUsed.setYPos(gridY);
-                itemUsed.getImageView().setTranslateX(itemUsed.getXPos() * Tile.TILE_WIDTH);
-                itemUsed.getImageView().setTranslateY(itemUsed.getYPos() * Tile.TILE_HEIGHT);
-                levelPane.getChildren().add(itemUsed.getImageView());
+                addItemToLevel(itemUsed);
                 itemUsed.use();
-                itemsInPlay.add(itemUsed);
                 removeItem(itemType);
             }
         }
         itemBeingDragged = null;
+    }
+
+    private void addItemToLevel(Item item){
+        item.getImageView().setTranslateX(item.getXPos() * Tile.TILE_WIDTH);
+        item.getImageView().setTranslateY(item.getYPos() * Tile.TILE_HEIGHT);
+        levelPane.getChildren().add(item.getImageView());
+        itemsInPlay.add(item);
     }
 
     /**

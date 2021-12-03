@@ -12,12 +12,24 @@ import javafx.scene.image.Image;
  */
 public class Poison extends Item {
 
+    // Image Paths
+    private static final String POISON_TEXTURE_PATH = "Assets/Poison.png";
+
     /**
      * Creates an instance of an item of type poison
      */
     public Poison() {
-        texture =  new Image("Assets/Poison.png");
+        texture =  new Image(POISON_TEXTURE_PATH);
         type = ItemType.POISON;
+    }
+
+    public Poison(int x, int y, boolean expired) {
+        this.type = ItemType.POISON;
+        this.texture = new Image(POISON_TEXTURE_PATH);
+
+        this.xPos = x;
+        this.yPos = y;
+        this.expired = expired;
     }
 
     /**
@@ -47,6 +59,14 @@ public class Poison extends Item {
     @Override
     public void update(float deltaTime) {
 
+    }
+
+    @Override
+    public String toString() {
+        return "PSN " +
+                xPos + " " +
+                yPos + " " +
+                expired;
     }
 
 }

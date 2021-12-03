@@ -10,18 +10,42 @@ import javafx.scene.image.Image;
  *
  */
 public class DeathRat extends Item {
+
+    // Constants
+    private static final int TIMER = 2;
+
+    // Image paths
+    private static final String DEATH_TEXTURE_PATH = "Assets/Death.png";
+
     private float timeLeft;
     private boolean isSpawning;
-
-    private static final int TIMER = 2;
 
     /**
      * Creates an instance of an item of type death rat.
      */
     public DeathRat() {
         timeLeft = TIMER;
-        texture = new Image("Assets/Death.png");
+        texture = new Image(DEATH_TEXTURE_PATH);
         type = ItemType.DEATH_RAT;
+    }
+
+    /**
+     * Constructor only used for loading the item state from a save file.
+     * @param x The Death rat items x position.
+     * @param y The death rat items y position.
+     * @param expired If the item has expired.
+     * @param timeLeft The time left until the death rat moves.
+     * @param isSpawning If the rat is spawning.
+     */
+    public DeathRat(int x, int y, boolean expired, float timeLeft, boolean isSpawning) {
+        this.type = ItemType.DEATH_RAT;
+        this.texture = new Image(DEATH_TEXTURE_PATH);
+
+        this.xPos = x;
+        this.yPos = y;
+        this.expired = expired;
+        this.timeLeft = timeLeft;
+        this.isSpawning = isSpawning;
     }
 
     public void setSpawning(boolean spawning) {
@@ -65,5 +89,15 @@ public class DeathRat extends Item {
             isSpawning = true;
             expired = true;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "DTH " +
+                xPos + " " +
+                yPos + " " +
+                expired + " " +
+                timeLeft + " " +
+                isSpawning;
     }
 }

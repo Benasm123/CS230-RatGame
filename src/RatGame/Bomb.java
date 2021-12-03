@@ -14,12 +14,15 @@ import java.util.ArrayList;
  *
  */
 public class Bomb extends Item {
+
     // Constants
     private static final int TIMER = 4;
     private static final Image BOMB_AT_4 = new Image("Assets/Bombcountdown/Bomb4.png");
     private static final Image BOMB_AT_3 = new Image("Assets/Bombcountdown/Bomb3.png");
     private static final Image BOMB_AT_2 = new Image("Assets/Bombcountdown/Bomb2.png");
     private static final Image BOMB_AT_1 = new Image("Assets/Bombcountdown/Bomb1.png");
+    private static final Image BOMB_TEXTURE = new Image("Assets/Bomb.png");
+
 
     // Variables
     private float timeSincePlaced;
@@ -32,10 +35,29 @@ public class Bomb extends Item {
      * Creates an instance of an item of type bomb
      */
     public Bomb() {
-        texture = new Image("Assets/Bomb.png");
-        isExploding = false;
         type = ItemType.BOMB;
         bombTiles = new ArrayList<>();
+        texture = BOMB_TEXTURE;
+        isExploding = false;
+    }
+
+    /**
+     * Constructor only used for loading the item state from a save file.
+     * @param x The x position of the bomb.
+     * @param y The y position of the bomb.
+     * @param expired If the bomb is expired or not.
+     * @param timeSincePlaced The time since the bomb has been placed.
+     * @param isExploding If the bomb is exploding.
+     */
+    public Bomb(int x, int y, boolean expired, float timeSincePlaced, boolean isExploding) {
+        this.type = ItemType.BOMB;
+        this.texture = BOMB_TEXTURE;
+
+        this.xPos = x;
+        this.yPos = y;
+        this.expired = expired;
+        this.timeSincePlaced = timeSincePlaced;
+        this.isExploding = isExploding;
     }
 
     /**
@@ -138,5 +160,15 @@ public class Bomb extends Item {
         else if (timeSincePlaced > TIMER - 1 && timeSincePlaced <= TIMER) {
             getImageView().setImage(BOMB_AT_1);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "BMB " +
+                xPos + " " +
+                yPos + " " +
+                expired + " " +
+                timeSincePlaced + " " +
+                isExploding;
     }
 }
