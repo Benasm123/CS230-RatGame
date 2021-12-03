@@ -17,6 +17,10 @@ public class Gas extends Item {
     private static final int SPREAD_RANGE = 5;
     private static final int SPREAD_INTERVAL = 1;
 
+    // Image Paths
+    private static final String GAS_TEXTURE_PATH = "Assets/Gas.png";
+    private static final String GAS_SPREAD_TEXTURE_PATH = "Assets/GasSpreadingTest.png";
+
     // Variables
     private boolean isSpreadingGas;
     private float timeTillSpread;
@@ -31,7 +35,7 @@ public class Gas extends Item {
      * Constructor initializing all variables
      */
     public Gas() {
-        texture = new Image("Assets/Gas.png");
+        texture = new Image(GAS_TEXTURE_PATH);
         lifeRemaining = LIFE_DURATION;
         type = ItemType.GAS;
 
@@ -39,6 +43,26 @@ public class Gas extends Item {
         currentRange = 0;
         gasSpreadPositions = new ArrayList<>();
         gasImageViews = new ArrayList<>();
+    }
+
+    public Gas(int x, int y, boolean expired, float timeTillSpread, float lifeRemaining,
+               int currentRange, boolean isSpreadingGas, ArrayList<Pair<Integer, Integer>> gasSpreadPositions) {
+        this.type = ItemType.GAS;
+        this.texture = new Image(GAS_TEXTURE_PATH);
+
+        this.xPos = x;
+        this.yPos = y;
+        this.expired = expired;
+        this.timeTillSpread = timeTillSpread;
+        this.lifeRemaining = lifeRemaining;
+        this.currentRange = currentRange;
+        this.isSpreadingGas = isSpreadingGas;
+        this.gasSpreadPositions = gasSpreadPositions;
+
+        this.gasImageViews = new ArrayList<>();
+        for (Pair<Integer, Integer> currentGasPosition : gasSpreadPositions) {
+            createGasSpreadImageView(currentGasPosition.getKey(), currentGasPosition.getValue());
+        }
     }
 
     /**
@@ -112,7 +136,7 @@ public class Gas extends Item {
      */
     private void createGasSpreadImageView(int xPos, int yPos) {
         ImageView gasSpreadImageView = new ImageView();
-        Image gasSpreadImage = new Image("Assets/GasSpreadingTest.png");
+        Image gasSpreadImage = new Image(GAS_SPREAD_TEXTURE_PATH);
         gasSpreadImageView.setImage(gasSpreadImage);
         gasSpreadImageView.setTranslateX(xPos * Tile.TILE_WIDTH);
         gasSpreadImageView.setTranslateY(yPos * Tile.TILE_HEIGHT);
@@ -214,5 +238,25 @@ public class Gas extends Item {
      */
     public void setIsSpreadingGas(boolean isSpreadingGas){
         this.isSpreadingGas = isSpreadingGas;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder positions = new StringBuilder();
+        for (Pair<Integer, Integer> position : gasSpreadPositions) {
+            positions.append(position.getKey()).append(" ").append(position.getValue()).append(" ");
+        }
+        // remove space at end
+        positions.deleteCharAt(positions.length()-1);
+
+        return "GAS " +
+                xPos + " " +
+                yPos + " " +
+                expired + " " +
+                timeTillSpread + " " +
+                lifeRemaining + " " +
+                currentRange + " " +
+                isSpreadingGas + " " +
+                positions;
     }
 }

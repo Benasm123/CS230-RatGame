@@ -11,10 +11,30 @@ import javafx.scene.image.Image;
  *
  */
 public class FemaleSexChange extends Item {
+
+    // Image paths
+    private static final String FEMALE_CHANGE_TEXTURE_PATH = "Assets/FemaleSexChange.png";
+
     public FemaleSexChange()
 	{
-        texture = new Image("Assets/FemaleSexChange.png");
+        type = ItemType.FEMALE_SEX_CHANGE;
+        texture = new Image(FEMALE_CHANGE_TEXTURE_PATH);
 	}
+
+    /**
+     * Constructor only used for loading the item state from a save file.
+     * @param x The items x position.
+     * @param y The items y position.
+     * @param expired If the item have expired.
+     */
+    public FemaleSexChange(int x, int y, boolean expired) {
+        this.type = ItemType.FEMALE_SEX_CHANGE;
+        this.texture = new Image(FEMALE_CHANGE_TEXTURE_PATH);
+
+        this.xPos = x;
+        this.yPos = y;
+        this.expired = expired;
+    }
 
     /**
      *
@@ -52,5 +72,13 @@ public class FemaleSexChange extends Item {
     @Override
     public void update(float deltaTime) {
 
+    }
+
+    @Override
+    public String toString() {
+        return "FSX " +
+                xPos + " " +
+                yPos + " " +
+                expired;
     }
 }

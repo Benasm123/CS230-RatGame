@@ -307,7 +307,7 @@ public class Rat {
             rat.texture = new Image("Assets/Male.png");
             rat.img.setImage(rat.texture);
         }else if(rat.isBaby==false && rat.isSterile==true){
-            rat.texture = new Image("SterileRatFamily/SterileMale.png");
+            rat.texture = new Image("Assets/SterileRatFamily/SterileMale.png");
             rat.img.setImage(rat.texture);
         }
 
@@ -322,7 +322,7 @@ public class Rat {
             rat.texture = new Image("Assets/Female.png");
             rat.img.setImage(rat.texture);
         }else if(rat.isBaby==false && rat.isSterile==true){
-            rat.texture = new Image("SterileRatFamily/SterileFemale.png");
+            rat.texture = new Image("Assets/SterileRatFamily/SterileFemale.png");
             rat.img.setImage(rat.texture);
         }
    }
