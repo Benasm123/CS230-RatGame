@@ -105,6 +105,8 @@ public class Level {
      * Called once the level is loaded and initialized the scene.
      */
     public void initialize() {
+        fpsCountText.setVisible(MainMenu.isShowFPS());
+
         firstLoop = true;
 
         // Main game loop code, that sets up the timer.

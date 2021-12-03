@@ -31,6 +31,7 @@ public class MainMenu {
 
     // Holds which profile is currently selected.
     private static PlayerProfile currentProfile;
+    private static boolean showFPS;
 
     // FXML variables.
     @FXML
@@ -45,10 +46,34 @@ public class MainMenu {
      */
     public void initialize(){
         updateMessage();
-        loadLastProfile();
+        loadConfigFile();
         updateSelectedProfile();
-
         checkIfPlayerHasSave();
+    }
+
+    public void loadConfigFile() {
+        File configFile = new File("src//Config//ConfigFile");
+
+        if (configFile.exists()) {
+            try {
+                Scanner reader = new Scanner(configFile);
+
+                String profileName = reader.nextLine();
+                loadLastProfile(profileName);
+
+                if (reader.hasNextLine()) {
+                    String stringShowFPS = reader.nextLine();
+                    System.out.println(stringShowFPS);
+                    showFPS = stringShowFPS.charAt(0) == 't';
+                    System.out.println(stringShowFPS);
+                } else {
+                    showFPS = false;
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void checkIfPlayerHasSave() {
@@ -90,25 +115,24 @@ public class MainMenu {
                 }
             }
         }
+    }
 
+    public static boolean isShowFPS() {
+        return showFPS;
+    }
+
+    public static void setShowFPS(boolean showFPS) {
+        MainMenu.showFPS = showFPS;
+        updateConfig();
     }
 
     /**
      * Will load the last used profile.
      */
-    private void loadLastProfile() {
-        File configFile = new File("src//Config//ConfigFile");
-        if (configFile.exists()) {
-            try {
-                Scanner reader = new Scanner(configFile);
-                String profileName = reader.nextLine();
-                PlayerProfile playerProfile = new PlayerProfile(profileName);
-                playerProfile.load(profileName);
-                setCurrentProfile(playerProfile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    private void loadLastProfile(String profileName) {
+        PlayerProfile playerProfile = new PlayerProfile(profileName);
+        playerProfile.load(profileName);
+        setCurrentProfile(playerProfile);
     }
     
     
@@ -250,8 +274,10 @@ public class MainMenu {
         File myObj = new File("src//Config//ConfigFile");
         try {
             FileWriter writer = new FileWriter(myObj);
-            writer.write(MainMenu.getCurrentProfile().getName());
+            writer.write(currentProfile.getName() + "\n");
+            writer.write(String.valueOf(showFPS));
             writer.close();
+
         } catch (IOException e) {
             System.out.println("Seems like the file cant be written to!");
             e.printStackTrace();
