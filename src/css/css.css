@@ -1,0 +1,16 @@
+* {
+    -fx-font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.button {
+    -fx-border-color: yellow;
+    -fx-border-width: 10px;
+    -fx-background-color: darkgreen;
+    -fx-background-radius: 15px;
+    -fx-text-fill: #ffffff;
+}
+
+.button:hover {
+    -fx-background-color: white;
+    -fx-color: black;
+}
