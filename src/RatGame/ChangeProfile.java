@@ -31,6 +31,8 @@ public class ChangeProfile {
 
         for (String i : allProfiles){
             Button changeProfileButton = new Button(i);
+            changeProfileButton.setPrefWidth(200);
+            changeProfileButton.setPrefHeight(30);
             changeProfileButton.setOnAction(event -> {
                 try {
                     playPressed(event);

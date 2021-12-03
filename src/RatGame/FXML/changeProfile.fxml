@@ -21,6 +21,6 @@
          </font></Button>
    </bottom>
    <center>
-      <VBox fx:id="profiles" alignment="CENTER" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
+      <VBox fx:id="profiles" alignment="CENTER" prefHeight="200.0" prefWidth="400.0" spacing="20.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
