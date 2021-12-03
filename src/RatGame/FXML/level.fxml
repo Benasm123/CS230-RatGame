@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane fx:id="mainStackPane" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#pauseGame" stylesheets="@../../css/css.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RatGame.Level">
+<StackPane fx:id="mainStackPane" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyPressed="#pauseGameKey" stylesheets="@../../css/css.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RatGame.Level">
    <children>
       <SplitPane fx:id="levelSplitPane" dividerPositions="0.8" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0">
         <items>
@@ -112,13 +112,7 @@
                               <Insets left="10.0" />
                            </GridPane.margin>
                         </Text>
-                        <Button fx:id="levelSaveButton" mnemonicParsing="false" onAction="#saveLevel" text="Save" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER">
-                           <GridPane.margin>
-                              <Insets />
-                           </GridPane.margin>
-                        </Button>
-                        <Button fx:id="ExitButton" mnemonicParsing="false" onAction="#exitPressed" text="Exit" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
-                        <Button mnemonicParsing="false" onAction="#pauseLoop" text="Pause" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
+                        <Button mnemonicParsing="false" onAction="#pauseGameAction" text="Pause" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
                      </children>
                   </GridPane>
                </children>
@@ -181,7 +175,7 @@
                   </Label>
                   <Button mnemonicParsing="false" onAction="#exitPressed" prefHeight="40.0" prefWidth="100.0" text="Quit" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                   <Button mnemonicParsing="false" onAction="#saveLevel" prefHeight="40.0" prefWidth="100.0" text="Save" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                  <Button layoutX="161.0" layoutY="324.0" mnemonicParsing="false" onAction="#continuePressed" prefHeight="40.0" prefWidth="100.0" text="Continue" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <Button layoutX="161.0" layoutY="324.0" mnemonicParsing="false" onAction="#pauseGameAction" prefHeight="40.0" prefWidth="100.0" text="Continue" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                </children>
             </GridPane>
          </children></StackPane>

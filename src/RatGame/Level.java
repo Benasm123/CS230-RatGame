@@ -254,14 +254,14 @@ public class Level {
         isPaused = !isPaused;
     }
 
-    public void pauseGame(KeyEvent e) {
+    public void pauseGameKey(KeyEvent e) {
         if (KeyCode.ESCAPE == e.getCode()) {
             pauseLoop();
             pauseScreen.setVisible(isPaused);
         }
     }
 
-    public void continuePressed(ActionEvent e) {
+    public void pauseGameAction(ActionEvent e) {
         pauseLoop();
         pauseScreen.setVisible(isPaused);
     }
