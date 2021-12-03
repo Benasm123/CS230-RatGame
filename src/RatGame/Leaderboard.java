@@ -7,6 +7,8 @@
  */
 package RatGame;
 
+import javafx.util.Pair;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -23,25 +25,97 @@ import java.util.Scanner;
 // need to save this leaderboard.
 public class Leaderboard {
 	// creates a list of player proles called leaderboard
-	private static int LVL;
+	private int level;
+    private String levelName;
 	
-	public static ArrayList <PlayerProfile> leaderboard;
+	public static ArrayList<Pair<String, Integer>> leaderboard;
+    public ArrayList<Pair<String, Integer>> lb;
 
-	public Leaderboard(int lvl) {
+	public Leaderboard(int level) {
 		leaderboard = new ArrayList<>();
-		LVL = lvl;
+		this.level = level;
 		save();
 	}
-	public Leaderboard() {
-		leaderboard = new ArrayList<>();
-	}
-	/**
+
+    public Leaderboard(String levelName){
+        this.levelName = levelName;
+        lb = new ArrayList<>();
+        loadLeaderboard();
+    }
+
+    public Leaderboard() {
+        leaderboard = new ArrayList<>();
+    }
+
+    public void updateLeaderboard(String level, String profileName, int score) {
+        addToLeaderboard(profileName, score);
+
+        while (lb.size() > 10) {
+            lb.remove(10);
+        }
+
+        saveLeaderboard();
+    }
+
+    public void addToLeaderboard(String profileName, int score) {
+        for (int i = 0 ; i < lb.size() ; i++) {
+            int scoreToCheckAgainst = lb.get(i).getValue();
+            if (scoreToCheckAgainst < score) {
+                lb.add(i, new Pair<>(profileName, score));
+                return;
+            }
+        }
+        lb.add(new Pair<>(profileName, score));
+    }
+
+    public void loadLeaderboard() {
+        File leaderboardFile = new File("src/Leaderboards/" + levelName);
+
+        try {
+            if (!leaderboardFile.exists()) {
+                if (leaderboardFile.createNewFile()) {
+                    System.out.println("Created Leaderboard File");
+                }
+            }
+
+            Scanner fileReader = new Scanner(leaderboardFile);
+            while (fileReader.hasNextLine()) {
+                String[] entry = fileReader.nextLine().split(" ");
+                lb.add(new Pair<>(entry[0], Integer.parseInt(entry[1])));
+            }
+            fileReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveLeaderboard() {
+        File leaderboardFile = new File("src/Leaderboards/" + levelName);
+
+        try {
+            FileWriter fileWriter = new FileWriter(leaderboardFile);
+            for (Pair<String, Integer> entry : lb) {
+                fileWriter.write(entry.getKey() + " " + entry.getValue() + "\n");
+            }
+
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public ArrayList<Pair<String, Integer>> getLb() {
+        return lb;
+    }
+
+    /**
 	 * adds a player profile to the leaderboard and sorts it automatically
 	 * @param profile
 	 */
 	public void addProfile(PlayerProfile profile) {
-		leaderboard.add(profile);
-		Collections.sort(leaderboard);
+//		leaderboard.add(profile);
+//		Collections.sort(leaderboard);
 		if(leaderboard.size() > 10) {
 			leaderboard.remove(10);
 		}
@@ -62,7 +136,7 @@ public class Leaderboard {
 	private void newFile() {
 		try {
 			new File("src/Leaderboards").mkdir();
-			File myObj = new File("src/Leaderboards/" + LVL + ". Leaderboard.txt");
+			File myObj = new File("src/Leaderboards/" + level + ". Leaderboard.txt");
 			if (myObj.exists()) {
 				deleteSave();
 			}
@@ -83,9 +157,9 @@ public class Leaderboard {
 	public void save() {
 		newFile();
 		try {
-			FileWriter writer = new FileWriter("src/Leaderboards/" + LVL + ". Leaderboard.txt");
+			FileWriter writer = new FileWriter("src/Leaderboards/" + level + ". Leaderboard.txt");
 			for (int i = 0; i < leaderboard.size(); i++) {
-				writer.write(leaderboard.get(i).getName() + "," +  leaderboard.get(i).getHighScore() +"\n");
+//				writer.write(leaderboard.get(i).getName() + "," +  leaderboard.get(i).getHighScore() +"\n");
 			}
 			writer.close();
 			System.out.println("Saved");
@@ -96,7 +170,7 @@ public class Leaderboard {
 		}
 	}
 	public void deleteSave() {
-		File myObj = new File("src/Leaderboards/" + LVL + ". Leaderboard.txt");
+		File myObj = new File("src/Leaderboards/" + level + ". Leaderboard.txt");
 		if (myObj.delete()) {
 			System.out.println("Save deleted");
 		}
@@ -114,7 +188,7 @@ public class Leaderboard {
 		    	  	String[] param = line.split(",");
 		    	  	PlayerProfile player = new PlayerProfile(param[0]);
 		    	  	player.setHighScore(Integer.parseInt(param[1]));
-					leaderboard.add(player);
+//					leaderboard.add(player);
 		      }
 		      in.close();
 		}
