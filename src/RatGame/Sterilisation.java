@@ -59,10 +59,10 @@ public class Sterilisation extends Item {
     }
 
     /**
-     * method which returns the list of sterilized tiles and sets check for tiles to true
+     * method which adds to the list of tiles that are sterilized and sets the check for sterile tiles to true
      * @param levelGrid
      */
-    public void getSterilizedTiles(Tile[][] levelGrid) {
+    public void addToSterilizedTiles(Tile[][] levelGrid) {
 
       for (int i = -SPREAD_RADIUS; i <= SPREAD_RADIUS; i++) {
             for (int j = -SPREAD_RADIUS; j <= SPREAD_RADIUS; j++) {

@@ -279,7 +279,7 @@ public class Level {
                 Sterilisation sterilisationItem = (Sterilisation) item;
                 sterilisationItem.checkIfRatOnSterileTile(rats);
                 if (!sterilisationItem.sterileTilesGot()) {
-                    sterilisationItem.getSterilizedTiles(levelGrid);
+                    sterilisationItem.addToSterilizedTiles(levelGrid);
                     levelPane.getChildren().addAll(sterilisationItem.getSterileTilesImages());
                 }
             }
