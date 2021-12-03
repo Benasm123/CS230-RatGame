@@ -923,9 +923,18 @@ public class Level {
                     if (oldSave.delete()) {
                         System.out.println("Old save file deleted.");
                     }
+                } else if (level.equals(getSaveFileName())) {
+                    File oldSave = new File(SAVE_FOLDER_PATH + getSaveFileName());
+                    if (oldSave.delete()) {
+                        System.out.println("Old save file deleted.");
+                    }
                 }
             }
         }
+    }
+
+    private String getSaveFileName() {
+        return levelName.charAt(0) + MainMenu.getCurrentProfile().getName();
     }
 
     /**
