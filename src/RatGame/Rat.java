@@ -286,8 +286,8 @@ public class Rat {
         }
 
         growUpTime += deltaTime;
-        sterile();
         this.sex(deltaTime);
+        sterile();
         this.setGetRotation(img);
         this.move(deltaTime, levelGrid);
         if(growUpTime>=timer){
