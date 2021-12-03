@@ -11,9 +11,11 @@ import javafx.scene.image.Image;
  *
  */
 public class Tile {
+    // Constants
     public static final int TILE_HEIGHT = 50;
     public static final int TILE_WIDTH = 50;
 
+    // Variables
     private float xPos;
     private float yPos;
     private TileType type;

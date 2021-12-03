@@ -15,6 +15,7 @@ public enum TileType {
     Tunnel(new Image("Assets/Tunnel.png"),true),
     VerticalTunnel (new Image("Assets/TunnelVertical.png"),true);
 
+    // Variables
     Image textureName;
     boolean isTraversable;
 
