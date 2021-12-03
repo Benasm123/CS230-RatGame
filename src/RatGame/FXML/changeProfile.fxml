@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../../css/css.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RatGame.ChangeProfile">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: turquoise;" stylesheets="@../../css/css.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RatGame.ChangeProfile">
    <top>
       <Label alignment="TOP_CENTER" text="Profiles" BorderPane.alignment="CENTER">
          <font>
@@ -21,6 +21,6 @@
          </font></Button>
    </bottom>
    <center>
-      <VBox fx:id="profiles" alignment="CENTER" prefHeight="200.0" prefWidth="400.0" style="-fx-background-color: turquoise;" stylesheets="@../../css/css.css" BorderPane.alignment="CENTER" />
+      <VBox fx:id="profiles" alignment="CENTER" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
