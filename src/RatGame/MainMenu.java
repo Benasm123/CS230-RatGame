@@ -55,13 +55,12 @@ public class MainMenu {
      * Loads the config file and loads setting and profiles last used.
      */
     public void loadConfigFile() {
-        File configFile = new File("src//Config//ConfigFile");
-
-        if (!configFile.exists()) {
-            return;
-        }
-
         try {
+            File configFile = new File("src/Config/ConfigFile");
+
+            if (!configFile.exists()) {
+                return;
+            }
             Scanner reader = new Scanner(configFile);
 
             if (reader.hasNextLine()) {
@@ -75,10 +74,11 @@ public class MainMenu {
 
             if (reader.hasNextLine()) {
                 String stringShowFPS = reader.nextLine();
-                showFPS = stringShowFPS.charAt(0) == 't';
+                setShowFPS(stringShowFPS.charAt(0) == 't');
             } else {
-                showFPS = false;
+                setShowFPS(false);
             }
+
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -206,9 +206,11 @@ public class MainMenu {
             InputStream requestReturn = sendRequestToURL(MESSAGE_URL);
             String puzzle = getStringFromBytes(requestReturn);
             String answer = solvePuzzle(puzzle);
+            requestReturn.close();
 
             InputStream solutionReturn = sendRequestToURL(SOLUTION_URL + answer);
             String message = getStringFromBytes(solutionReturn);
+            solutionReturn.close();
 
             messageDay.setText(message);
         } catch (IOException e) {
@@ -315,7 +317,7 @@ public class MainMenu {
     public static void updateConfig() {
         File configFile = new File("src/Config/ConfigFile");
         try {
-            FileWriter writer = new FileWriter(configFile);
+            FileWriter writer = new FileWriter(configFile, false);
             writer.write(currentProfile.getName() + "\n");
             writer.write(String.valueOf(showFPS));
             writer.close();

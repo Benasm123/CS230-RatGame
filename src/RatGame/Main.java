@@ -56,7 +56,7 @@ public class Main extends Application {
      */
     private void createConfigFile(){
         new File("src/Config").mkdir();
-        File myObj = new File("src//Config//ConfigFile");
+        File myObj = new File("src/Config/ConfigFile");
         try {
             if (myObj.createNewFile()) {
                 System.out.println("Config Created!");

@@ -5,67 +5,9 @@ import javafx.util.Pair;
 import java.util.Random;
 import java.util.ArrayList;
 
-
-// General notes: Careful with magic numbers, and make sure almost all variables are private and if we need to use them create getters
-// and setters.
-
-// All class variables need to be private. some of yours arnt set to anything.
-// Need to look at variable names, they need to be meaningful, i see a timer and timer2... might be better to change
-// Try to assign things in constructors or if your keeping things constant then make them constants eg:
-// adult and babySpeed can be static final, make sure to name all caps like ADULT_SPEED, and BABY_SPEED
-
-// Add a variable for the velocity of the rat, right now in the check paths you have 5 and 0 everywhere, you can keep
-// the 0 but make sure the 5 is a variable not a magic number. This will make it easier for us and also its required by
-// liam.
-
-// Try to move all initialization into the constructor to stay consistent.
-
-// Youre choosing the number of baby rats to spawn in the class, better to do it when the rat gets pregnant as this will
-// add variance and should be in a function really anyway.
-
-// You have stuff like isBaby==true, first this can be simplified to isBaby and would be preferred, and also you need to
-// Make sure there's a space on both sides of binary operators.
-// Same with !isBaby
-
-// I would move the ratType enum into its own file and out of the rat class, as they are technically classes, and it
-// specifies on the conventions that classes need to be in their own files.
-// this will cause errors through the code, but if you go through and just remove the Rat. from all the Rat.ratType calls
-// Should fix it.
-
-// Check paths can still get rid of most of the paramaters, inlucidng x,y and lastx,y to clean it up.
-// Also can set velocity directly instead of returning a pair.
-
-// Once above has been done you can tidy it by having the if statements only changing the x and y, to:
-        //       if (xVel < 0){
-        //            if ((int)xPos+1 != lastX) {
-        //                xPos = (int)xPos+1;
-        //                yPos = (int)yPos;
-        //            }
-        //        } else if (yVel < 0) {
-        //            if ((int)yPos+1 != lastY) {
-        //                xPos = (int)xPos;
-        //                yPos = (int)yPos+1;
-        //            }
-        //        } else {
-        //            if((int)xPos != lastX || (int)yPos != lastY){
-        //                xPos = (int)xPos;
-        //                yPos = (int)yPos;
-        //        }
-        //        checkPaths(levelGrid);
-        //        lastX = (int) xPos;
-        //        lastY = (int) yPos;
-    // }
-// Formating might be off, but that should work and looks a lot cleaner
-// This is still quite long mihgt be worth splitting up into another method if its doign too many things
-
-// You have a method called setGetRotation, and this is confusing and doesnt need to do that, just name it
-// rotate() and it doesnt ened to return anything.
-
-// Try go through the method and work out what doesn't need to be called in other classes and set them to private.
-// Also, methods need to be ordered in the order:
-// First: public
-// protected
-// then private.
+/**
+ *
+ */
 public class Rat {
 
     // Constants
