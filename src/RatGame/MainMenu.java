@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.Scanner;
 
 // TODO: Add functionality to settings
-// TODO: Add player profile selection and changing
 
 /**
  * The main menu scene controller. Controls all main menu functionality.
@@ -34,12 +33,9 @@ public class MainMenu {
     private static boolean showFPS;
 
     // FXML variables.
-    @FXML
-    private Text messageDay;
-    @FXML
-    private Text selectedProfile;
-    @FXML
-    private Button playButton;
+    @FXML private Text messageDay;
+    @FXML private Text selectedProfile;
+    @FXML private Button playButton;
 
     /**
      * Set up the main menu when loaded.
@@ -55,35 +51,43 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Loads the config file and loads setting and profiles last used.
+     */
     public void loadConfigFile() {
         File configFile = new File("src//Config//ConfigFile");
 
-        if (configFile.exists()) {
-            try {
-                Scanner reader = new Scanner(configFile);
+        if (!configFile.exists()) {
+            return;
+        }
 
-                if (reader.hasNextLine()) {
-                    String profileName = reader.nextLine();
-                    loadProfile(profileName);
-                } else {
-                    String[] allProfiles = new File("src/Profiles").list();
-                    assert allProfiles != null;
-                    loadProfile(allProfiles[0]);
-                }
+        try {
+            Scanner reader = new Scanner(configFile);
 
-                if (reader.hasNextLine()) {
-                    String stringShowFPS = reader.nextLine();
-                    showFPS = stringShowFPS.charAt(0) == 't';
-                } else {
-                    showFPS = false;
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (reader.hasNextLine()) {
+                String profileName = reader.nextLine();
+                loadProfile(profileName);
+            } else {
+                String[] allProfiles = new File("src/Profiles").list();
+                assert allProfiles != null;
+                loadProfile(allProfiles[0]);
             }
+
+            if (reader.hasNextLine()) {
+                String stringShowFPS = reader.nextLine();
+                showFPS = stringShowFPS.charAt(0) == 't';
+            } else {
+                showFPS = false;
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Check whether there is a save to load.
+     */
     private void checkIfPlayerHasSave() {
         String[] allSaves = new File("src/Saves/").list();
 
@@ -93,18 +97,30 @@ public class MainMenu {
 
         for (String save : allSaves) {
             if (save.substring(1).startsWith(MainMenu.currentProfile.getName())) {
-                playButton.setText("Continue!");
-                playButton.setOnAction(event -> {
-                    try {
-                        continueGame(event);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+                updatePlayButton();
             }
         }
     }
 
+    /**
+     * Updates the play button to show that there is a save to load.
+     */
+    private void updatePlayButton() {
+        playButton.setText("Continue!");
+        playButton.setOnAction(event -> {
+            try {
+                continueGame(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Continues the game from a previous save.
+     * @param event The event which triggered the action.
+     * @throws IOException Throws an error if the level file cannot be found.
+     */
     public void continueGame(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -125,10 +141,18 @@ public class MainMenu {
         }
     }
 
+    /**
+     * Get if the fps is set to showing.
+     * @return True if fps is set to show, else false.
+     */
     public static boolean isShowFPS() {
         return showFPS;
     }
 
+    /**
+     * Sets whether the fps is to be shown or hidden.
+     * @param showFPS Whether the fps is to be shown.
+     */
     public static void setShowFPS(boolean showFPS) {
         MainMenu.showFPS = showFPS;
         updateConfig();
@@ -151,6 +175,11 @@ public class MainMenu {
         System.exit(0);
     }
 
+    /**
+     * Switched the scene to the credits page.
+     * @param event The event that triggered the action.
+     * @throws IOException Throws an error if the credits page file is not found.
+     */
     public void goToCredits(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/CreditsPage.fxml")));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -159,7 +188,7 @@ public class MainMenu {
     }
 
     /**
-     * shows current profile
+     * Updates text to show the current profile selected.
      */
     private void updateSelectedProfile() {
     	if (currentProfile == null) {
@@ -170,7 +199,7 @@ public class MainMenu {
     }
 
     /**
-     * gives a message everytime the game started
+     * Updates the message of the day.
      */
     public void updateMessage() {
         try {
@@ -280,21 +309,19 @@ public class MainMenu {
         scene.setRoot(root);
     }
 
-
-
     /**
-     * Updates config file to save profile loaded.
+     * Updates config file to save settings.
      */
     public static void updateConfig() {
-        File myObj = new File("src//Config//ConfigFile");
+        File configFile = new File("src/Config/ConfigFile");
         try {
-            FileWriter writer = new FileWriter(myObj);
+            FileWriter writer = new FileWriter(configFile);
             writer.write(currentProfile.getName() + "\n");
             writer.write(String.valueOf(showFPS));
             writer.close();
 
         } catch (IOException e) {
-            System.out.println("Seems like the file cant be written to!");
+            System.out.println("Error: Cant write to file.");
             e.printStackTrace();
         }
     }

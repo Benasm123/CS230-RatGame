@@ -9,8 +9,10 @@ import javafx.scene.image.ImageView;
  */
 public abstract class Item {
 
-    // Can make these all private and add getters and setter that are public.
-    // TODO: in all items need to set variables using setters and use make this private.
+    // Constants
+    private static final float HITBOX_OFFSET = 0.1f;
+    private static final float HITBOX_WIDTH_HEIGHT = 1.0f - HITBOX_OFFSET * 2;
+
     // Variables all items have.
     protected ItemType type;
     protected Image texture;
@@ -28,8 +30,11 @@ public abstract class Item {
         expired = false;
     }
 
+    /**
+     * Creates a hitbox for the item.
+     */
     public void createHitBox() {
-        hitBox = new HitBox(xPos + 0.1f, yPos + 0.1f, 0.8f, 0.8f);
+        hitBox = new HitBox(xPos + HITBOX_OFFSET, yPos + HITBOX_OFFSET, HITBOX_WIDTH_HEIGHT, HITBOX_WIDTH_HEIGHT);
     }
 
     /**

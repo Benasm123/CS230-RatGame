@@ -51,6 +51,7 @@ public class Level {
     private static final String FILE_DELIMITER = " ";
     private static final int INVENTORY_GRID_OFFSET = 1;
     private static final int ITEM_MAX_STACK = 4;
+    private static final String TIME_LEFT_TEXT = "Time left: ";
 
     // Fps related variables
     private ArrayDeque<Float> pastDeltaTimes;
@@ -81,6 +82,7 @@ public class Level {
     private int score;
     private int expectedTime;
     private float totalTimeOnLevel;
+    private int lastTimeStamp;
 
     // Mouse variables
     private double lastMouseX;
@@ -189,7 +191,8 @@ public class Level {
         // this gets the type of the item being dropped
         ItemType itemType = null;
         for (ItemType type : ItemType.values()) {
-            if (type.getTexture().equals(itemBeingDragged.getImage().getUrl().substring(itemBeingDragged.getImage().getUrl().length() - type.getTexture().length()))){
+            if (type.getTexture().equals(itemBeingDragged.getImage().getUrl().substring(
+                    itemBeingDragged.getImage().getUrl().length() - type.getTexture().length()))){
                 itemType = type;
             }
         }
@@ -207,14 +210,9 @@ public class Level {
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < gameScreen.getWidth() &&
                 droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < gameScreen.getHeight()) {
             if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
-                for (Item item : itemsInPlay) {
-                    if (item.xPos == gridX && item.yPos == gridY) {
-                        return;
-                    }
+                if (alreadyItemOnTile(gridX, gridY)) {
+                    return;
                 }
-
-                // TODO: TESTING ONLY DELETE
-                System.out.println("X: " + gridX + " Y: " + gridY);
 
                 Item itemUsed = itemsInInventory.get(itemType.getIndex()).pop();
                 itemUsed.setXPos(gridX);
@@ -243,7 +241,7 @@ public class Level {
         if (!isSave) {
             controller.createLevel(levelName, false);
         } else {
-            String[] allLevels = new File("src/Levels/").list();
+            String[] allLevels = new File(LEVEL_FOLDER_PATH).list();
             assert allLevels != null;
             for (String level : allLevels) {
                 if (level.startsWith(levelName.substring(0, 1))){
@@ -260,16 +258,19 @@ public class Level {
         isPaused = !isPaused;
     }
 
-    public void pauseGameKey(KeyEvent e) {
-        if (isGameFinished) {
-            return;
-        }
-        if (KeyCode.ESCAPE == e.getCode()) {
-            pauseLoop();
-            pauseScreen.setVisible(isPaused);
+    /**
+     * Pause the game if an escape key is pressed.
+     * @param event The event which triggered this action.
+     */
+    public void pauseGameKey(KeyEvent event) {
+        if (KeyCode.ESCAPE == event.getCode()) {
+            pauseGameAction();
         }
     }
 
+    /**
+     * Pauses the game and bring up a pause screen.
+     */
     public void pauseGameAction() {
         if (isGameFinished) {
             return;
@@ -326,7 +327,7 @@ public class Level {
         score = 0;
 
         if (isSave) {
-            String[] allLevels = new File("src/Levels/").list();
+            String[] allLevels = new File(LEVEL_FOLDER_PATH).list();
 
             assert allLevels != null;
             for (String level : allLevels) {
@@ -350,6 +351,8 @@ public class Level {
             System.out.println("Can not find file: " + src);
             e.printStackTrace();
         }
+
+        timeText.setText(TIME_LEFT_TEXT + expectedTime);
 
         drawTiles();
     }
@@ -396,7 +399,7 @@ public class Level {
         } else if (levelGridStackPane.getWidth() > gameScreen.getWidth()) {
             if (levelGridStackPane.getTranslateX() > 0) {
                 levelGridStackPane.setTranslateX(0.0);
-            } else if (levelGridStackPane.getTranslateX() < gameScreen.getWidth() - levelGridStackPane.getWidth() ) {
+            } else if (levelGridStackPane.getTranslateX() < gameScreen.getWidth() - levelGridStackPane.getWidth()) {
                 levelGridStackPane.setTranslateX(gameScreen.getWidth() - levelGridStackPane.getWidth());
             }
             if (levelGridStackPane.getTranslateY() < 0) {
@@ -440,12 +443,31 @@ public class Level {
         updateRatsAliveText();
         updateItems(deltaTime);
         updateItemsInPlay(deltaTime);
-        checkSteppedOn();
+        checkIfItemSteppedOnByRat();
         checkWinLoseCondition();
         updateTimeText();
         updateDeadRats(deltaTime);
     }
 
+    /**
+     * Check whether this tile already has an item on it.
+     * @param gridX The grid x position to check.
+     * @param gridY The grid y position to check.
+     * @return True if the tile is occupied with an item, otherwise false;
+     */
+    private boolean alreadyItemOnTile(int gridX, int gridY) {
+        for (Item item : itemsInPlay) {
+            if (item.xPos == gridX && item.yPos == gridY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Updates all the dead rat icons and removes them when needed.
+     * @param deltaTime The time since the last frame.
+     */
     private void updateDeadRats(float deltaTime) {
         Iterator<ImageView> deadRatsIterator = deadRats.iterator();
         while (deadRatsIterator.hasNext()) {
@@ -459,11 +481,13 @@ public class Level {
         }
     }
 
-    int lastTimeStamp;
-
+    /**
+     * Updates the text which shows the expected time left on the screen.
+     */
     private void updateTimeText() {
         if ((int) totalTimeOnLevel != lastTimeStamp) {
-            timeText.setText("Time left: " + (expectedTime - (int) totalTimeOnLevel));
+            timeText.setText(TIME_LEFT_TEXT + (expectedTime - (int) totalTimeOnLevel));
+            lastTimeStamp = (int) totalTimeOnLevel;
         }
     }
 
@@ -476,54 +500,20 @@ public class Level {
         while (itemIterator.hasNext()) {
             Item item = itemIterator.next();
             if (item.getType() == ItemType.DEATH_RAT) {
-                if (((DeathRat) item).getSpawning()) {
-                    Rat deathRat = createRat(Rat.ratType.DEATHRAT, item.getXPos(), item.getYPos(), false);
-                    rats.add(deathRat);
-                    ((DeathRat) item).setSpawning(false);
-                }
+                DeathRat deathRat = (DeathRat) item;
+                updateDeathRatItem(deathRat);
             } else if (item.getType() == ItemType.BOMB) {
-                if (((Bomb) item).isExploding()){
-                    ArrayList<Pair<Integer, Integer>> tilesToClear = ((Bomb) item).getBombTiles(levelGrid);
-                    for (Pair<Integer, Integer> coordinate : tilesToClear) {
-                        Integer xPos = coordinate.getKey();
-                        Integer yPos = coordinate.getValue();
-                        for (Rat rat : rats) {
-                            if ((int)rat.getxPos() == xPos && (int)rat.getyPos() == yPos) {
-                                rat.die();
-                            }
-                        }
-                        for (Item i : itemsInPlay) {
-                            if (i.getXPos() == xPos && i.getYPos() == yPos) {
-                                i.setExpired(true);
-                            }
-                        }
-                    }
-                }
+                Bomb bombItem = (Bomb) item;
+                updateBomb(bombItem);
             } else if (item.getType() == ItemType.GAS) {
                 Gas gasItem = (Gas) item;
-                gasItem.checkIfRatsInGas(deltaTime, rats);
-                if (gasItem.isSpreadingGas()) {
-                    gasItem.spreadGas(levelGrid);
-                    updateGasSpread(gasItem);
-                }
+                updateGas(gasItem, deltaTime);
             } else if (item.getType() == ItemType.STERILISATION) {
                 Sterilisation sterilisationItem = (Sterilisation) item;
-                sterilisationItem.checkIfRatOnSterileTile(rats);
-                if (!sterilisationItem.sterileTilesGot()) {
-                    sterilisationItem.addToSterilizedTiles(levelGrid);
-                    levelGridStackPane.getChildren().addAll(sterilisationItem.getSterileTilesImages());
-                }
+                updateSterilization(sterilisationItem);
             }
             if (item.expired) {
-                if (item.getType() == ItemType.GAS) {
-                    levelGridStackPane.getChildren().removeAll(((Gas) item).getGasImageViews());
-                }
-
-                if (item.getType() == ItemType.STERILISATION) {
-                    levelGridStackPane.getChildren().removeAll(((Sterilisation) item).getSterileTilesImages());
-                }
-
-                levelGridStackPane.getChildren().remove(item.imageView);
+                removeExpiredItemFromPlay(item);
                 itemIterator.remove();
             }
         }
@@ -535,6 +525,89 @@ public class Level {
         updateTunnels();
     }
 
+    /**
+     * Removes the expired items from play.
+     * @param item The expired item to remove from play.
+     */
+    private void removeExpiredItemFromPlay(Item item) {
+
+        // Gas and sterilisation need to have children removed as well.
+        if (item.getType() == ItemType.GAS) {
+            levelGridStackPane.getChildren().removeAll(((Gas) item).getGasImageViews());
+        }
+
+        if (item.getType() == ItemType.STERILISATION) {
+            levelGridStackPane.getChildren().removeAll(((Sterilisation) item).getSterileTilesImages());
+        }
+
+        levelGridStackPane.getChildren().remove(item.imageView);
+    }
+
+    /**
+     * Updates the sterilisation item, getting the tiles needed if not already got, and sterilises rats.
+     * @param sterilisationItem The sterilisation item to update.
+     */
+    private void updateSterilization(Sterilisation sterilisationItem) {
+        sterilisationItem.checkIfRatOnSterileTile(rats);
+        if (!sterilisationItem.sterileTilesGot()) {
+            sterilisationItem.addToSterilizedTiles(levelGrid);
+            levelGridStackPane.getChildren().addAll(sterilisationItem.getSterileTilesImages());
+        }
+    }
+
+    /**
+     * Update the gas item, getting rats which are in the gas, and spreading the gas if gas is spreading.
+     * @param gasItem The gas item to update.
+     * @param deltaTime The time since the last frame.
+     */
+    private void updateGas(Gas gasItem, float deltaTime) {
+        gasItem.checkIfRatsInGas(deltaTime, rats);
+        if (gasItem.isSpreadingGas()) {
+            gasItem.spreadGas(levelGrid);
+            updateGasSpread(gasItem);
+        }
+    }
+
+    /**
+     * Update the death rat item to spawn the death rat when it is spawning.
+     * @param deathRatItem The death rat item to update.
+     */
+    private void updateDeathRatItem(DeathRat deathRatItem) {
+        if (deathRatItem.getSpawning()) {
+            Rat deathRat = createRat(Rat.ratType.DEATHRAT, deathRatItem.getXPos(), deathRatItem.getYPos(), false);
+            rats.add(deathRat);
+            deathRatItem.setSpawning(false);
+        }
+    }
+
+    /**
+     * Update the bomb item to explode it if the bomb is exploding and clearing all tiles in explosion.
+     * @param bombItem The bomb item to update.
+     */
+    private void updateBomb(Bomb bombItem) {
+        if (bombItem.isExploding()) {
+            ArrayList<Pair<Integer, Integer>> tilesToClear = bombItem.getBombTiles(levelGrid);
+            for (Pair<Integer, Integer> coordinate : tilesToClear) {
+                Integer xPos = coordinate.getKey();
+                Integer yPos = coordinate.getValue();
+                for (Rat rat : rats) {
+                    if ((int) rat.getxPos() == xPos && (int) rat.getyPos() == yPos) {
+                        rat.die();
+                    }
+                }
+                for (Item i : itemsInPlay) {
+                    if (i.getXPos() == xPos && i.getYPos() == yPos) {
+                        i.setExpired(true);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates the image to show when the rat dies, and spawns it.
+     * @param rat The rat which has died.
+     */
     private void createDeadRatImage(Rat rat) {
         ImageView deadRat = new ImageView();
         deadRat.setImage(new Image("Assets/deadrat.png"));
@@ -546,6 +619,10 @@ public class Level {
         deadRats.add(deadRat);
     }
 
+    /**
+     * Updates the gas spread images and displays them if not yet displayed.
+     * @param item The gas item that the spread is being updated for.
+     */
     private void updateGasSpread(Gas item){
         for (ImageView imageView : item.getGasImageViews()) {
             if (!levelGridStackPane.getChildren().contains(imageView)) {
@@ -565,6 +642,10 @@ public class Level {
         femaleRatsAliveText.setText("Females alive: " + getNumberOfFemaleRatsAlive());
     }
 
+    /**
+     * Counts the number of rats alive and returns it.
+     * @return The number of rats alive.
+     */
     private int getNumberOfRatsAlive() {
         int numberOfRatsAlive = 0;
         for (Rat rat : rats) {
@@ -625,24 +706,30 @@ public class Level {
         if (isGameFinished) {
             deleteSave();
             if (hasWon) {
-                System.out.println(MainMenu.getCurrentProfile() == null);
-                winLoseText.setText("YOU WIN!");
-                if (totalTimeOnLevel < expectedTime) {
-                    score += expectedTime - (int)totalTimeOnLevel;
-                }
-                if (MainMenu.getCurrentProfile() != null) {
-                    Leaderboard leaderboard = new Leaderboard(levelName);
-                    leaderboard.updateLeaderboard(levelName, MainMenu.getCurrentProfile().getName(), score);
-
-                    PlayerProfile player = MainMenu.getCurrentProfile();
-                    player.levelComplete(Integer.parseInt(levelName.substring(0, 1)), score);
-                }
+                gameWon();
             } else {
                 winLoseText.setText("YOU LOSE!");
             }
             scoreText.setText("You scored: " + score);
             gameOverScreen.setVisible(true);
             gameOverScreen.setDisable(false);
+        }
+    }
+
+    /**
+     * Counts end game score, sets end game text and adds to the leaderboard.
+     */
+    private void gameWon() {
+        winLoseText.setText("YOU WIN!");
+        if (totalTimeOnLevel < expectedTime) {
+            score += expectedTime - (int)totalTimeOnLevel;
+        }
+        if (MainMenu.getCurrentProfile() != null) {
+            Leaderboard leaderboard = new Leaderboard(levelName);
+            leaderboard.updateLeaderboard(MainMenu.getCurrentProfile().getName(), score);
+
+            PlayerProfile player = MainMenu.getCurrentProfile();
+            player.levelComplete(Integer.parseInt(levelName.substring(0, 1)), score);
         }
     }
 
@@ -675,13 +762,7 @@ public class Level {
                 rat.setIsGivingBirth();
             } else {
                 rat.update(deltaTime, levelGrid);
-                for (Rat otherRat : rats) {
-                    if (!rat.equals(otherRat)) {
-                        if (rat.getHitBox().beginCollide(otherRat.getHitBox())) {
-                            rat.steppedOn(otherRat);
-                        }
-                    }
-                }
+                checkIfRatCollidesWithRat(rat);
             }
         }
         rats.addAll(ratsToAdd);
@@ -689,6 +770,20 @@ public class Level {
 
         // Update tunnel after every rat spawns so that tunnels are always on top.
         updateTunnels();
+    }
+
+    /**
+     * Check if rat collides with any other rats.
+     * @param rat The rat which is being checked for collision.
+     */
+    private void checkIfRatCollidesWithRat(Rat rat) {
+        for (Rat otherRat : rats) {
+            if (!rat.equals(otherRat)) {
+                if (rat.getHitBox().beginCollide(otherRat.getHitBox())) {
+                    rat.steppedOn(otherRat);
+                }
+            }
+        }
     }
 
     /**
@@ -877,66 +972,7 @@ public class Level {
                 return;
             }
 
-            String itemType = itemToSpawn[0];
-            int x = Integer.parseInt(itemToSpawn[1]);
-            int y = Integer.parseInt(itemToSpawn[2]);
-            boolean expired = Boolean.getBoolean(itemToSpawn[3]);
-
-            Item item = null;
-
-            switch (itemType) {
-                case "BMB":
-                    float timeSincePlaced = Float.parseFloat(itemToSpawn[4]);
-                    boolean exploding = Boolean.getBoolean(itemToSpawn[5]);
-                    item = new Bomb(x, y, expired, timeSincePlaced, exploding);
-                    break;
-                case "DTH":
-                    float timeLeft = Float.parseFloat(itemToSpawn[4]);
-                    boolean spawning = Boolean.getBoolean(itemToSpawn[5]);
-                    item = new DeathRat(x, y, expired, timeLeft, spawning);
-                    break;
-                case "FSX":
-                    item = new FemaleSexChange(x, y, expired);
-                    break;
-                case "MSX":
-                    item = new MaleSexChange(x, y, expired);
-                    break;
-                case "GAS":
-                    float timeTillSpread = Float.parseFloat(itemToSpawn[4]);
-                    float lifeRemaining = Float.parseFloat(itemToSpawn[5]);
-                    int currentRange = Integer.parseInt(itemToSpawn[6]);
-                    boolean spreading = Boolean.getBoolean(itemToSpawn[7]);
-
-                    ArrayList<Pair<Integer, Integer>> gasPositions = new ArrayList<>();
-                    for (int i = 8 ; i < itemToSpawn.length ; i += 2) {
-                        int gasX = Integer.parseInt(itemToSpawn[i]);
-                        int gasY = Integer.parseInt(itemToSpawn[i + 1]);
-                        gasPositions.add(new Pair<>(gasX, gasY));
-                    }
-
-                    item = new Gas(x, y, expired, timeTillSpread, lifeRemaining, currentRange, spreading, gasPositions);
-                    break;
-                case "STP":
-                    int hp = Integer.parseInt(itemToSpawn[4]);
-                    item = new NoEntrySign(x, y, expired, hp);
-                    break;
-                case "PSN":
-                    item = new Poison(x, y, expired);
-                    break;
-                case "STR":
-                    float sterileTimeSincePlaced = Float.parseFloat(itemToSpawn[4]);
-                    boolean sterileTilesGot = Boolean.getBoolean(itemToSpawn[5]);
-
-                    ArrayList<Pair<Integer, Integer>> sterilePositions = new ArrayList<>();
-                    for (int i = 6 ; i < itemToSpawn.length ; i += 2) {
-                        int sterileX = Integer.parseInt(itemToSpawn[i]);
-                        int sterileY = Integer.parseInt(itemToSpawn[i + 1]);
-                        sterilePositions.add(new Pair<>(sterileX, sterileY));
-                    }
-
-                    item = new Sterilisation(x, y, expired, sterileTimeSincePlaced, sterileTilesGot, sterilePositions);
-
-            }
+            Item item = getItemFromSave(itemToSpawn);
 
             if (item != null) {
                 item.getImageView().setImage(item.getTexture());
@@ -946,6 +982,78 @@ public class Level {
                 addItemToLevel(item);
             }
         }
+    }
+
+    /**
+     * Create the item from the file save.
+     * @param itemToSpawn The information about the item to spawn.
+     * @return The item created.
+     */
+    public Item getItemFromSave(String[] itemToSpawn){
+        String itemType = itemToSpawn[0];
+        int x = Integer.parseInt(itemToSpawn[1]);
+        int y = Integer.parseInt(itemToSpawn[2]);
+        boolean expired = Boolean.getBoolean(itemToSpawn[3]);
+
+        Item item = null;
+
+        switch (itemType) {
+            case "BMB":
+                float timeSincePlaced = Float.parseFloat(itemToSpawn[4]);
+                boolean exploding = Boolean.getBoolean(itemToSpawn[5]);
+                item = new Bomb(x, y, expired, timeSincePlaced, exploding);
+                break;
+            case "DTH":
+                float timeLeft = Float.parseFloat(itemToSpawn[4]);
+                boolean spawning = Boolean.getBoolean(itemToSpawn[5]);
+                item = new DeathRat(x, y, expired, timeLeft, spawning);
+                break;
+            case "FSX":
+                item = new FemaleSexChange(x, y, expired);
+                break;
+            case "MSX":
+                item = new MaleSexChange(x, y, expired);
+                break;
+            case "GAS":
+                float timeTillSpread = Float.parseFloat(itemToSpawn[4]);
+                float lifeRemaining = Float.parseFloat(itemToSpawn[5]);
+                int currentRange = Integer.parseInt(itemToSpawn[6]);
+                boolean spreading = Boolean.getBoolean(itemToSpawn[7]);
+
+                ArrayList<Pair<Integer, Integer>> gasPositions = new ArrayList<>();
+                for (int i = 8 ; i < itemToSpawn.length ; i += 2) {
+                    int gasX = Integer.parseInt(itemToSpawn[i]);
+                    int gasY = Integer.parseInt(itemToSpawn[i + 1]);
+                    gasPositions.add(new Pair<>(gasX, gasY));
+                }
+
+                item = new Gas(x, y, expired, timeTillSpread, lifeRemaining, currentRange, spreading, gasPositions);
+                break;
+            case "STP":
+                int hp = Integer.parseInt(itemToSpawn[4]);
+                item = new NoEntrySign(x, y, expired, hp);
+                break;
+            case "PSN":
+                item = new Poison(x, y, expired);
+                break;
+            case "STR":
+                float sterileTimeSincePlaced = Float.parseFloat(itemToSpawn[4]);
+                boolean sterileTilesGot = Boolean.getBoolean(itemToSpawn[5]);
+
+                ArrayList<Pair<Integer, Integer>> sterilePositions = new ArrayList<>();
+                for (int i = 6 ; i < itemToSpawn.length ; i += 2) {
+                    int sterileX = Integer.parseInt(itemToSpawn[i]);
+                    int sterileY = Integer.parseInt(itemToSpawn[i + 1]);
+                    sterilePositions.add(new Pair<>(sterileX, sterileY));
+                }
+
+                item = new Sterilisation(x, y, expired, sterileTimeSincePlaced, sterileTilesGot, sterilePositions);
+                break;
+            default:
+                System.out.println("Error in level save file");
+                break;
+        }
+        return item;
     }
 
     /**
@@ -1017,7 +1125,6 @@ public class Level {
         if (levelSaveFile.delete()){
             System.out.println("Deleted previous save file: " + levelSaveFile.getName());
         }
-        System.out.println(levelSaveFile);
 
         if (levelSaveFile.createNewFile()){
             System.out.println("New save file created: " + levelName);
@@ -1036,22 +1143,28 @@ public class Level {
         }
     }
 
+    /**
+     * Deletes this levels save file.
+     */
     private void deleteSave() {
         String[] allSaves = new File("src/Saves/").list();
-        if (allSaves != null) {
-            for (String level : allSaves) {
-                if (level.equals(getSaveFileName())) {
-                    File oldSave = new File(SAVE_FOLDER_PATH + getSaveFileName());
-                    if (oldSave.delete()) {
-                        System.out.println("Old save file deleted.");
-                    } else {
-                        System.out.println(level + " is not the same as " + SAVE_FOLDER_PATH + getSaveFileName());
-                    }
+        if (allSaves == null) {
+            return;
+        }
+        for (String level : allSaves) {
+            if (level.equals(getSaveFileName())) {
+                File oldSave = new File(SAVE_FOLDER_PATH + getSaveFileName());
+                if (oldSave.delete()) {
+                    System.out.println("Old save file deleted.");
                 }
             }
         }
     }
 
+    /**
+     * Gets the format for the save file name.
+     * @return The name for the save file.
+     */
     private String getSaveFileName() {
         return levelName.charAt(0) + MainMenu.getCurrentProfile().getName();
     }
@@ -1113,7 +1226,7 @@ public class Level {
     /**
      * writes each rat to the save file, containing all information necessary.
      * @param fileWriter The file writer containing the file we want to write to.
-     * @throws IOException Throws an exception if you cannot write to the file.
+     * @throws IOException Throws an exception if the file cannot be written to.
      */
     private void saveRatSpawnGrid(FileWriter fileWriter) throws IOException {
         for (Rat rat : rats) {
@@ -1122,6 +1235,11 @@ public class Level {
         fileWriter.write("ITEMS\n");
     }
 
+    /**
+     * Saves all the items in play to the level save.
+     * @param fileWriter The file writer containing the file we want to write to.
+     * @throws IOException Throws an exception if the file cannot be written to.
+     */
     private void saveItemsInPlay(FileWriter fileWriter) throws IOException {
         for (Item item : itemsInPlay) {
             fileWriter.write(item.toString());
@@ -1229,7 +1347,7 @@ public class Level {
     /**
      * Collision detection for rats and all items on the level. Triggers the item when a rat steps on it.
      */
-    private void checkSteppedOn() {
+    private void checkIfItemSteppedOnByRat() {
         for (Rat rat : rats) {
             for (Item item : itemsInPlay) {
                 if (rat.getHitBox().beginCollide(item.getHitBox())) {

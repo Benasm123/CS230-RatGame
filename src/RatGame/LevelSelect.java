@@ -8,12 +8,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,17 +22,16 @@ import java.util.Objects;
  */
 public class LevelSelect {
 
+    // Constants
+    private static final String CSS_SELECTED_CLASS = "selected";
+    private static final String CSS_LEVEL_CLASS = "levelSelectButton";
+
+    // Variables
     Button selectedButton;
 
     // FXML variables.
-    @FXML
-    VBox LevelButtons;
-    @FXML
-    VBox leaderboardScreen;
-    @FXML
-	private Text top10;
-    @FXML
-    private Label entry1;
+    @FXML VBox LevelButtons;
+    @FXML VBox leaderboardScreen;
 
     /**
      * Initializes the level select, getting all levels and showing them to the player.
@@ -50,8 +46,7 @@ public class LevelSelect {
         for (String i : allLevels) {
 
             Button levelSelectButton = new Button(i);
-            levelSelectButton.setMinHeight(30);
-            levelSelectButton.setMaxWidth(500);
+            levelSelectButton.getStyleClass().add(CSS_LEVEL_CLASS);
             levelSelectButton.setOnAction(this::levelSelected);
 
             if (MainMenu.getCurrentProfile() != null) {
@@ -85,20 +80,24 @@ public class LevelSelect {
         controller.createLevel(selectedButton.getText(), false);
     }
 
+    /**
+     * Highlights the selected level and shows the leaderboard for it.
+     * @param event The event that triggered the action.
+     */
     private void levelSelected(ActionEvent event) {
         if (selectedButton != null) {
-            selectedButton.getStyleClass().remove("selected");
+            selectedButton.getStyleClass().remove(CSS_SELECTED_CLASS);
             leaderboardScreen.getChildren().removeIf(node -> node.getClass() == Label.class);
         }
 
         selectedButton = (Button) event.getTarget();
 
-        selectedButton.getStyleClass().add("selected");
+        selectedButton.getStyleClass().add(CSS_SELECTED_CLASS);
 
         Leaderboard lb = new Leaderboard(selectedButton.getText());
 
-        for (int i = 0 ; i < lb.getLb().size() ; i++) {
-            Label entryLabel = new Label(i + 1 + ". " + lb.getLb().get(i).getKey() + " " + lb.getLb().get(i).getValue());
+        for (int i = 0; i < lb.getLeaderboardStandings().size() ; i++) {
+            Label entryLabel = new Label(i + 1 + ". " + lb.getLeaderboardStandings().get(i).getKey() + " " + lb.getLeaderboardStandings().get(i).getValue());
             Font font = new Font(entryLabel.getFont().getName(), 20);
             entryLabel.setFont(font);
             leaderboardScreen.getChildren().add(entryLabel);
@@ -115,17 +114,6 @@ public class LevelSelect {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
         scene.setRoot(root);
-    }
-
-    /**
-     * Loads the leaderboard and displays it to the screen.
-     * @param event The event triggering this action.
-     */
-    public void displayPressed(ActionEvent event){
-        Leaderboard board = new Leaderboard();
-        int lvl = Integer.parseInt(String.valueOf(((Button)event.getSource()).getText().charAt(0)));
-        board.load(lvl);
-    	top10.setText(board.toString());
     }
 
 }

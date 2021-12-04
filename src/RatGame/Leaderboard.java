@@ -1,74 +1,77 @@
-/**
- * This class ranks the top 10 scores in a leaderboard and prints them as a string.
- *
- * @author CS-230 Group13 (21/22)
- * @version 1.0
- *
- */
 package RatGame;
 
 import javafx.util.Pair;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
-// TODO: Needs to be made so one leaderboard for each level
-// I dont think this keeps track of scores right now
-// TODO: Cap the leaderboard length to 10 - can do by after sorting, check size and if more than 10 just copy the first
-// 10 elements over the top of itself.
-// Right now you store all, but only print top 10, but dont want to be storing all players that ever play as we will
-// need to save this leaderboard.
+/**
+ * Leaderboard class which manages top 10 scores for each level.
+ * @author José Mendes, Benas Montrimas.
+ */
 public class Leaderboard {
-	// creates a list of player proles called leaderboard
-	private int level;
-    private String levelName;
-	
-	public static ArrayList<Pair<String, Integer>> leaderboard;
-    public ArrayList<Pair<String, Integer>> lb;
 
-	public Leaderboard(int level) {
-		leaderboard = new ArrayList<>();
-		this.level = level;
-		save();
-	}
+    // Variables
+    private final String levelName;
+    public ArrayList<Pair<String, Integer>> leaderboardStandings;
 
+    /**
+     * Constructor creating and loading the leaderboard for the selected level.
+     * @param levelName The name of the level that the leaderboard is for.
+     */
     public Leaderboard(String levelName){
         this.levelName = levelName;
-        lb = new ArrayList<>();
+        leaderboardStandings = new ArrayList<>();
         loadLeaderboard();
     }
 
-    public Leaderboard() {
-        leaderboard = new ArrayList<>();
-    }
-
-    public void updateLeaderboard(String level, String profileName, int score) {
+    /**
+     * Updates the leaderboard with a new score, adding it to the leaderboard and saves it to the board.
+     * @param profileName The name of the profile that achieved the score.
+     * @param score The score to add to the leaderboard.
+     */
+    public void updateLeaderboard(String profileName, int score) {
         addToLeaderboard(profileName, score);
 
-        while (lb.size() > 10) {
-            lb.remove(10);
+        // Limit leaderboard to 10 entries.
+        while (leaderboardStandings.size() > 10) {
+            leaderboardStandings.remove(10);
         }
 
         saveLeaderboard();
     }
 
-    public void addToLeaderboard(String profileName, int score) {
-        for (int i = 0 ; i < lb.size() ; i++) {
-            int scoreToCheckAgainst = lb.get(i).getValue();
+    /**
+     * Gets the leaderboard standings.
+     * @return The leaderboard standings.
+     */
+    public ArrayList<Pair<String, Integer>> getLeaderboardStandings() {
+        return leaderboardStandings;
+    }
+
+    /**
+     * Adds an entry to the leaderboard.
+     * @param profileName The name of the profile which achieved the score.
+     * @param score The score to add to the leaderboard.
+     */
+    private void addToLeaderboard(String profileName, int score) {
+        for (int i = 0; i < leaderboardStandings.size() ; i++) {
+            int scoreToCheckAgainst = leaderboardStandings.get(i).getValue();
             if (scoreToCheckAgainst < score) {
-                lb.add(i, new Pair<>(profileName, score));
+                leaderboardStandings.add(i, new Pair<>(profileName, score));
                 return;
             }
         }
-        lb.add(new Pair<>(profileName, score));
+        leaderboardStandings.add(new Pair<>(profileName, score));
     }
 
-    public void loadLeaderboard() {
+    /**
+     * Loads the leaderboard from the leaderboard save.
+     */
+    private void loadLeaderboard() {
         File leaderboardFile = new File("src/Leaderboards/" + levelName);
 
         try {
@@ -81,7 +84,7 @@ public class Leaderboard {
             Scanner fileReader = new Scanner(leaderboardFile);
             while (fileReader.hasNextLine()) {
                 String[] entry = fileReader.nextLine().split(" ");
-                lb.add(new Pair<>(entry[0], Integer.parseInt(entry[1])));
+                leaderboardStandings.add(new Pair<>(entry[0], Integer.parseInt(entry[1])));
             }
             fileReader.close();
         } catch (IOException e) {
@@ -89,12 +92,15 @@ public class Leaderboard {
         }
     }
 
-    public void saveLeaderboard() {
+    /**
+     * Saves the leaderboard to a file.
+     */
+    private void saveLeaderboard() {
         File leaderboardFile = new File("src/Leaderboards/" + levelName);
 
         try {
             FileWriter fileWriter = new FileWriter(leaderboardFile);
-            for (Pair<String, Integer> entry : lb) {
+            for (Pair<String, Integer> entry : leaderboardStandings) {
                 fileWriter.write(entry.getKey() + " " + entry.getValue() + "\n");
             }
 
@@ -104,97 +110,4 @@ public class Leaderboard {
         }
 
     }
-
-    public ArrayList<Pair<String, Integer>> getLb() {
-        return lb;
-    }
-
-    /**
-	 * adds a player profile to the leaderboard and sorts it automatically
-	 * @param profile
-	 */
-	public void addProfile(PlayerProfile profile) {
-//		leaderboard.add(profile);
-//		Collections.sort(leaderboard);
-		if(leaderboard.size() > 10) {
-			leaderboard.remove(10);
-		}
-	}
-
-	/**
-	 * prints out the leaderboard (top 10 scores) as a string.
-	 */
-	@Override
-	public String toString() {
-		String board = "Leaderboard\n";
-		for (int i = 0; i < leaderboard.size(); i++) {
-			board += (leaderboard.get(i) + "\n");
-		}
-		return board;
-	}
-	
-	private void newFile() {
-		try {
-			new File("src/Leaderboards").mkdir();
-			File myObj = new File("src/Leaderboards/" + level + ". Leaderboard.txt");
-			if (myObj.exists()) {
-				deleteSave();
-			}
-			if (myObj.createNewFile()) {
-				System.out.println("File created: " + myObj.getName());
-				System.out.println("Absolute path: " + myObj.getAbsolutePath());
-			}
-			else {
-				System.out.println("File already exists.");
-				System.out.println("Absolute path: " + myObj.getAbsolutePath());
-			}
-		}
-		catch (IOException e) {
-			System.out.println("An error occurred.");
-			e.printStackTrace();
-		}
-	}
-	public void save() {
-		newFile();
-		try {
-			FileWriter writer = new FileWriter("src/Leaderboards/" + level + ". Leaderboard.txt");
-			for (int i = 0; i < leaderboard.size(); i++) {
-//				writer.write(leaderboard.get(i).getName() + "," +  leaderboard.get(i).getHighScore() +"\n");
-			}
-			writer.close();
-			System.out.println("Saved");
-		}
-		catch (IOException e) {
-			System.out.println("An error occurred.");
-			e.printStackTrace();
-		}
-	}
-	public void deleteSave() {
-		File myObj = new File("src/Leaderboards/" + level + ". Leaderboard.txt");
-		if (myObj.delete()) {
-			System.out.println("Save deleted");
-		}
-		else {
-			System.out.println("Failed to delete the file.");
-		}
-	}
-	public void load(int lvl) {
-		try {
-		      File myObj = new File("src/Leaderboards/" + lvl + ". Leaderboard.txt");
-		      Scanner in = new Scanner(myObj);
-		      
-		      while (in.hasNextLine()) {
-		    	  	String line = in.nextLine();
-		    	  	String[] param = line.split(",");
-		    	  	PlayerProfile player = new PlayerProfile(param[0]);
-		    	  	player.setHighScore(Integer.parseInt(param[1]));
-//					leaderboard.add(player);
-		      }
-		      in.close();
-		}
-		catch (FileNotFoundException e) {
-		      System.out.println("An error occurred.");
-		      e.printStackTrace();
-		}
-	}
 }

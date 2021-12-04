@@ -46,6 +46,17 @@ public class Gas extends Item {
         gasImageViews = new ArrayList<>();
     }
 
+    /**
+     * Constructor used for loading from a save only.
+     * @param x The x position of the item.
+     * @param y The y position of the item.
+     * @param expired If the item is expired.
+     * @param timeTillSpread The time till the gas next has to spread.
+     * @param lifeRemaining The life remaining on the item until it expires.
+     * @param currentRange The distance the gas has spread.
+     * @param isSpreadingGas If the gas is currently spreading.
+     * @param gasSpreadPositions The positions of the gas spread.
+     */
     public Gas(int x, int y, boolean expired, float timeTillSpread, float lifeRemaining,
                int currentRange, boolean isSpreadingGas, ArrayList<Pair<Integer, Integer>> gasSpreadPositions) {
         this.type = ItemType.GAS;
@@ -239,6 +250,10 @@ public class Gas extends Item {
         this.isSpreadingGas = isSpreadingGas;
     }
 
+    /**
+     * Turns the gas item into a readable string.
+     * @return Returns all useful properties for the item in a string.
+     */
     @Override
     public String toString() {
         StringBuilder positions = new StringBuilder();
