@@ -370,8 +370,59 @@ public class Rat {
             stringOfBaby += "F";
         }
 
-        properties += stringOfType + " " + (int)xPos + " " + (int)yPos + " " + stringOfBaby;
+        properties += stringOfType + " " + (int)xPos + " " + (int)yPos + " " + stringOfBaby + " " +
+                (int) xVel + " " + (int) yVel + " " + isSterile + " " + isPregnant + " " + isGivingBirth + " " +
+                growUpTime + " " + isDead + " " + totalTimePoisoned + " " + spawnNumber + " " +
+                spawns + " " + deathRatKills + " " + lastX + " " + lastY;
         return properties;
+    }
+
+    public void setSterile(boolean sterile) {
+        isSterile = sterile;
+    }
+
+    public void setPregnant(boolean pregnant) {
+        isPregnant = pregnant;
+    }
+
+    public void setGivingBirth(boolean givingBirth) {
+        isGivingBirth = givingBirth;
+    }
+
+    public void setGrowUpTime(float growUpTime) {
+        this.growUpTime = growUpTime;
+    }
+
+    public void setDead(boolean dead) {
+        isDead = dead;
+    }
+
+    public void setPoisoned(boolean poisoned) {
+        isPoisoned = poisoned;
+    }
+
+    public void setTotalTimePoisoned(float totalTimePoisoned) {
+        this.totalTimePoisoned = totalTimePoisoned;
+    }
+
+    public void setSpawnNumber(int spawnNumber) {
+        this.spawnNumber = spawnNumber;
+    }
+
+    public void setSpawns(int spawns) {
+        this.spawns = spawns;
+    }
+
+    public void setDeathRatKills(int deathRatKills) {
+        this.deathRatKills = deathRatKills;
+    }
+
+    public void setLastX(int lastX) {
+        this.lastX = lastX;
+    }
+
+    public void setLastY(int lastY) {
+        this.lastY = lastY;
     }
 
     /*

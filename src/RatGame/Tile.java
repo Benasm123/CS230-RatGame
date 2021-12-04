@@ -48,6 +48,10 @@ public class Tile {
         return texture;
     }
 
+    public void setTexture(Image texture) {
+        this.texture = texture;
+    }
+
     /**
      * @return the tile type as a string according to the level format
      */

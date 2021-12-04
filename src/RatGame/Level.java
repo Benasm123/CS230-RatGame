@@ -746,6 +746,14 @@ public class Level {
         levelGridCanvas.setWidth(Tile.TILE_WIDTH * levelWidth);
 
         levelGrid = new Tile[levelWidth][levelHeight];
+
+        ArrayList<Image> grassImages = new ArrayList<>();
+        grassImages.add(new Image("Assets/extras/blueflower.png"));
+        grassImages.add(new Image("Assets/extras/cheese.png"));
+        grassImages.add(new Image("Assets/extras/pinkflower.png"));
+        grassImages.add(new Image("Assets/extras/trap.png"));
+        grassImages.add(new Image("Assets/extras/trash.png"));
+
         for (int row = 0; row < levelHeight; row++) {
             String rowLayout = fileReader.nextLine();
             for (int col = 0; col < levelWidth; col++) {
@@ -760,6 +768,15 @@ public class Level {
                     tile = new Tile(row, col, TileType.VerticalTunnel);
                 } else {
                     System.out.println("There seems to be a error in the level file!");
+                }
+
+                assert tile != null;
+
+                if (tile.getType() == TileType.Grass) {
+                    Random rand = new Random();
+                    if (rand.nextInt(5) == 0) {
+                        tile.setTexture(grassImages.get(rand.nextInt(grassImages.size())));
+                    }
                 }
 
                 levelGrid[col][row] = tile;
@@ -822,6 +839,25 @@ public class Level {
             boolean isBaby = ratToSpawnSplit[3].equals("T");
 
             Rat newRat = createRat(type, xPos, yPos, isBaby);
+
+            if (isSave) {
+                newRat.setxVel(Integer.parseInt(ratToSpawnSplit[4]));
+                newRat.setyVel(Integer.parseInt(ratToSpawnSplit[5]));
+                if (Boolean.parseBoolean(ratToSpawnSplit[6])) {
+                    newRat.setIsSterile();
+                }
+                newRat.setPregnant(Boolean.parseBoolean(ratToSpawnSplit[7]));
+                newRat.setGivingBirth(Boolean.parseBoolean(ratToSpawnSplit[8]));
+                newRat.setGrowUpTime(Float.parseFloat(ratToSpawnSplit[9]));
+                newRat.setDead(Boolean.parseBoolean(ratToSpawnSplit[10]));
+                newRat.setTotalTimePoisoned(Float.parseFloat(ratToSpawnSplit[11]));
+                newRat.setSpawnNumber(Integer.parseInt(ratToSpawnSplit[12]));
+                newRat.setSpawns(Integer.parseInt(ratToSpawnSplit[13]));
+                newRat.setDeathRatKills(Integer.parseInt(ratToSpawnSplit[14]));
+                newRat.setLastX(Integer.parseInt(ratToSpawnSplit[15]));
+                newRat.setLastY(Integer.parseInt(ratToSpawnSplit[16]));
+            }
+
             rats.add(newRat);
         }
 
@@ -933,7 +969,8 @@ public class Level {
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
                 GraphicsContext levelGraphicsContext = levelGridCanvas.getGraphicsContext2D();
-                levelGraphicsContext.drawImage(levelGrid[col][row].getTexture(), col * Tile.TILE_HEIGHT, row * Tile.TILE_WIDTH);
+                Image texture = levelGrid[col][row].getTexture();
+                levelGraphicsContext.drawImage(texture, col * Tile.TILE_HEIGHT, row * Tile.TILE_WIDTH);
             }
         }
     }
