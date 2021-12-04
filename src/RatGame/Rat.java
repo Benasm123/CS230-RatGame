@@ -176,14 +176,10 @@ public class Rat {
         imageView.setTranslateY(yPos * Tile.TILE_HEIGHT);
     }
 
-     /*
+     /**
      * @param levelGrid
-     * @param x
-     * @param y
-     * @param lastX
-     * @param lastY
      * method checks the paths of the levelGrid to see which tiles are available for the rat to move on
-     * */
+      * */
     private void checkPaths(Tile[][] levelGrid) {
         ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
 
@@ -216,11 +212,15 @@ public class Rat {
         yVel = direction.getValue() * movementSpeedMultiplier;
     }
 
+    /**
+     *
+     * @return imageView which is just the image
+     */
     public ImageView getImageView() {
         return imageView;
     }
 
-    /*
+    /**
     * @param deltaTime
     * @param levelGrid
     * method controls the movement of a rat object
@@ -263,12 +263,15 @@ public class Rat {
         }
     }
 
+    /**
+     *
+     * @return the type of rat
+     */
     public RatType getType() {
         return type;
     }
 
-    /*
-    * @param img
+    /**
     * rotates image and returns the angle the image is rotated at
     * */
     public void rotate() {
@@ -288,7 +291,7 @@ public class Rat {
         imageView.setRotate(rotation);
     }
 
-    /*
+    /**
     * @param deltaTime
     * @levelGrid
     * provides update on the rats
@@ -315,11 +318,14 @@ public class Rat {
         timeToBirth(deltaTime);
    }
 
+    /**
+     * updates the Hitbox
+     */
    public void updateHitBox() {
         this.hitBox.setPos(this.xPos + HITBOX_OFFSET, this.yPos + HITBOX_OFFSET);
    }
 
-   /*
+   /**
    * @rat
    * sets rat sex to Male
    * */
@@ -334,8 +340,7 @@ public class Rat {
         }
 
    }
-   /*
-   * @rat
+   /**
    * sets rat sex to Female
    * */
    public void changeSexFemale() {
@@ -349,21 +354,21 @@ public class Rat {
         }
    }
 
-   /*
+   /**
    * return x coordinate of rat
    * */
    public float getXPos() {
         return xPos;
    }
 
-   /*
+   /**
    * return y coordinate of rat
    * */
    public float getYPos() {
         return yPos;
    }
 
-    /*
+    /**
     * return properties of the rats as a string
     * */
     public String toString() {
@@ -393,55 +398,103 @@ public class Rat {
         return properties;
     }
 
+    /**
+     * sets isSterile boolean to the parameter passed in
+     * @param sterile
+     */
     public void setSterile(boolean sterile) {
         isSterile = sterile;
     }
 
+    /**
+     * sets isPregnant boolean to the parameter passed in
+     * @param pregnant
+     */
     public void setPregnant(boolean pregnant) {
         isPregnant = pregnant;
     }
 
+    /**
+     * sets isGivingBirth boolean to the parameter passed in
+     * @param givingBirth
+     */
     public void setGivingBirth(boolean givingBirth) {
         isGivingBirth = givingBirth;
     }
 
+    /**
+     * sets growUpTime variable to the parameter passed in
+     * @param growUpTime
+     */
     public void setGrowUpTime(float growUpTime) {
         this.growUpTime = growUpTime;
     }
 
+    /**
+     * sets isDead boolean to the parameter passed in
+     * @param dead
+     */
     public void setDead(boolean dead) {
         isDead = dead;
     }
 
+    /**
+     * sets isPoisoned boolean to the parameter passed in
+     * @param poisoned
+     */
     public void setPoisoned(boolean poisoned) {
         isPoisoned = poisoned;
     }
 
+    /**
+     * sets totalTimePoisoned variable to the parameter passed in
+     * @param totalTimePoisoned
+     */
     public void setTotalTimePoisoned(float totalTimePoisoned) {
         this.totalTimePoisoned = totalTimePoisoned;
     }
 
+    /**
+     * sets spawnNumber variable to the parameter passed in
+     * @param spawnNumber
+     */
     public void setSpawnNumber(int spawnNumber) {
         this.spawnNumber = spawnNumber;
     }
 
+    /**
+     * sets spawns variable to the parameter passed in
+     * @param spawns
+     */
     public void setSpawns(int spawns) {
         this.spawns = spawns;
     }
 
+    /**
+     * sets deathRatKills variable to the parameter passed in
+     * @param deathRatKills
+     */
     public void setDeathRatKills(int deathRatKills) {
         this.deathRatKills = deathRatKills;
     }
 
+    /**
+     * sets lastX variable to the parameter passed in
+     * @param lastX
+     */
     public void setLastX(int lastX) {
         this.lastX = lastX;
     }
 
+    /**
+     * sets lastY variable to the parameter passed in
+     * @param lastY
+     */
     public void setLastY(int lastY) {
         this.lastY = lastY;
     }
 
-    /*
+    /**
     * @param deltaTime
     * timer for pregnant rat to give birth
     * */
@@ -464,8 +517,8 @@ public class Rat {
         }
     }
 
-    /*
-    *@param deltaTime
+    /**
+    * @param deltaTime
     * sets timer for a rat to become pregnant after having sex
     * */
     private void sex(float deltaTime) {
@@ -487,7 +540,7 @@ public class Rat {
         }
     }
 
-    /*
+    /**
     * prevents sterile rats from becoming pregnant
     * */
     private void sterile() {
@@ -499,8 +552,7 @@ public class Rat {
         }
     }
 
-    /*
-    * @param deltaTime
+    /**
     * makes baby rat an adult after some time
     * alters speed of rats to make them slower as adults
     * */
@@ -522,23 +574,37 @@ public class Rat {
         }
     }
 
+    /**
+     *
+     * @return isGivingBirth boolean
+     */
     public boolean getIsGivingBirth() {
         return isGivingBirth;
     }
 
+    /**
+     * sets the isGivingBirth boolean into the parameter passed in
+     */
     public void setIsGivingBirth() {
         isGivingBirth = false;
     }
 
+    /**
+     *
+     * @return isDead boolean
+     */
     public boolean getIsDead() {
         return isDead;
     }
 
+    /**
+     * sets isDead boolean to true
+     */
     public void die() {
         this.isDead = true;
     }
 
-    /*
+    /**
     * @param otherRat
     * determines the actions that happen once a rat steps on or is stepped on by another
     * */
@@ -567,18 +633,34 @@ public class Rat {
         }
     }
 
+    /**
+     *
+     * @return isPoisoned boolean
+     */
     public boolean getIsPoisoned() {
         return isPoisoned;
     }
 
+    /**
+     * sets isPoisoned boolean equal to the boolean passed in
+     * @param isPoisoned
+     */
     public void setIsPoisoned(boolean isPoisoned) {
         this.isPoisoned = isPoisoned;
     }
 
+    /**
+     * increment the totalTimePoisoned to the float passed in
+     * @param amount
+     */
     public void poison(float amount) {
         totalTimePoisoned += amount;
     }
 
+    /**
+     *
+     * @return the scores
+     */
     public int getScore() {
         if (type == RatType.DEATH_RAT) {
             return 0;
@@ -593,6 +675,9 @@ public class Rat {
         }
     }
 
+    /**
+     * edits the x and y coordinate so the rat could turn around
+     */
     public void turnAround() {
         if (xVel < 0 || yVel < 0) {
             lastX = (int) xPos;
@@ -608,34 +693,65 @@ public class Rat {
         yVel *= -1;
     }
 
+    /**
+     *
+     * @return xVel
+     */
     public float getXVel() {
         return xVel;
     }
 
+    /**
+     *
+     * @return hitbox
+     */
     public HitBox getHitBox() {
         return hitBox;
     }
 
+    /**
+     *
+     * @return yVel
+     */
     public float getYVel() {
         return yVel;
     }
 
+    /**
+     * sets xVel variable equal to the float parameter passed in
+     * @param xVel
+     */
     public void setXVel(float xVel) {
 		this.xVel = xVel;
 	}
 
+    /**
+     * sets yVel variable equal to the float parameter passed in
+     * @param yVel
+     */
 	public void setYVel(float yVel) {
 		this.yVel = yVel;
 	}
 
+    /**
+     * sets xPos variable equal to the float parameter passed in
+     * @param xPos
+     */
 	public void setXPos(float xPos) {
         this.xPos = xPos;
     }
 
+    /**
+     * sets yPos variable equal to the float parameter passed in
+     * @param yPos
+     */
     public void setYPos(float yPos) {
         this.yPos = yPos;
     }
 
+    /**
+     * sets isSterile boolean to true
+     */
     public void setIsSterile() {
         isSterile = true;
     }
