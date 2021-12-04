@@ -151,6 +151,13 @@ public class MainMenu {
         System.exit(0);
     }
 
+    public void goToCredits(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/CreditsPage.fxml")));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
+
     /**
      * shows current profile
      */

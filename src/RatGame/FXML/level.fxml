@@ -11,11 +11,10 @@
    <children>
       <SplitPane fx:id="levelSplitPane" dividerPositions="0.8" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0">
         <items>
-          <AnchorPane fx:id="gameScreen" minHeight="0.0" minWidth="0.0" prefHeight="800.0" prefWidth="800.0">
+          <AnchorPane fx:id="gameScreen" minHeight="0.0" minWidth="0.0" prefHeight="800.0" prefWidth="800.0" styleClass="gameBackground">
                <children>
                   <Pane>
                      <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#c9e0f5" height="100000.0" stroke="BLACK" strokeType="INSIDE" width="100000.0" />
                         <StackPane fx:id="levelGridStackPane" alignment="TOP_LEFT" onMouseDragged="#onDragLevel" onMousePressed="#getMousePosOnClicked" onMouseReleased="#clampToGameScreen">
                            <children>
                               <Canvas fx:id="levelGridCanvas" height="500.0" width="500.0" />

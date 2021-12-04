@@ -774,7 +774,7 @@ public class Level {
 
                 if (tile.getType() == TileType.Grass) {
                     Random rand = new Random();
-                    if (rand.nextInt(5) == 0) {
+                    if (rand.nextInt(10) == 0) {
                         tile.setTexture(grassImages.get(rand.nextInt(grassImages.size())));
                     }
                 }

@@ -73,6 +73,9 @@ public class LevelSelect {
      * @throws IOException If the FXML file is not found will throw an error.
      */
     public void playPressed(ActionEvent event) throws IOException {
+        if (selectedButton == null) {
+            return;
+        }
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
