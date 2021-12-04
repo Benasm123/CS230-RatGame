@@ -264,7 +264,7 @@ public class Level {
         }
     }
 
-    public void pauseGameAction(ActionEvent e) {
+    public void pauseGameAction() {
         pauseLoop();
         pauseScreen.setVisible(isPaused);
     }
@@ -318,6 +318,7 @@ public class Level {
         if (isSave) {
             String[] allLevels = new File("src/Levels/").list();
 
+            assert allLevels != null;
             for (String level : allLevels) {
                 if (level.charAt(0) == src.charAt(0)) {
                     levelName = level;
@@ -431,12 +432,12 @@ public class Level {
         updateItemsInPlay(deltaTime);
         checkSteppedOn();
         checkWinLoseCondition();
-        updateTimeText(deltaTime);
+        updateTimeText();
     }
 
     int lastTimeStamp;
 
-    private void updateTimeText(float deltaTime) {
+    private void updateTimeText() {
         if ((int) totalTimeOnLevel != lastTimeStamp) {
             timeText.setText("Time left: " + (expectedTime - (int) totalTimeOnLevel));
         }
@@ -964,12 +965,9 @@ public class Level {
 
     private void deleteSave() {
         String[] allSaves = new File("src/Saves/").list();
-        System.out.println("HELLLO: " + getSaveFileName() + "HERLGRLG");
         if (allSaves != null) {
             for (String level : allSaves) {
-                System.out.println("BYRWWW: " + level + "DFSDFS");
                 if (level.equals(getSaveFileName())) {
-                    System.out.println("FREGFERGDRSFDGDFGSDFSGSFGD");
                     File oldSave = new File(SAVE_FOLDER_PATH + getSaveFileName());
                     if (oldSave.delete()) {
                         System.out.println("Old save file deleted.");
