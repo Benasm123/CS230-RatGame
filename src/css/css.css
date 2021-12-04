@@ -19,8 +19,8 @@
 }
 
 .mainMenu {
-    /*-fx-background-color: #2384c6;*/
-    -fx-background-color: #6badd9;
+    /*-fx-background-color: #6badd9;*/
+    -fx-background-color: #2384c6;
     -fx-background-image: url("/./Assets/BackgroundHigherRes.png");
     -fx-background-repeat: stretch;
     -fx-background-size: auto 100%;

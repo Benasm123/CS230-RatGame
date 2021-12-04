@@ -71,6 +71,7 @@ public class Level {
     private Tile[][] levelGrid;
     private ArrayList<ImageView> tunnels;
     private ArrayList<Rat> rats;
+    private ArrayList<ImageView> deadRats;
     private int numberOfRatsToLose;
     private int numberOfRatsToWin;
     private ArrayList<Stack<Item>> itemsInInventory;
@@ -317,6 +318,7 @@ public class Level {
     public void createLevel(String src, boolean isSave) {
         this.isSave = isSave;
         rats = new ArrayList<>();
+        deadRats = new ArrayList<>();
         itemsInPlay = new ArrayList<>();
         timeSinceItemSpawn = new float[NUMBER_OF_ITEM_TYPES];
         itemSpawnTime = new int[NUMBER_OF_ITEM_TYPES];
@@ -441,6 +443,20 @@ public class Level {
         checkSteppedOn();
         checkWinLoseCondition();
         updateTimeText();
+        updateDeadRats(deltaTime);
+    }
+
+    private void updateDeadRats(float deltaTime) {
+        Iterator<ImageView> deadRatsIterator = deadRats.iterator();
+        while (deadRatsIterator.hasNext()) {
+            ImageView deadRat = deadRatsIterator.next();
+            deadRat.setScaleX(deadRat.getScaleX() + deltaTime);
+            deadRat.setScaleY(deadRat.getScaleY() + deltaTime);
+            if (deadRat.getScaleX() > 1.0f) {
+                deadRatsIterator.remove();
+                levelGridStackPane.getChildren().removeIf(node -> node == deadRat);
+            }
+        }
     }
 
     int lastTimeStamp;
@@ -517,6 +533,17 @@ public class Level {
 
         // Update tunnel after every rat spawns so that tunnels are always on top.
         updateTunnels();
+    }
+
+    private void createDeadRatImage(Rat rat) {
+        ImageView deadRat = new ImageView();
+        deadRat.setImage(new Image("Assets/deadrat.png"));
+        deadRat.setTranslateX(rat.getxPos() * Tile.TILE_WIDTH);
+        deadRat.setTranslateY(rat.getyPos() * Tile.TILE_HEIGHT);
+        deadRat.setScaleX(0.5);
+        deadRat.setScaleY(0.5);
+        levelGridStackPane.getChildren().add(deadRat);
+        deadRats.add(deadRat);
     }
 
     private void updateGasSpread(Gas item){
@@ -630,6 +657,7 @@ public class Level {
         while (ratIterator.hasNext()) {
             Rat rat = ratIterator.next();
             if (rat.getIsDead()) {
+                createDeadRatImage(rat);
                 score += rat.getScore();
                 levelGridStackPane.getChildren().remove(rat.img);
                 ratIterator.remove();
