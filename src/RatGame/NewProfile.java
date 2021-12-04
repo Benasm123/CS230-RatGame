@@ -19,7 +19,7 @@ import java.util.Objects;
  * This class is the changeProfile class allows player to switch profiles.
  * @author José Mendes & Ahmed Almahari.
  */
-public class NewGame {
+public class NewProfile {
     private static final String[] ILLEGAL_CHARACTERS_IN_FILE_NAME = {"<", ">", ":", "\"", "/", "\\", "|", "?", "*", " ", ".", ","};
 
     @FXML

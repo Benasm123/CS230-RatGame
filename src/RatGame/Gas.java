@@ -187,8 +187,8 @@ public class Gas extends Item {
      * @param rat The rat to gas.
      */
     private void setRatsBeingGassed(float deltaTime, Rat rat) {
-        int ratX = (int) rat.getxPos();
-        int ratY = (int) rat.getyPos();
+        int ratX = (int) rat.getXPos();
+        int ratY = (int) rat.getYPos();
         for (Pair<Integer, Integer> position : gasSpreadPositions) {
             int gasX = position.getKey();
             int gasY = position.getValue();
@@ -263,6 +263,10 @@ public class Gas extends Item {
         // remove space at end
         positions.deleteCharAt(positions.length()-1);
 
+        /**
+         * To string which returns the string used for saving this item.
+         * @return The string required for saving this item.
+         */
         return "GAS " +
                 xPos + " " +
                 yPos + " " +

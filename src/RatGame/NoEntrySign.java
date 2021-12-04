@@ -49,9 +49,9 @@ public class NoEntrySign extends Item {
     public void steppedOn(Rat rat) {
         hpLeft--;
         updateImage();
-        System.out.println(rat.getxVel());
+        System.out.println(rat.getXVel());
         rat.turnAround();
-        System.out.println(rat.getxVel());
+        System.out.println(rat.getXVel());
     	if (hpLeft == 0) {
     		expired = true;
     	}
@@ -62,6 +62,10 @@ public class NoEntrySign extends Item {
 
     }
 
+    /**
+     * To string which returns the string used for saving this item.
+     * @return The string required for saving this item.
+     */
     @Override
     public String toString() {
         return "STP " +

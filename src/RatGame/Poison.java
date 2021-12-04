@@ -23,6 +23,12 @@ public class Poison extends Item {
         type = ItemType.POISON;
     }
 
+    /**
+     * Constructor used only for loading from saves.
+     * @param x The items x position.
+     * @param y The items y position.
+     * @param expired If the item is expired.
+     */
     public Poison(int x, int y, boolean expired) {
         this.type = ItemType.POISON;
         this.texture = new Image(POISON_TEXTURE_PATH);
@@ -64,6 +70,10 @@ public class Poison extends Item {
 
     }
 
+    /**
+     * To string which returns the string used for saving this item.
+     * @return The string required for saving this item.
+     */
     @Override
     public String toString() {
         return "PSN " +

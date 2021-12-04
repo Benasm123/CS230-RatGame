@@ -108,8 +108,8 @@ public class Sterilisation extends Item {
      */
     public void checkIfRatOnSterileTile(ArrayList<Rat> rats) {
         for (Rat rat : rats) {
-            int ratX = (int) rat.getxPos();
-            int ratY = (int) rat.getyPos();
+            int ratX = (int) rat.getXPos();
+            int ratY = (int) rat.getYPos();
 
             for (Pair<Integer, Integer> sterilizedTile : sterilizedTiles) {
                 int sterileX = sterilizedTile.getKey();
@@ -155,6 +155,10 @@ public class Sterilisation extends Item {
         sterileTilesImages.add(sterileTileSpreadImg);
     }
 
+    /**
+     * To string which returns the string used for saving this item.
+     * @return The string required for saving this item.
+     */
     @Override
     public String toString() {
         StringBuilder positions = new StringBuilder();

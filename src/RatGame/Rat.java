@@ -68,100 +68,112 @@ import java.util.ArrayList;
 // then private.
 public class Rat {
 
+    // Constants
     private static final int SCORE = 10;
     private static final float TIME_TILL_DIES_OF_POISON = 2.0f;
     private static final float POISON_RECOVERY_RATE = 0.1f;
+    private static final float ADULT_SPEED_MULTIPLIER = 0.6f;
+    private static final float BABY_SPEED_MULTIPLIER = 0.8f;
+    private static final int MOVEMENT_SPEED = 5;
+    private static final float TIME_TO_GROW_UP = 10.0f;
+    private static final float TIME_TILL_BIRTH = 5.0f;
+    private static final float TIME_TILL_STOP_SEX = 5.0f;
+    private static final int MAX_DEATH_RAT_KILLS = 5;
+    private static final float HITBOX_OFFSET = 0.3f;
+    private static final float HITBOX_WIDTH_HEIGHT = 1.0f - HITBOX_OFFSET * 2;
 
-    Image texture;
-    ImageView img;
+    // Texture paths
+    private static final String BABY_TEXTURE_PATH = "Assets/Baby.png";
+    private static final String MALE_TEXTURE_PATH = "Assets/Male.png";
+    private static final String FEMALE_TEXTURE_PATH = "Assets/Female.png";
+    private static final String DEATH_RAT_TEXTURE_PATH = "Assets/Death.png";
+    private static final String STERILE_MALE_TEXTURE_PATH = "Assets/SterileRatFamily/SterileMale.png";
+    private static final String STERILE_FEMALE_TEXTURE_PATH = "Assets/SterileRatFamily/SterileFemale.png";
+    private static final String FEMALE_PREGNANT_TEXTURE_PATH = "Assets/FemalePregnant.png";
+
+
+    // Variables
+    private Image texture;
+    private final ImageView imageView;
     private final HitBox hitBox;
 
     private float xPos;
     private float yPos;
-    private float adultSpeed = 0.6f;
-    private float babySpeed = 0.8f;
-    float timer = 10.0F;
-    float timer2= 5.0f;
-    float timer3= 5.0f;
-    private float movementSpeed = adultSpeed;
+    private float movementSpeedMultiplier;
 
-    private float xVel=0.0f;
-    private float yVel=0.0f;
+    private float xVel;
+    private float yVel;
 
 
-    int lastX;
-    int lastY;
-    boolean isSterile=false;
+    private int lastX;
+    private int lastY;
+    private boolean isSterile = false;
 
-    private float sexTimer=0.0f;
+    private float sexTimer;
     private boolean isBaby;
-    private boolean havingSex=false;
-    private boolean isPregnant = false;
-    private boolean isGivingBirth = false;
-    private float birthTime = 0.0f;
-    private float growUpTime = 0.0f;
-    private boolean isDead = false;
+    private boolean havingSex;
+    private boolean isPregnant;
+    private boolean isGivingBirth;
+    private float birthTime;
+    private float growUpTime;
+    private boolean isDead;
     private boolean isPoisoned;
     private float totalTimePoisoned;
 
-    Random rnd = new Random();
-    int spawnNumber=rnd.nextInt(3)+2;
-    int spawns=0;
+    private int spawnNumber;
+    private int spawns;
 
-    private int deathRatKills=0;
-    float rotation;
-    ratType type;
+    private int deathRatKills;
+    private RatType type;
 
-    /*
-    * enum containing the rat types
-    * */
-    enum ratType{
-        MALE, FEMALE, DEATHRAT;
-    }
+    /**
+     * Constructor to initialize the attributes of the rat.
+     * @param type The type of the rat.
+     * @param xPos The rats x position.
+     * @param yPos The rats y position.
+     * @param isBaby If the rat is a baby.
+     */
+    public Rat(RatType type, int xPos, int yPos, boolean isBaby){
 
-    /*
-    * @param type
-    * @param xPos
-    * @param yPos
-    * @param isBaby
-    * constructor to initialize the attributes of the rat
-    * */
-    public Rat(ratType type, int xPos, int yPos, boolean isBaby){
-
-        if(isBaby==true){
-            movementSpeed = babySpeed;
-        }
-        this.isBaby=isBaby;
+        this.isBaby = isBaby;
         this.xPos = xPos;
         this.yPos = yPos;
         this.type = type;
-        lastX =-1;
-        lastY =-1;
 
-
-        hitBox = new HitBox(xPos + 0.2f, yPos + 0.2f, 0.6f, 0.6f);
-
+        havingSex = false;
+        isPregnant = false;
+        isGivingBirth = false;
+        isDead = false;
         isPoisoned = false;
 
-        isPregnant=false;
-        isDead=false;
-
-        img = new ImageView();
-        if(type == ratType.DEATHRAT && isBaby==false){
-            texture = new Image("Assets/Death.png");
-            img.setImage(texture);
-        }else if(type == ratType.MALE && isBaby==false){
-            texture = new Image("Assets/Male.png");
-            img.setImage(texture);
-        }else if(type==ratType.FEMALE && isBaby==false){
-            texture = new Image("Assets/Female.png");
-            img.setImage(texture);
-        }else {
-            texture = new Image("Assets/Baby.png");
-            img.setImage(texture);
+        if (isBaby) {
+            movementSpeedMultiplier = BABY_SPEED_MULTIPLIER;
+        } else {
+            movementSpeedMultiplier = ADULT_SPEED_MULTIPLIER;
         }
-        img.setTranslateX(xPos*50);
-        img.setTranslateY(yPos*50);
+
+        // Initialize last position to something impossible so rat chooses random direction on start.
+        lastX = -1;
+        lastY = -1;
+
+        hitBox = new HitBox(xPos + HITBOX_OFFSET, yPos + HITBOX_OFFSET, HITBOX_WIDTH_HEIGHT, HITBOX_WIDTH_HEIGHT);
+
+        imageView = new ImageView();
+        if (type == RatType.DEATH_RAT && !isBaby) {
+            texture = new Image(DEATH_RAT_TEXTURE_PATH);
+            imageView.setImage(texture);
+        } else if (type == RatType.MALE && !isBaby) {
+            texture = new Image(MALE_TEXTURE_PATH);
+            imageView.setImage(texture);
+        } else if (type == RatType.FEMALE && !isBaby) {
+            texture = new Image(FEMALE_TEXTURE_PATH);
+            imageView.setImage(texture);
+        } else {
+            texture = new Image(BABY_TEXTURE_PATH);
+            imageView.setImage(texture);
+        }
+        imageView.setTranslateX(xPos * Tile.TILE_WIDTH);
+        imageView.setTranslateY(yPos * Tile.TILE_HEIGHT);
     }
 
      /*
@@ -172,27 +184,40 @@ public class Rat {
      * @param lastY
      * method checks the paths of the levelGrid to see which tiles are available for the rat to move on
      * */
-    private Pair<Integer, Integer> checkPaths(Tile[][] levelGrid, int x, int y, int lastX, int lastY){
+    private void checkPaths(Tile[][] levelGrid) {
         ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
 
+        int x = (int) xPos;
+        int y = (int) yPos;
+
         if (levelGrid[x+1][y].getType().isTraversable && x + 1 != lastX) {
-            paths.add(new Pair<>(5, 0));
+            paths.add(new Pair<>(MOVEMENT_SPEED, 0));
         }
         if (levelGrid[x-1][y].getType().isTraversable && x - 1 != lastX) {
-            paths.add(new Pair<>(-5, 0));
+            paths.add(new Pair<>(-MOVEMENT_SPEED, 0));
         }
         if (levelGrid[x][y+1].getType().isTraversable && y + 1 != lastY) {
-            paths.add(new Pair<>(0, 5));
+            paths.add(new Pair<>(0, MOVEMENT_SPEED));
         }
         if (levelGrid[x][y-1].getType().isTraversable && y - 1 != lastY) {
-            paths.add(new Pair<>(0, -5));
+            paths.add(new Pair<>(0, -MOVEMENT_SPEED));
         }
 
+        Pair<Integer, Integer> direction;
+
         if (paths.size() == 0) {
-            return new Pair<>((lastX - x)*5, (lastY - y)*5);
+            direction = new Pair<>((lastX - x) * MOVEMENT_SPEED, (lastY - y) * MOVEMENT_SPEED);
+        } else {
+            Random rand = new Random();
+            direction = paths.get(rand.nextInt(paths.size()));
         }
-        Random rand = new Random();
-        return paths.get(rand.nextInt(paths.size()));
+
+        xVel = direction.getKey() * movementSpeedMultiplier;
+        yVel = direction.getValue() * movementSpeedMultiplier;
+    }
+
+    public ImageView getImageView() {
+        return imageView;
     }
 
     /*
@@ -201,58 +226,53 @@ public class Rat {
     * method controls the movement of a rat object
     * */
     public void move(float deltaTime, Tile[][] levelGrid) {
-
-        if(havingSex==true) {
-            sexTimer+=deltaTime;
+        if (havingSex) {
             return;
         }
 
         xPos += xVel * deltaTime;
         yPos += yVel * deltaTime;
 
-
-        img.setTranslateX(xPos*50);
-        img.setTranslateY(yPos*50);
+        imageView.setTranslateX(xPos * Tile.TILE_WIDTH);
+        imageView.setTranslateY(yPos * Tile.TILE_HEIGHT);
 
         if (xVel < 0) {
-            if ((int)xPos+1 != lastX) {
-                xPos = (int)xPos+1;
-                yPos = (int)yPos;
-                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey()*movementSpeed;
-                yVel = vel.getValue()*movementSpeed;
+            if ((int) xPos + 1 != lastX) {
+                xPos = (int) xPos + 1;
+                yPos = (int) yPos;
+                checkPaths(levelGrid);
                 lastX = (int) xPos;
                 lastY = (int) yPos;
-
             }
-        }else if (yVel < 0) {
-            if ((int)yPos+1 != lastY) {
-                xPos = (int)xPos;
-                yPos = (int)yPos+1;
-                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey()*movementSpeed;
-                yVel = vel.getValue()*movementSpeed;
+        } else if (yVel < 0) {
+            if ((int) yPos + 1 != lastY) {
+                xPos = (int) xPos;
+                yPos = (int) yPos + 1;
+                checkPaths(levelGrid);
                 lastX = (int) xPos;
                 lastY = (int) yPos;
-                img.setRotate(180.0);
             }
-        }else {
-            if((int)xPos != lastX || (int)yPos != lastY) {
-                xPos = (int)xPos;
-                yPos = (int)yPos;
-                Pair<Integer, Integer> vel = checkPaths(levelGrid, (int)xPos, (int)yPos, lastX, lastY);
-                xVel = vel.getKey()*movementSpeed;
-                yVel = vel.getValue()*movementSpeed;
+        } else {
+            if ((int) xPos != lastX || (int) yPos != lastY) {
+                xPos = (int) xPos;
+                yPos = (int) yPos;
+                checkPaths(levelGrid);
                 lastX = (int) xPos;
                 lastY = (int) yPos;
             }
         }
     }
+
+    public RatType getType() {
+        return type;
+    }
+
     /*
     * @param img
     * rotates image and returns the angle the image is rotated at
     * */
-    public float setGetRotation(ImageView img) {
+    public void rotate() {
+        float rotation;
         if (xVel < 0) {
             rotation = 90.0f;
         }
@@ -265,8 +285,7 @@ public class Rat {
         else {
             rotation = 180.0f;
         }
-        img.setRotate(rotation);
-        return rotation;
+        imageView.setRotate(rotation);
     }
 
     /*
@@ -275,46 +294,43 @@ public class Rat {
     * provides update on the rats
     * */
     public void update(float deltaTime, Tile[][] levelGrid) {
-        if(totalTimePoisoned >= TIME_TILL_DIES_OF_POISON) {
+        if (totalTimePoisoned >= TIME_TILL_DIES_OF_POISON) {
             die();
         }
 
         totalTimePoisoned -= POISON_RECOVERY_RATE * deltaTime;
-        if(totalTimePoisoned < 0) {
+        if (totalTimePoisoned < 0) {
             totalTimePoisoned = 0;
         }
 
         growUpTime += deltaTime;
-        if(growUpTime>=timer){
+        if (growUpTime >= TIME_TO_GROW_UP) {
             growUp();
         }
-        this.sex(deltaTime);
+        sex(deltaTime);
         sterile();
-        this.setGetRotation(img);
-        this.move(deltaTime, levelGrid);
+        rotate();
+        move(deltaTime, levelGrid);
         updateHitBox();
-        if(growUpTime>=timer){
-            growUp();
-        }
         timeToBirth(deltaTime);
    }
 
    public void updateHitBox() {
-        this.hitBox.setPos(this.xPos + 0.2f, this.yPos + 0.2f);
+        this.hitBox.setPos(this.xPos + HITBOX_OFFSET, this.yPos + HITBOX_OFFSET);
    }
 
    /*
    * @rat
    * sets rat sex to Male
    * */
-   public void changeSexMale(Rat rat) {
-        rat.type = ratType.MALE;
-        if(rat.isBaby==false  && rat.isSterile==false) {
-            rat.texture = new Image("Assets/Male.png");
-            rat.img.setImage(rat.texture);
-        }else if(rat.isBaby==false && rat.isSterile==true){
-            rat.texture = new Image("Assets/SterileRatFamily/SterileMale.png");
-            rat.img.setImage(rat.texture);
+   public void changeSexMale() {
+        type = RatType.MALE;
+        if (!isBaby && !isSterile) {
+            texture = new Image(MALE_TEXTURE_PATH);
+            imageView.setImage(texture);
+        } else if (!isBaby) {
+            texture = new Image(STERILE_MALE_TEXTURE_PATH);
+            imageView.setImage(texture);
         }
 
    }
@@ -322,51 +338,50 @@ public class Rat {
    * @rat
    * sets rat sex to Female
    * */
-   public void changeSexFemale(Rat rat) {
-        rat.type = ratType.FEMALE;
-        if(rat.isBaby==false && rat.isSterile==false) {
-            rat.texture = new Image("Assets/Female.png");
-            rat.img.setImage(rat.texture);
-        }else if(rat.isBaby==false && rat.isSterile==true){
-            rat.texture = new Image("Assets/SterileRatFamily/SterileFemale.png");
-            rat.img.setImage(rat.texture);
+   public void changeSexFemale() {
+        type = RatType.FEMALE;
+        if (!isBaby && !isSterile) {
+            texture = new Image(FEMALE_TEXTURE_PATH);
+            imageView.setImage(texture);
+        } else if (!isBaby) {
+            texture = new Image(STERILE_FEMALE_TEXTURE_PATH);
+            imageView.setImage(texture);
         }
    }
 
    /*
    * return x coordinate of rat
    * */
-   public float getxPos() {
+   public float getXPos() {
         return xPos;
    }
 
    /*
    * return y coordinate of rat
    * */
-   public float getyPos() {
+   public float getYPos() {
         return yPos;
    }
 
     /*
     * return properties of the rats as a string
     * */
-    public String toString(){
+    public String toString() {
         String stringOfType="";
         String stringOfBaby="";
         String properties ="";
-        if(type == ratType.MALE) {
+
+        if (type == RatType.MALE) {
             stringOfType += "M";
-        }
-        else if(type == ratType.FEMALE) {
+        } else if (type == RatType.FEMALE) {
             stringOfType += "F";
-        }
-        else {
+        } else {
             stringOfType += "D";
         }
 
-        if(isBaby){
+        if (isBaby) {
             stringOfBaby += "T";
-        }else{
+        } else {
             stringOfBaby += "F";
         }
 
@@ -374,6 +389,7 @@ public class Rat {
                 (int) xVel + " " + (int) yVel + " " + isSterile + " " + isPregnant + " " + isGivingBirth + " " +
                 growUpTime + " " + isDead + " " + totalTimePoisoned + " " + spawnNumber + " " +
                 spawns + " " + deathRatKills + " " + lastX + " " + lastY;
+
         return properties;
     }
 
@@ -429,55 +445,57 @@ public class Rat {
     * @param deltaTime
     * timer for pregnant rat to give birth
     * */
-    private void timeToBirth(float deltaTime){
-
-        if (isPregnant==true){
-            texture = new Image("Assets/FemalePregnant.png");
-            img.setImage(texture);
+    private void timeToBirth(float deltaTime) {
+        if (isPregnant) {
+            texture = new Image(FEMALE_PREGNANT_TEXTURE_PATH);
+            imageView.setImage(texture);
             birthTime += deltaTime;
-            if(birthTime>=timer2){
+            if (birthTime >= TIME_TILL_BIRTH) {
                 isGivingBirth = true;
-                spawns+=1;
-                birthTime=0.0f;
-                if(spawns==spawnNumber){
+                spawns += 1;
+                birthTime = 0.0f;
+                if (spawns==spawnNumber) {
                     isPregnant=false;
-                    texture = new Image("Assets/Female.png");
-                    img.setImage(texture);
-                    spawns=0;
+                    texture = new Image(FEMALE_TEXTURE_PATH);
+                    imageView.setImage(texture);
+                    spawns = 0;
                 }
             }
         }
     }
+
     /*
     *@param deltaTime
     * sets timer for a rat to become pregnant after having sex
     * */
-    private void sex(float deltaTime){
-        if(havingSex==true && type==ratType.FEMALE){
-            sexTimer+=deltaTime;
-            if(sexTimer>=timer3){
-                havingSex=false;
-                isPregnant=true;
-                sexTimer=0;
+    private void sex(float deltaTime) {
+        if (havingSex && type == RatType.FEMALE) {
+            sexTimer += deltaTime;
+            if (sexTimer >= TIME_TILL_STOP_SEX) {
+                Random rnd = new Random();
+                spawnNumber = rnd.nextInt(3) + 2;
+                havingSex = false;
+                isPregnant = true;
+                sexTimer = 0;
             }
-        }else if(havingSex==true){
-            sexTimer+=deltaTime;
-            if(sexTimer>=timer3){
-                havingSex=false;
-                sexTimer=0;
+        } else if (havingSex) {
+            sexTimer += deltaTime;
+            if (sexTimer >= TIME_TILL_STOP_SEX) {
+                havingSex = false;
+                sexTimer = 0;
             }
         }
-
     }
+
     /*
     * prevents sterile rats from becoming pregnant
     * */
-    private void sterile(){
-        if(isSterile==true && type==ratType.MALE){
-            havingSex=false;
-            isPregnant=false;
-        }else if(isSterile==true && type==ratType.FEMALE){
-            havingSex=false;
+    private void sterile() {
+        if (isSterile && type == RatType.MALE) {
+            havingSex = false;
+            isPregnant = false;
+        } else if (isSterile && type == RatType.FEMALE) {
+            havingSex = false;
         }
     }
 
@@ -486,37 +504,37 @@ public class Rat {
     * makes baby rat an adult after some time
     * alters speed of rats to make them slower as adults
     * */
-    private void growUp(){
+    private void growUp() {
         isBaby = false;
-        movementSpeed = adultSpeed;
-        if(type == ratType.MALE && isSterile==false){
-            texture = new Image("Assets/Male.png");
-            img.setImage(texture);
-        }else if(type==ratType.FEMALE && isSterile==false){
-            texture = new Image("Assets/Female.png");
-            img.setImage(texture);
-        }else if(type==ratType.FEMALE && isSterile==true){
-            texture = new Image("Assets/SterileRatFamily/SterileFemale.png");
-            img.setImage(texture);
-        }else if(type==ratType.MALE && isSterile==true){
-            texture = new Image("Assets/SterileRatFamily/SterileMale.png");
-            img.setImage(texture);
+        movementSpeedMultiplier = ADULT_SPEED_MULTIPLIER;
+        if (type == RatType.MALE && !isSterile) {
+            texture = new Image(MALE_TEXTURE_PATH);
+            imageView.setImage(texture);
+        } else if (type == RatType.FEMALE && !isSterile) {
+            texture = new Image(FEMALE_TEXTURE_PATH);
+            imageView.setImage(texture);
+        } else if (type == RatType.FEMALE) {
+            texture = new Image(STERILE_FEMALE_TEXTURE_PATH);
+            imageView.setImage(texture);
+        } else if (type == RatType.MALE) {
+            texture = new Image(STERILE_MALE_TEXTURE_PATH);
+            imageView.setImage(texture);
         }
     }
 
-    public boolean getIsGivingBirth(){
+    public boolean getIsGivingBirth() {
         return isGivingBirth;
     }
 
-    public void setIsGivingBirth(){
+    public void setIsGivingBirth() {
         isGivingBirth = false;
     }
 
-    public boolean getIsDead(){
+    public boolean getIsDead() {
         return isDead;
     }
 
-    public void die(){
+    public void die() {
         this.isDead = true;
     }
 
@@ -525,42 +543,35 @@ public class Rat {
     * determines the actions that happen once a rat steps on or is stepped on by another
     * */
     public void steppedOn(Rat otherRat) {
-        if(type == ratType.FEMALE && otherRat.type == Rat.ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(havingSex==false && otherRat.havingSex==false && isPregnant==false && isSterile==false && otherRat.isSterile==false){
-                otherRat.havingSex=true;
-                havingSex=true;
+        if (type == RatType.FEMALE && otherRat.type == RatType.MALE && !isBaby && !otherRat.isBaby) {
+            if(!havingSex && !otherRat.havingSex && !isPregnant && !isSterile && !otherRat.isSterile) {
+                otherRat.havingSex = true;
+                havingSex = true;
             }
 
-        }else if (otherRat.type == ratType.FEMALE && type==ratType.MALE && isBaby==false && otherRat.isBaby==false){
-            if(otherRat.havingSex==false && havingSex==false && otherRat.isPregnant==false && isSterile==false && otherRat.isSterile==false){
+        } else if (otherRat.type == RatType.FEMALE && type == RatType.MALE && !isBaby && !otherRat.isBaby) {
+            if (!otherRat.havingSex && !havingSex && !otherRat.isPregnant && !isSterile && !otherRat.isSterile) {
                 havingSex=true;
                 otherRat.havingSex=true;
             }
 
-        }else if (type == ratType.DEATHRAT){
-            if (otherRat.type == ratType.DEATHRAT) {
+        } else if (type == RatType.DEATH_RAT) {
+            if (otherRat.type == RatType.DEATH_RAT) {
                 return;
             }
-            otherRat.isDead=true;
-            deathRatKills +=1;
-            System.out.println(deathRatKills);
-            if(deathRatKills==5){
+            otherRat.isDead = true;
+            deathRatKills += 1;
+            if (deathRatKills == MAX_DEATH_RAT_KILLS) {
                 isDead = true;
             }
-//        }else if (otherRat.type == ratType.DEATHRAT) {
-//            isDead = true;
-//            otherRat.deathRatKills +=1;
-//            System.out.println(otherRat.deathRatKills);
-//            if(otherRat.deathRatKills==5){
-//                otherRat.isDead = true;
-//            }
         }
     }
-    public boolean getIsPoisoned(){
+
+    public boolean getIsPoisoned() {
         return isPoisoned;
     }
 
-    public void setIsPoisoned(boolean isPoisoned){
+    public void setIsPoisoned(boolean isPoisoned) {
         this.isPoisoned = isPoisoned;
     }
 
@@ -568,10 +579,10 @@ public class Rat {
         totalTimePoisoned += amount;
     }
 
-    public int getScore(){
-        if (type == ratType.DEATHRAT){
+    public int getScore() {
+        if (type == RatType.DEATH_RAT) {
             return 0;
-        } else if (type == ratType.MALE) {
+        } else if (type == RatType.MALE) {
             return SCORE;
         } else {
             if (isPregnant) {
@@ -597,7 +608,7 @@ public class Rat {
         yVel *= -1;
     }
 
-    public float getxVel() {
+    public float getXVel() {
         return xVel;
     }
 
@@ -605,28 +616,27 @@ public class Rat {
         return hitBox;
     }
 
-    public float getyVel() {
+    public float getYVel() {
         return yVel;
     }
 
-    public void setxVel(float xVel)
-	{
+    public void setXVel(float xVel) {
 		this.xVel = xVel;
 	}
 
-	public void setyVel(float yVel)
-	{
+	public void setYVel(float yVel) {
 		this.yVel = yVel;
 	}
 
-	public void setxPos(float xPos) {
+	public void setXPos(float xPos) {
         this.xPos = xPos;
     }
 
-    public void setyPos(float yPos) {
+    public void setYPos(float yPos) {
         this.yPos = yPos;
     }
-    public void setIsSterile(){
-        isSterile=true;
+
+    public void setIsSterile() {
+        isSterile = true;
     }
 }

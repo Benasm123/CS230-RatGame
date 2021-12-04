@@ -163,6 +163,10 @@ public class Bomb extends Item {
         }
     }
 
+    /**
+     * To string which returns the string used for saving this item.
+     * @return The string required for saving this item.
+     */
     @Override
     public String toString() {
         return "BMB " +

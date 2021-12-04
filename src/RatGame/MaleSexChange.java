@@ -53,13 +53,11 @@ public class MaleSexChange extends Item {
      */
     @Override
     public void steppedOn(Rat rat) {
-        // Same comments as in female sex change here, you can even move everytthing into the changeSex method
-        if(rat.type == Rat.ratType.DEATHRAT){
-            expired =true;
-        }else{
-            rat.changeSexMale(rat);
-            expired =true;
+        // Same comments as in female sex change here, you can even move everything into the changeSex method
+        if (rat.getType() != RatType.DEATH_RAT) {
+            rat.changeSexMale();
         }
+        expired =true;
     }
 
     /**
@@ -71,6 +69,10 @@ public class MaleSexChange extends Item {
 
     }
 
+    /**
+     * To string which returns the string used for saving this item.
+     * @return The string required for saving this item.
+     */
     @Override
     public String toString() {
         return "MSX " +

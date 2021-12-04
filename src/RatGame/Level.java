@@ -574,7 +574,7 @@ public class Level {
      */
     private void updateDeathRatItem(DeathRat deathRatItem) {
         if (deathRatItem.getSpawning()) {
-            Rat deathRat = createRat(Rat.ratType.DEATHRAT, deathRatItem.getXPos(), deathRatItem.getYPos(), false);
+            Rat deathRat = createRat(RatType.DEATH_RAT, deathRatItem.getXPos(), deathRatItem.getYPos(), false);
             rats.add(deathRat);
             deathRatItem.setSpawning(false);
         }
@@ -591,7 +591,7 @@ public class Level {
                 Integer xPos = coordinate.getKey();
                 Integer yPos = coordinate.getValue();
                 for (Rat rat : rats) {
-                    if ((int) rat.getxPos() == xPos && (int) rat.getyPos() == yPos) {
+                    if ((int) rat.getXPos() == xPos && (int) rat.getYPos() == yPos) {
                         rat.die();
                     }
                 }
@@ -611,8 +611,8 @@ public class Level {
     private void createDeadRatImage(Rat rat) {
         ImageView deadRat = new ImageView();
         deadRat.setImage(new Image("Assets/deadrat.png"));
-        deadRat.setTranslateX(rat.getxPos() * Tile.TILE_WIDTH);
-        deadRat.setTranslateY(rat.getyPos() * Tile.TILE_HEIGHT);
+        deadRat.setTranslateX(rat.getXPos() * Tile.TILE_WIDTH);
+        deadRat.setTranslateY(rat.getYPos() * Tile.TILE_HEIGHT);
         deadRat.setScaleX(0.5);
         deadRat.setScaleY(0.5);
         levelGridStackPane.getChildren().add(deadRat);
@@ -649,7 +649,7 @@ public class Level {
     private int getNumberOfRatsAlive() {
         int numberOfRatsAlive = 0;
         for (Rat rat : rats) {
-            if (rat.type != Rat.ratType.DEATHRAT) {
+            if (rat.getType() != RatType.DEATH_RAT) {
                 numberOfRatsAlive++;
             }
         }
@@ -663,7 +663,7 @@ public class Level {
     private int getNumberOfFemaleRatsAlive() {
         int counter = 0;
         for (Rat rat : rats) {
-            if (rat.type == Rat.ratType.FEMALE) {
+            if (rat.getType() == RatType.FEMALE) {
                 counter++;
             }
         }
@@ -677,7 +677,7 @@ public class Level {
     private int getNumberOfMaleRatsAlive() {
         int counter = 0;
         for (Rat rat : rats) {
-            if (rat.type == Rat.ratType.MALE) {
+            if (rat.getType() == RatType.MALE) {
                 counter++;
             }
         }
@@ -746,18 +746,18 @@ public class Level {
             if (rat.getIsDead()) {
                 createDeadRatImage(rat);
                 score += rat.getScore();
-                levelGridStackPane.getChildren().remove(rat.img);
+                levelGridStackPane.getChildren().remove(rat.getImageView());
                 ratIterator.remove();
             } else if (rat.getIsGivingBirth()) {
                 Random rand = new Random();
                 int num = rand.nextInt(2);
-                Rat.ratType type;
+                RatType type;
                 if (num == 0) {
-                    type = Rat.ratType.MALE;
+                    type = RatType.MALE;
                 } else {
-                    type = Rat.ratType.FEMALE;
+                    type = RatType.FEMALE;
                 }
-                Rat babyRat = createRat(type, (int)rat.getxPos(), (int)rat.getyPos(),true);
+                Rat babyRat = createRat(type, (int)rat.getXPos(), (int)rat.getYPos(),true);
                 ratsToAdd.add(babyRat);
                 rat.setIsGivingBirth();
             } else {
@@ -920,13 +920,13 @@ public class Level {
             }
             String[] ratToSpawnSplit = ratToSpawn.split(FILE_DELIMITER);
 
-            Rat.ratType type;
+            RatType type;
             if (ratToSpawnSplit[0].equals("F")) {
-                type = Rat.ratType.FEMALE;
+                type = RatType.FEMALE;
             } else if (ratToSpawnSplit[0].equals("M")) {
-                type = Rat.ratType.MALE;
+                type = RatType.MALE;
             } else {
-                type = Rat.ratType.FEMALE;
+                type = RatType.FEMALE;
             }
 
             int xPos = Integer.parseInt(ratToSpawnSplit[1]);
@@ -936,8 +936,8 @@ public class Level {
             Rat newRat = createRat(type, xPos, yPos, isBaby);
 
             if (isSave) {
-                newRat.setxVel(Integer.parseInt(ratToSpawnSplit[4]));
-                newRat.setyVel(Integer.parseInt(ratToSpawnSplit[5]));
+                newRat.setXVel(Integer.parseInt(ratToSpawnSplit[4]));
+                newRat.setYVel(Integer.parseInt(ratToSpawnSplit[5]));
                 if (Boolean.parseBoolean(ratToSpawnSplit[6])) {
                     newRat.setIsSterile();
                 }
@@ -1062,10 +1062,10 @@ public class Level {
      * @param xPos The X position of the rat to be spawned.
      * @param yPos The Y position of the rat to be spawned.
      */
-    private Rat createRat(Rat.ratType type, int xPos, int yPos, boolean isBaby) {
+    private Rat createRat(RatType type, int xPos, int yPos, boolean isBaby) {
         Rat rat = new Rat(type, xPos, yPos, isBaby);
-        levelGridStackPane.getChildren().add(rat.img);
-        rat.img.toBack();
+        levelGridStackPane.getChildren().add(rat.getImageView());
+        rat.getImageView().toBack();
         levelGridCanvas.toBack();
         return rat;
     }
@@ -1073,7 +1073,7 @@ public class Level {
     /**
      * Draws the tiles onto the level.
      */
-    private void drawTiles(){
+    private void drawTiles() {
         for (int row = 0; row < levelHeight; row++) {
             for (int col = 0; col < levelWidth; col++) {
                 GraphicsContext levelGraphicsContext = levelGridCanvas.getGraphicsContext2D();
