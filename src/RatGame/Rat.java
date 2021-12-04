@@ -487,6 +487,9 @@ public class Rat {
             }
 
         }else if (type == ratType.DEATHRAT){
+            if (otherRat.type == ratType.DEATHRAT) {
+                return;
+            }
             otherRat.isDead=true;
             deathRatKills +=1;
             System.out.println(deathRatKills);

@@ -56,6 +56,7 @@ public class Level {
     private ArrayDeque<Float> pastDeltaTimes;
     private long lastFrameTime;
     private float timeSinceFPSRefreshed;
+    private boolean isGameFinished;
 
     // Game Loop variables
     private boolean isPaused;
@@ -109,6 +110,7 @@ public class Level {
         fpsCountText.setVisible(MainMenu.isShowFPS());
 
         firstLoop = true;
+        isGameFinished = false;
 
         // Main game loop code, that sets up the timer.
         gameLoop = new AnimationTimer() {
@@ -141,7 +143,7 @@ public class Level {
      * @param event The mouse event initiating the drag.
      */
     public void onItemBeginDrag(MouseEvent event) {
-        if (isPaused) {
+        if (isPaused || itemBeingDragged != null) {
             return;
         }
         lastMouseX = event.getSceneX();
@@ -173,7 +175,7 @@ public class Level {
      */
     public void onItemDragFinished(MouseEvent event) {
         // If the game is paused we do not want items to be usable.
-        if (isPaused) {
+        if (isPaused || itemBeingDragged == null) {
             return;
         }
         double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
@@ -258,6 +260,9 @@ public class Level {
     }
 
     public void pauseGameKey(KeyEvent e) {
+        if (isGameFinished) {
+            return;
+        }
         if (KeyCode.ESCAPE == e.getCode()) {
             pauseLoop();
             pauseScreen.setVisible(isPaused);
@@ -265,6 +270,9 @@ public class Level {
     }
 
     public void pauseGameAction() {
+        if (isGameFinished) {
+            return;
+        }
         pauseLoop();
         pauseScreen.setVisible(isPaused);
     }
@@ -572,7 +580,6 @@ public class Level {
      * Checks if the player has won or lost the game yet.
      */
     private void checkWinLoseCondition() {
-        boolean isGameFinished = false;
         boolean hasWon = false;
 
         if (getNumberOfRatsAlive() > numberOfRatsToLose) {
