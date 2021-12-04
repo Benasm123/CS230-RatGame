@@ -17,3 +17,11 @@
 .selected {
     -fx-background-color: blue;
 }
+
+.mainMenu {
+    -fx-background-color: #2384c6;
+    -fx-background-image: url("/./Assets/BackgroundHigherRes.png");
+    -fx-background-repeat: stretch;
+    -fx-background-size: auto 100%;
+    -fx-background-position: center center;
+}
