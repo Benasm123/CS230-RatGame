@@ -714,8 +714,9 @@ public class Level {
      * @param fileReader The scanner which contains the information for the expected time.
      */
     private void loadTimeLimit(Scanner fileReader) {
-        String expectedTimeString = fileReader.nextLine();
-        expectedTime = Integer.parseInt(expectedTimeString);
+        String[] expectedTimeString = fileReader.nextLine().split(" ");
+        expectedTime = Integer.parseInt(expectedTimeString[0]);
+        totalTimeOnLevel = Float.parseFloat(expectedTimeString[1]);
     }
 
     /**
@@ -1024,7 +1025,7 @@ public class Level {
      * @throws IOException Throws an exception if you cannot write to the file.
      */
     private void saveExpectedTime(FileWriter fileWriter) throws IOException {
-        fileWriter.write(expectedTime + "\n");
+        fileWriter.write(expectedTime + " " + totalTimeOnLevel + "\n");
     }
 
     /**
