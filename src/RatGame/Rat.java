@@ -286,14 +286,13 @@ public class Rat {
         }
 
         growUpTime += deltaTime;
+        if(growUpTime>=timer){
+            growUp();
+        }
         this.sex(deltaTime);
         sterile();
         this.setGetRotation(img);
         this.move(deltaTime, levelGrid);
-        if(growUpTime>=timer){
-            growUp();
-        }
-
         timeToBirth(deltaTime);
    }
 
@@ -375,6 +374,8 @@ public class Rat {
     private void timeToBirth(float deltaTime){
 
         if (isPregnant==true){
+            texture = new Image("Assets/FemalePregnant.png");
+            img.setImage(texture);
             birthTime += deltaTime;
             if(birthTime>=timer2){
                 isGivingBirth = true;
@@ -399,8 +400,6 @@ public class Rat {
             if(sexTimer>=timer3){
                 havingSex=false;
                 isPregnant=true;
-                texture = new Image("Assets/FemalePregnant.png");
-                img.setImage(texture);
                 sexTimer=0;
             }
         }else if(havingSex==true){
