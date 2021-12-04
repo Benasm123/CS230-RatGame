@@ -10,6 +10,11 @@
     -fx-pref-height: 30px;
 }
 
+.mainMenuButton {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 50px;
+}
+
 .button:hover {
     -fx-background-color: white;
     -fx-text-fill: black;
