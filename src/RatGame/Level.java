@@ -641,10 +641,10 @@ public class Level {
             } else {
                 rat.update(deltaTime, levelGrid);
                 for (Rat otherRat : rats) {
-                    if (rat.getxPos() == otherRat.getxPos() &&
-                            rat.getyPos() == otherRat.getyPos() &&
-                            rat != otherRat) {
-                        rat.steppedOn(otherRat);
+                    if (!rat.equals(otherRat)) {
+                        if (rat.getHitBox().beginCollide(otherRat.getHitBox())) {
+                            rat.steppedOn(otherRat);
+                        }
                     }
                 }
             }
@@ -1119,6 +1119,7 @@ public class Level {
     }
 
     private void addItemToLevel(Item item){
+        item.createHitBox();
         item.getImageView().setTranslateX(item.getXPos() * Tile.TILE_WIDTH);
         item.getImageView().setTranslateY(item.getYPos() * Tile.TILE_HEIGHT);
         levelGridStackPane.getChildren().add(item.getImageView());
@@ -1158,7 +1159,7 @@ public class Level {
     private void checkSteppedOn() {
         for (Rat rat : rats) {
             for (Item item : itemsInPlay) {
-                if (rat.getxPos() == item.getXPos() && rat.getyPos() == item.getYPos()) {
+                if (rat.getHitBox().beginCollide(item.getHitBox())) {
                     item.steppedOn(rat);
                 }
             }

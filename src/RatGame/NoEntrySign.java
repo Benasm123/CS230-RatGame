@@ -36,7 +36,7 @@ public class NoEntrySign extends Item {
     
     @Override
     public void use() {
-        System.out.println("Stop sign used?");
+
     }
 
     private void updateImage() {
@@ -49,8 +49,9 @@ public class NoEntrySign extends Item {
     public void steppedOn(Rat rat) {
         hpLeft--;
         updateImage();
-        rat.setxVel(rat.getxVel()*-1);
-        rat.setyVel(rat.getyVel()*-1);
+        System.out.println(rat.getxVel());
+        rat.turnAround();
+        System.out.println(rat.getxVel());
     	if (hpLeft == 0) {
     		expired = true;
     	}

@@ -18,6 +18,7 @@ public abstract class Item {
     protected int xPos;
     protected int yPos;
     protected boolean expired;
+    protected HitBox hitBox;
 
     /**
      * Constructor initializing things all items need.
@@ -25,6 +26,10 @@ public abstract class Item {
     protected Item(){
         imageView = new ImageView();
         expired = false;
+    }
+
+    public void createHitBox() {
+        hitBox = new HitBox(xPos + 0.1f, yPos + 0.1f, 0.8f, 0.8f);
     }
 
     /**
@@ -114,6 +119,10 @@ public abstract class Item {
      */
     public void setImageView(ImageView imageView) {
         this.imageView = imageView;
+    }
+
+    public HitBox getHitBox() {
+        return hitBox;
     }
 
     /**

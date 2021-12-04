@@ -74,6 +74,7 @@ public class Rat {
 
     Image texture;
     ImageView img;
+    private final HitBox hitBox;
 
     private float xPos;
     private float yPos;
@@ -136,6 +137,9 @@ public class Rat {
         this.type = type;
         lastX =-1;
         lastY =-1;
+
+
+        hitBox = new HitBox(xPos + 0.2f, yPos + 0.2f, 0.6f, 0.6f);
 
         isPoisoned = false;
 
@@ -288,7 +292,15 @@ public class Rat {
         sterile();
         this.setGetRotation(img);
         this.move(deltaTime, levelGrid);
+        updateHitBox();
+        if(growUpTime>=timer){
+            growUp();
+        }
         timeToBirth(deltaTime);
+   }
+
+   public void updateHitBox() {
+        this.hitBox.setPos(this.xPos + 0.2f, this.yPos + 0.2f);
    }
 
    /*
@@ -477,15 +489,17 @@ public class Rat {
         }else if (type == ratType.DEATHRAT){
             otherRat.isDead=true;
             deathRatKills +=1;
+            System.out.println(deathRatKills);
             if(deathRatKills==5){
                 isDead = true;
             }
-        }else if (otherRat.type == ratType.DEATHRAT) {
-            isDead = true;
-            otherRat.deathRatKills +=1;
-            if(otherRat.deathRatKills==5){
-                otherRat.isDead = true;
-            }
+//        }else if (otherRat.type == ratType.DEATHRAT) {
+//            isDead = true;
+//            otherRat.deathRatKills +=1;
+//            System.out.println(otherRat.deathRatKills);
+//            if(otherRat.deathRatKills==5){
+//                otherRat.isDead = true;
+//            }
         }
     }
     public boolean getIsPoisoned(){
@@ -514,8 +528,27 @@ public class Rat {
         }
     }
 
+    public void turnAround() {
+        if (xVel < 0 || yVel < 0) {
+            lastX = (int) xPos;
+            lastY = (int) yPos;
+        } else if (yVel > 0){
+            lastX = (int) xPos;
+            lastY = (int) yPos + 1;
+        } else if (xVel > 0) {
+            lastX = (int) xPos + 1;
+            lastY = (int) yPos;
+        }
+        xVel *= -1;
+        yVel *= -1;
+    }
+
     public float getxVel() {
         return xVel;
+    }
+
+    public HitBox getHitBox() {
+        return hitBox;
     }
 
     public float getyVel() {
