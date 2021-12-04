@@ -16,6 +16,7 @@ public class Gas extends Item {
     private static final int LIFE_DURATION = 10;
     private static final int SPREAD_RANGE = 5;
     private static final int SPREAD_INTERVAL = 1;
+    private static final float GAS_DAMAGE = 1.0f;
 
     // Image Paths
     private static final String GAS_TEXTURE_PATH = "Assets/Gas.png";
@@ -164,9 +165,9 @@ public class Gas extends Item {
      * Checks if a rat is being gassed and if so, gasses it.
      * @param rats The collection of rats on the level.
      */
-    public void checkIfRatsInGas(ArrayList<Rat> rats) {
+    public void checkIfRatsInGas(float deltaTime, ArrayList<Rat> rats) {
         for (Rat rat : rats) {
-            setRatsBeingGassed(rat);
+            setRatsBeingGassed(deltaTime, rat);
         }
     }
 
@@ -174,17 +175,15 @@ public class Gas extends Item {
      * Gasses the rat being passed in.
      * @param rat The rat to gas.
      */
-    private void setRatsBeingGassed(Rat rat) {
+    private void setRatsBeingGassed(float deltaTime, Rat rat) {
         int ratX = (int) rat.getxPos();
         int ratY = (int) rat.getyPos();
         for (Pair<Integer, Integer> position : gasSpreadPositions) {
             int gasX = position.getKey();
             int gasY = position.getValue();
             if (gasX == ratX && gasY == ratY && !expired) {
-                rat.setIsPoisoned(true);
+                rat.poison(GAS_DAMAGE * deltaTime);
                 return;
-            } else {
-                rat.setIsPoisoned(false);
             }
         }
     }
