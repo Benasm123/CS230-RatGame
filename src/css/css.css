@@ -20,6 +20,11 @@
     -fx-pref-height: 50px;
 }
 
+.pauseButton {
+    -fx-pref-width: 100px;
+    -fx-pref-height: 50px;
+}
+
 .button:hover {
     -fx-background-color: white;
     -fx-text-fill: black;
