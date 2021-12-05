@@ -6,7 +6,9 @@ import java.util.Random;
 import java.util.ArrayList;
 
 /**
- *
+ * this class controls the whole functionality of the rats
+ * @author Oluwatimilehin Abajingin
+ * @version 1.0
  */
 public class Rat {
 
