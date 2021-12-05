@@ -7,8 +7,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -18,7 +22,11 @@ import java.util.Objects;
  */
 public class Settings {
 
+    @FXML private Slider volSlider;
+    @FXML private Button playMusic;
     @FXML private Button fpsButton;
+
+    public static final String BACKGROUND_SONG = "grp13Song-Angrybirds.mp3";
 
     public void initialize() {
         updateFPSText();
@@ -43,4 +51,19 @@ public class Settings {
         MainMenu.setShowFPS(!MainMenu.isShowFPS());
         updateFPSText();
     }
+
+    MediaPlayer mediaPlayer;
+    public void play(ActionEvent event){
+        playSound();
+    }
+
+
+    private void playSound(){
+        Media sound = new Media(new File(BACKGROUND_SONG).toURI().toString());
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.setCycleCount(javafx.scene.media.MediaPlayer.INDEFINITE);
+        mediaPlayer.play();
+    }
+
+
 }
