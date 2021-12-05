@@ -15,8 +15,7 @@ public class FemaleSexChange extends Item {
     // Image paths
     private static final String FEMALE_CHANGE_TEXTURE_PATH = "Assets/FemaleSexChange.png";
 
-    public FemaleSexChange()
-	{
+    public FemaleSexChange() {
         type = ItemType.FEMALE_SEX_CHANGE;
         texture = new Image(FEMALE_CHANGE_TEXTURE_PATH);
 	}
