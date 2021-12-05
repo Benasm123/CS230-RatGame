@@ -16,11 +16,9 @@ import java.net.URLConnection;
 import java.util.Objects;
 import java.util.Scanner;
 
-// TODO: Add functionality to settings
-
 /**
  * The main menu scene controller. Controls all main menu functionality.
- * @author Benas Montrimas.
+ * @author Benas Montrimas and Ahmed Almahari.
  */
 public class MainMenu {
 

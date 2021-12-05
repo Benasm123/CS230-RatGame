@@ -19,7 +19,7 @@ import java.util.Objects;
 
 /**
  * The settings screen controller and handles all its functionality.
- * @author Benas Montrimas.
+ * @author Benas Montrimas and Ahmed Almahari.
  */
 public class Settings {
 

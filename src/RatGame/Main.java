@@ -16,7 +16,7 @@ import java.util.Objects;
 
 /**
  * The Main application class. Sets up the window and chooses which screen to show.
- * @author Benas Montrimas.
+ * @author Benas Montrimas and Ahmed Almahari.
  */
 public class Main extends Application {
     // The dimensions of the window
