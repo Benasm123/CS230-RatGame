@@ -118,6 +118,10 @@ public abstract class Item {
         return imageView;
     }
 
+    /**
+     * Gets the items hitbox.
+     * @return The hitbox of the item.
+     */
     public HitBox getHitBox() {
         return hitBox;
     }

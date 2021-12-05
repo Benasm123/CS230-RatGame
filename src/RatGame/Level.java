@@ -316,6 +316,7 @@ public class Level {
     /**
      * Sets up the level from the level file.
      * @param src The level file path that wants to be read.
+     * @param isSave Whether the level create is a save file.
      */
     public void createLevel(String src, boolean isSave) {
         this.isSave = isSave;
@@ -799,6 +800,7 @@ public class Level {
     /**
      * Reads in a file and parses the data for the level.
      * @param src A path to the level wanting to be read.
+     * @throws FileNotFoundException Throws an exception if file is not found.
      */
     private void loadLevelFile(String src) throws FileNotFoundException {
         File levelFile = new File(src);
@@ -1071,6 +1073,8 @@ public class Level {
      * @param type The type of rat, either male, female, or death, to be spawned.
      * @param xPos The X position of the rat to be spawned.
      * @param yPos The Y position of the rat to be spawned.
+     * @param isBaby If the rat is a baby rat.
+     * @return The rat created.
      */
     private Rat createRat(RatType type, int xPos, int yPos, boolean isBaby) {
         Rat rat = new Rat(type, xPos, yPos, isBaby);
@@ -1123,6 +1127,7 @@ public class Level {
 
     /**
      * Creates the save file to store the level save in.
+     * @return The file that has been created.
      * @throws IOException If the file cannot be created will throw an error.
      */
     private File createSaveFile() throws IOException {

@@ -4,7 +4,7 @@ package RatGame;
  * Enum that contains all the item types.
  * @author Benas Montrimas.
  */
-enum ItemType {
+public enum ItemType {
     // All item types.
     BOMB(0, "Assets/Bomb.png"),
     GAS(1, "Assets/Gas.png"),

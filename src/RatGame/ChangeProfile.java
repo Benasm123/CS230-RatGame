@@ -21,7 +21,7 @@ import java.util.Objects;
 public class ChangeProfile {
 
     @FXML
-    VBox profiles;
+    private VBox profiles;
 
     /**
      * Initializes the change profile, getting all profiles and shows them to player.

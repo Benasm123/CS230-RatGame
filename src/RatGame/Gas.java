@@ -145,6 +145,7 @@ public class Gas extends Item {
 
     /**
      * Checks if a rat is being gassed and if so, gasses it.
+     * @param deltaTime The time since the last frame.
      * @param rats The collection of rats on the level.
      */
     public void checkIfRatsInGas(float deltaTime, ArrayList<Rat> rats) {
@@ -214,6 +215,7 @@ public class Gas extends Item {
 
     /**
      * Gasses the rat being passed in.
+     * @param deltaTime The time since the last frame.
      * @param rat The rat to gas.
      */
     private void setRatsBeingGassed(float deltaTime, Rat rat) {

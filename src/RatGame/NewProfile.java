@@ -17,7 +17,7 @@ import java.util.Objects;
 
 /**
  * This class is the newProfile class allows player to create a new profiles.
- * @author José Mendes & Ahmed Almahari.
+ * @author José Mendes, Ahmed Almahari.
  */
 public class NewProfile {
 
