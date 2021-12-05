@@ -41,6 +41,15 @@ public class Sterilisation extends Item {
         sterileTilesImages = new ArrayList<>();
     }
 
+    /**
+     * Constructor used for loading the item from a save.
+     * @param x The items x position.
+     * @param y The items y position.
+     * @param expired If the item is expired.
+     * @param timeSincePlaced The time since the item was place.
+     * @param sterileTilesGot If the sterile tiles have been got.
+     * @param sterilizedTiles The sterile tiles.
+     */
     public Sterilisation(int x, int y, boolean expired, float timeSincePlaced, boolean sterileTilesGot, ArrayList<Pair<Integer, Integer>> sterilizedTiles) {
         this.type = ItemType.STERILISATION;
         this.texture = STERILE_TEXTURE_PATH;
@@ -60,7 +69,7 @@ public class Sterilisation extends Item {
 
     /**
      * method which adds to the list of tiles that are sterilized and sets the check for sterile tiles to true
-     * @param levelGrid
+     * @param levelGrid The level grid of the level this item is on.
      */
     public void addToSterilizedTiles(Tile[][] levelGrid) {
 
@@ -95,7 +104,7 @@ public class Sterilisation extends Item {
     /**
      * method inherited from the parent class that defines what happens when a particular rat steps on it
      * Not used by this item
-     * @param rat
+     * @param rat The rat that steps on this item.
      */
     @Override
     public void steppedOn(Rat rat) {
@@ -104,7 +113,7 @@ public class Sterilisation extends Item {
 
     /**
      * method which checks if a rat has been on a sterile tile
-     * @param rats
+     * @param rats All the rats on the level this item is on.
      */
     public void checkIfRatOnSterileTile(ArrayList<Rat> rats) {
         for (Rat rat : rats) {
@@ -135,24 +144,11 @@ public class Sterilisation extends Item {
     }
 
     /**
-     *
+     * Gets the image views of the sterile tiles.
      * @return the list of tiles to spread image to
      */
     public ArrayList<ImageView> getSterileTilesImages() {
         return sterileTilesImages;
-    }
-
-    /**
-     * method which spreads the sterilisation image to all tiles in radius
-     * @param xPos
-     * @param yPos
-     */
-    private void sterileTilesImageViews(int xPos, int yPos) {
-        ImageView sterileTileSpreadImg = new ImageView();
-        sterileTileSpreadImg.setImage(STERILE_SPREAD_TEXTURE_PATH);
-        sterileTileSpreadImg.setTranslateX(xPos * Tile.TILE_WIDTH);
-        sterileTileSpreadImg.setTranslateY(yPos * Tile.TILE_HEIGHT);
-        sterileTilesImages.add(sterileTileSpreadImg);
     }
 
     /**
@@ -174,5 +170,18 @@ public class Sterilisation extends Item {
                 timeSincePlaced + " " +
                 sterileTilesGot + " " +
                 positions;
+    }
+
+    /**
+     * method which spreads the sterilisation image to all tiles in radius
+     * @param xPos The x position of the sterile tile.
+     * @param yPos The y position of the sterile tile.
+     */
+    private void sterileTilesImageViews(int xPos, int yPos) {
+        ImageView sterileTileSpreadImg = new ImageView();
+        sterileTileSpreadImg.setImage(STERILE_SPREAD_TEXTURE_PATH);
+        sterileTileSpreadImg.setTranslateX(xPos * Tile.TILE_WIDTH);
+        sterileTileSpreadImg.setTranslateY(yPos * Tile.TILE_HEIGHT);
+        sterileTilesImages.add(sterileTileSpreadImg);
     }
 }

@@ -16,9 +16,7 @@ public class Tile {
     public static final int TILE_WIDTH = 50;
 
     // Variables
-    private float xPos;
-    private float yPos;
-    private TileType type;
+    private final TileType type;
     private Image texture;
 
     /**
@@ -28,8 +26,6 @@ public class Tile {
      * @param type the type of the tile
      */
     public Tile(float xPos, float yPos, TileType type) {
-        this.xPos = xPos;
-        this.yPos = yPos;
         this.type = type;
         this.texture = type.textureName;
     }
