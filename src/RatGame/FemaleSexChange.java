@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
  * This class allows for the creation of Female sex change items.
  * If they are of the opposite sex, this sex change item changes the rat's sex to female as soon as it's stepped on.
  *
- * @author CS-230 Group13 (21/22)
+ * @author Oluwatimilehin Abajingin
  * @version 1.0
  *
  */
