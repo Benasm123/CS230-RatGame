@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -20,6 +22,9 @@ public class Main extends Application {
     // The dimensions of the window
     private static final int WINDOW_WIDTH = 1200;
     private static final int WINDOW_HEIGHT = 800;
+    public static final String BACKGROUND_SONG = "src/Assets/sound/grp13Song-Angrybirds.mp3";
+
+    public static MediaPlayer mediaPlayer;
 
     /**
      * Called on application start.
@@ -29,6 +34,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root;
+
+        Media sound = new Media(new File(BACKGROUND_SONG).toURI().toString());
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.setCycleCount(javafx.scene.media.MediaPlayer.INDEFINITE);
+        mediaPlayer.play();
 
         File profile = new File("src/Profiles");
 

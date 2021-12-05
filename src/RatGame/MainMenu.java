@@ -31,6 +31,7 @@ public class MainMenu {
     // Holds which profile is currently selected.
     private static PlayerProfile currentProfile;
     private static boolean showFPS;
+    private static double volume;
 
     // FXML variables.
     @FXML private Text messageDay;
@@ -77,6 +78,13 @@ public class MainMenu {
                 setShowFPS(stringShowFPS.charAt(0) == 't');
             } else {
                 setShowFPS(false);
+            }
+
+            if (reader.hasNextLine()) {
+                String stringVolume = reader.nextLine();
+                setVolume(Double.parseDouble(stringVolume));
+            } else {
+                setVolume(1);
             }
 
             reader.close();
@@ -319,7 +327,8 @@ public class MainMenu {
         try {
             FileWriter writer = new FileWriter(configFile, false);
             writer.write(currentProfile.getName() + "\n");
-            writer.write(String.valueOf(showFPS));
+            writer.write(String.valueOf(showFPS) + "\n");
+            writer.write(String.valueOf(volume));
             writer.close();
 
         } catch (IOException e) {
@@ -334,6 +343,16 @@ public class MainMenu {
      */
     public static PlayerProfile getCurrentProfile() {
         return currentProfile;
+    }
+
+    public static double getVolume() {
+        return volume;
+    }
+
+    public static void setVolume(double volume) {
+        MainMenu.volume = volume;
+        Main.mediaPlayer.setVolume(volume);
+        updateConfig();
     }
 
     /**
