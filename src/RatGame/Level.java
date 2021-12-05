@@ -102,9 +102,11 @@ public class Level {
     @FXML private Text maleRatsAliveText;
     @FXML private Text femaleRatsAliveText;
     @FXML private Text winLoseText;
-    @FXML private Text scoreText;
+    @FXML private Text scoreEndGameText;
     @FXML private StackPane pauseScreen;
     @FXML private Text timeText;
+    @FXML private Text ratsToLoseText;
+    @FXML private Text scoreText;
 
     /**
      * Called once the level is loaded and initialized the scene.
@@ -179,8 +181,11 @@ public class Level {
     public void onItemDragFinished(MouseEvent event) {
         // If the game is paused we do not want items to be usable.
         if (isPaused || itemBeingDragged == null) {
+            mainStackPane.getChildren().remove(itemBeingDragged);
+            itemBeingDragged = null;
             return;
         }
+
         double droppedAbsoluteXPos = (itemBeingDragged.getTranslateX() + itemBeingDragged.getImage().getWidth()/2);
         double droppedAbsoluteYPos = (itemBeingDragged.getTranslateY() + itemBeingDragged.getImage().getHeight()/2);
         double droppedGridXPos = ((droppedAbsoluteXPos + (0 - levelGridStackPane.getTranslateX()))/Tile.TILE_WIDTH);
@@ -202,25 +207,22 @@ public class Level {
 
         // If item isn't found in the inventory we return, we do not want to use an item they do not own.
         if (itemType == null) {
+            itemBeingDragged = null;
             return;
         }
 
         // Checks if it's on a path, and whether its on the screen, stopping player dropping an item to a path they cannot see.
         if (droppedGridXPos < levelWidth && droppedGridXPos > 0 && droppedGridYPos < levelHeight && droppedGridYPos > 0 &&
                 droppedAbsoluteXPos > 0 && droppedAbsoluteXPos < gameScreen.getWidth() &&
-                droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < gameScreen.getHeight()) {
-            if (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path) {
-                if (alreadyItemOnTile(gridX, gridY)) {
-                    return;
-                }
-
-                Item itemUsed = itemsInInventory.get(itemType.getIndex()).pop();
-                itemUsed.setXPos(gridX);
-                itemUsed.setYPos(gridY);
-                addItemToLevel(itemUsed);
-                itemUsed.use();
-                removeItem(itemType);
-            }
+                droppedAbsoluteYPos > 0 && droppedAbsoluteYPos < gameScreen.getHeight() &&
+                (levelGrid[(int)droppedGridXPos][(int)droppedGridYPos].getType() == TileType.Path &&
+                !alreadyItemOnTile(gridX, gridY))) {
+            Item itemUsed = itemsInInventory.get(itemType.getIndex()).pop();
+            itemUsed.setXPos(gridX);
+            itemUsed.setYPos(gridY);
+            addItemToLevel(itemUsed);
+            itemUsed.use();
+            removeItem(itemType);
         }
         itemBeingDragged = null;
     }
@@ -352,6 +354,7 @@ public class Level {
             e.printStackTrace();
         }
 
+        ratsToLoseText.setText("Rats to lose: " + numberOfRatsToLose);
         timeText.setText(TIME_LEFT_TEXT + expectedTime);
 
         drawTiles();
@@ -386,6 +389,7 @@ public class Level {
      */
     public void clampToGameScreen() {
         if (levelGridStackPane.getWidth() > gameScreen.getWidth() && levelGridStackPane.getHeight() > gameScreen.getHeight()) {
+            System.out.println("1");
             if (levelGridStackPane.getTranslateX() > 0) {
                 levelGridStackPane.setTranslateX(0.0);
             } else if (levelGridStackPane.getTranslateX() < gameScreen.getWidth() - levelGridStackPane.getWidth()) {
@@ -397,6 +401,7 @@ public class Level {
                 levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
             }
         } else if (levelGridStackPane.getWidth() > gameScreen.getWidth()) {
+            System.out.println("2");
             if (levelGridStackPane.getTranslateX() > 0) {
                 levelGridStackPane.setTranslateX(0.0);
             } else if (levelGridStackPane.getTranslateX() < gameScreen.getWidth() - levelGridStackPane.getWidth()) {
@@ -408,6 +413,7 @@ public class Level {
                 levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
             }
         } else if (levelGridStackPane.getHeight() > gameScreen.getHeight()) {
+            System.out.println("3");
             if (levelGridStackPane.getTranslateX() < 0) {
                 levelGridStackPane.setTranslateX(0.0);
             } else if (levelGridStackPane.getTranslateX() > gameScreen.getWidth() - levelGridStackPane.getWidth() ) {
@@ -419,6 +425,7 @@ public class Level {
                 levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
             }
         } else {
+            System.out.println("4");
             if (levelGridStackPane.getTranslateY() < 0) {
                 levelGridStackPane.setTranslateY(0.0);
             } else if (levelGridStackPane.getTranslateY() + levelGridStackPane.getHeight() > gameScreen.getHeight()) {
@@ -446,7 +453,12 @@ public class Level {
         checkIfItemSteppedOnByRat();
         checkWinLoseCondition();
         updateTimeText();
+        updateScoreText();
         updateDeadRats(deltaTime);
+    }
+
+    private void updateScoreText() {
+        scoreText.setText("Score: " + score);
     }
 
     /**
@@ -710,7 +722,7 @@ public class Level {
             } else {
                 winLoseText.setText("YOU LOSE!");
             }
-            scoreText.setText("You scored: " + score);
+            scoreEndGameText.setText("You scored: " + score);
             gameOverScreen.setVisible(true);
             gameOverScreen.setDisable(false);
         }

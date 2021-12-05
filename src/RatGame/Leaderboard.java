@@ -72,6 +72,8 @@ public class Leaderboard {
      * Loads the leaderboard from the leaderboard save.
      */
     private void loadLeaderboard() {
+        new File("src/Leaderboards").mkdir();
+
         File leaderboardFile = new File("src/Leaderboards/" + levelName);
 
         try {

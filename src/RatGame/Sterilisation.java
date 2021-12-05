@@ -94,7 +94,7 @@ public class Sterilisation extends Item {
 
     /**
      * method inherited from the parent class that defines what happens when a particular rat steps on it
-     * Not used by the bomb
+     * Not used by this item
      * @param rat
      */
     @Override
@@ -165,7 +165,6 @@ public class Sterilisation extends Item {
         for (Pair<Integer, Integer> position : sterilizedTiles) {
             positions.append(position.getKey()).append(" ").append(position.getValue()).append(" ");
         }
-        // remove space at end
         positions.deleteCharAt(positions.length()-1);
 
         return "STR " +
