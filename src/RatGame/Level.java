@@ -124,7 +124,6 @@ public class Level {
                 if (firstLoop) {
                     firstLoop = false;
                     lastFrameTime = now;
-                    System.out.println(now);
                 }
 
                 float deltaTime = (float) ((now - lastFrameTime) / NANO_TO_SECOND);
@@ -389,7 +388,6 @@ public class Level {
      */
     public void clampToGameScreen() {
         if (levelGridStackPane.getWidth() > gameScreen.getWidth() && levelGridStackPane.getHeight() > gameScreen.getHeight()) {
-            System.out.println("1");
             if (levelGridStackPane.getTranslateX() > 0) {
                 levelGridStackPane.setTranslateX(0.0);
             } else if (levelGridStackPane.getTranslateX() < gameScreen.getWidth() - levelGridStackPane.getWidth()) {
@@ -401,7 +399,6 @@ public class Level {
                 levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
             }
         } else if (levelGridStackPane.getWidth() > gameScreen.getWidth()) {
-            System.out.println("2");
             if (levelGridStackPane.getTranslateX() > 0) {
                 levelGridStackPane.setTranslateX(0.0);
             } else if (levelGridStackPane.getTranslateX() < gameScreen.getWidth() - levelGridStackPane.getWidth()) {
@@ -413,7 +410,6 @@ public class Level {
                 levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
             }
         } else if (levelGridStackPane.getHeight() > gameScreen.getHeight()) {
-            System.out.println("3");
             if (levelGridStackPane.getTranslateX() < 0) {
                 levelGridStackPane.setTranslateX(0.0);
             } else if (levelGridStackPane.getTranslateX() > gameScreen.getWidth() - levelGridStackPane.getWidth() ) {
@@ -425,7 +421,6 @@ public class Level {
                 levelGridStackPane.setTranslateY(gameScreen.getHeight() - levelGridStackPane.getHeight());
             }
         } else {
-            System.out.println("4");
             if (levelGridStackPane.getTranslateY() < 0) {
                 levelGridStackPane.setTranslateY(0.0);
             } else if (levelGridStackPane.getTranslateY() + levelGridStackPane.getHeight() > gameScreen.getHeight()) {
