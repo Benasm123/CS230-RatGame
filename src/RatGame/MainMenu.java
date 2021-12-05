@@ -51,9 +51,141 @@ public class MainMenu {
     }
 
     /**
+     * Continues the game from a previous save.
+     * @param event The event which triggered the action.
+     * @throws IOException Throws an error if the level file cannot be found.
+     */
+    public void continueGame(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(loader.load());
+
+        Level controller = loader.getController();
+
+        String[] allSaves = new File("src/Saves/").list();
+
+        String profileName = currentProfile.getName();
+        if (allSaves != null) {
+            for (String save : allSaves) {
+                if (save.substring(1).startsWith(profileName)) {
+                    controller.createLevel(save, true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Get if the fps is set to showing.
+     * @return True if fps is set to show, else false.
+     */
+    public static boolean isShowFPS() {
+        return showFPS;
+    }
+
+    /**
+     * Sets whether the fps is to be shown or hidden.
+     * @param showFPS Whether the fps is to be shown.
+     */
+    public static void setShowFPS(boolean showFPS) {
+        MainMenu.showFPS = showFPS;
+        updateConfig();
+    }
+
+    /**
+     * Used to exit the game from the main menu when pressing the exit button.
+     */
+    public void quitProgram() {
+        System.exit(0);
+    }
+
+    /**
+     * Called when the Setting button is pressed in game, and swaps to the settings screen.
+     * @param event The action event that triggered this method.
+     * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
+     */
+    public void switchToSettings(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/settings.fxml")));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
+
+    /**
+     * Called when the Level Select button is pressed in game, and swaps to the level select screen.
+     * @param event The action event that triggered this method.
+     * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
+     */
+    public void switchToLevelSelect(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/levelSelect.fxml")));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
+
+    /**
+     * Called when the Change Profile button is pressed in game, and swaps to the change profile screen.
+     * @param event The action event that triggered this method.
+     * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
+     */
+    public void switchToChangeProfile(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/changeProfile.fxml")));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
+
+    /**
+     * Loads the new game scene and switches to it.
+     * @param event The event which triggered this action.
+     * @throws IOException Throws an error if FXML file cannot be found.
+     */
+    public void onNewGamePressed(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/newGame.fxml")));
+        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
+
+    /**
+     * Get the current profile loaded.
+     * @return The current profile which is currently loaded.
+     */
+    public static PlayerProfile getCurrentProfile() {
+        return currentProfile;
+    }
+
+    /**
+     * Gets the volume of the music.
+     * @return The volume of the music.
+     */
+    public static double getVolume() {
+        return volume;
+    }
+
+    /**
+     * Sets the volume of the music.
+     * @param volume The value you want to set the volume to.
+     */
+    public static void setVolume(double volume) {
+        MainMenu.volume = volume;
+        Main.mediaPlayer.setVolume(volume);
+        updateConfig();
+    }
+
+    /**
+     * Sets the current profile to a new one.
+     * @param profile The profile which you want to set as the current profile.
+     */
+    public static void setCurrentProfile(PlayerProfile profile) {
+        currentProfile = profile;
+        updateConfig();
+    }
+
+    /**
      * Loads the config file and loads setting and profiles last used.
      */
-    public void loadConfigFile() {
+    private void loadConfigFile() {
         try {
             File configFile = new File("src/Config/ConfigFile");
 
@@ -123,62 +255,12 @@ public class MainMenu {
     }
 
     /**
-     * Continues the game from a previous save.
-     * @param event The event which triggered the action.
-     * @throws IOException Throws an error if the level file cannot be found.
-     */
-    public void continueGame(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML/level.fxml"));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.setRoot(loader.load());
-
-        Level controller = loader.getController();
-
-        String[] allSaves = new File("src/Saves/").list();
-
-        String profileName = currentProfile.getName();
-        if (allSaves != null) {
-            for (String save : allSaves) {
-                if (save.substring(1).startsWith(profileName)) {
-                    controller.createLevel(save, true);
-                }
-            }
-        }
-    }
-
-    /**
-     * Get if the fps is set to showing.
-     * @return True if fps is set to show, else false.
-     */
-    public static boolean isShowFPS() {
-        return showFPS;
-    }
-
-    /**
-     * Sets whether the fps is to be shown or hidden.
-     * @param showFPS Whether the fps is to be shown.
-     */
-    public static void setShowFPS(boolean showFPS) {
-        MainMenu.showFPS = showFPS;
-        updateConfig();
-    }
-
-    /**
      * Will load the last used profile.
      */
     private void loadProfile(String profileName) {
         PlayerProfile playerProfile = new PlayerProfile(profileName);
         playerProfile.load(profileName);
         setCurrentProfile(playerProfile);
-    }
-    
-    
-    /**
-     * Used to exit the game from the main menu when pressing the exit button.
-     */
-    @FXML protected void quitProgram() {
-        System.exit(0);
     }
 
     /**
@@ -207,7 +289,7 @@ public class MainMenu {
     /**
      * Updates the message of the day.
      */
-    public void updateMessage() {
+    private void updateMessage() {
         try {
             InputStream requestReturn = sendRequestToURL(MESSAGE_URL);
             String puzzle = getStringFromBytes(requestReturn);
@@ -270,62 +352,14 @@ public class MainMenu {
     }
 
     /**
-     * Called when the Setting button is pressed in game, and swaps to the settings screen.
-     * @param event The action event that triggered this method.
-     * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
-     */
-    public void switchToSettings(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/settings.fxml")));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.setRoot(root);
-    }
-
-    /**
-     * Called when the Level Select button is pressed in game, and swaps to the level select screen.
-     * @param event The action event that triggered this method.
-     * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
-     */
-    public void switchToLevelSelect(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/levelSelect.fxml")));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.setRoot(root);
-    }
-
-    /**
-     * Called when the Change Profile button is pressed in game, and swaps to the change profile screen.
-     * @param event The action event that triggered this method.
-     * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
-     */
-    public void switchToChangeProfile(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/changeProfile.fxml")));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.setRoot(root);
-    }
-
-    /**
-     * Loads the new game scene and switches to it.
-     * @param event The event which triggered this action.
-     * @throws IOException Throws an error if FXML file cannot be found.
-     */
-    public void onNewGamePressed(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/newGame.fxml")));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.setRoot(root);
-    }
-
-    /**
      * Updates config file to save settings.
      */
-    public static void updateConfig() {
+    private static void updateConfig() {
         File configFile = new File("src/Config/ConfigFile");
         try {
             FileWriter writer = new FileWriter(configFile, false);
             writer.write(currentProfile.getName() + "\n");
-            writer.write(String.valueOf(showFPS) + "\n");
+            writer.write(showFPS + "\n");
             writer.write(String.valueOf(volume));
             writer.close();
 
@@ -333,32 +367,5 @@ public class MainMenu {
             System.out.println("Error: Cant write to file.");
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Get the current profile loaded.
-     * @return The current profile which is currently loaded.
-     */
-    public static PlayerProfile getCurrentProfile() {
-        return currentProfile;
-    }
-
-    public static double getVolume() {
-        return volume;
-    }
-
-    public static void setVolume(double volume) {
-        MainMenu.volume = volume;
-        Main.mediaPlayer.setVolume(volume);
-        updateConfig();
-    }
-
-    /**
-     * Sets the current profile to a new one.
-     * @param profile The profile which you want to set as the current profile.
-     */
-    public static void setCurrentProfile(PlayerProfile profile) {
-        currentProfile = profile;
-        updateConfig();
     }
 }

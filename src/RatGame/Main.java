@@ -62,10 +62,21 @@ public class Main extends Application {
     }
 
     /**
+     * Main method.
+     * @param args Arguments for application.
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    /**
      * Creates the config folder and files, if they do not already exist.
      */
     private void createConfigFile(){
-        new File("src/Config").mkdir();
+        if (new File("src/Config").mkdir()) {
+            System.out.println("Config folder created");
+        }
+
         File myObj = new File("src/Config/ConfigFile");
         try {
             if (myObj.createNewFile()) {
@@ -74,13 +85,5 @@ public class Main extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Main method.
-     * @param args Arguments for application.
-     */
-    public static void main(String[] args) {
-        launch(args);
     }
 }

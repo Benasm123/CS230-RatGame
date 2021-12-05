@@ -26,8 +26,8 @@ public class Sterilisation extends Item {
     private boolean sterileTilesGot;
 
     // Collections
-    private ArrayList<ImageView> sterileTilesImages;
-    private ArrayList<Pair<Integer, Integer>> sterilizedTiles;
+    private final ArrayList<ImageView> sterileTilesImages;
+    private final ArrayList<Pair<Integer, Integer>> sterilizedTiles;
 
 
     /**

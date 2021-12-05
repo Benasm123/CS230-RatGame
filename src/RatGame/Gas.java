@@ -112,21 +112,6 @@ public class Gas extends Item {
     }
 
     /**
-     * Checks if gas from this item is already on a tile.
-     * @param x The x position to check.
-     * @param y The y position to check.
-     * @return True if there is no gas on the tile, otherwise true.
-     */
-    private boolean gasNotOnTile(int x, int y) {
-        for (Pair<Integer, Integer> positionsToCompare : gasSpreadPositions){
-            if (positionsToCompare.equals(new Pair<>(x, y))){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Creates gas and spreads to all available tiles.
      * @param levelGrid The level layout.
      */
@@ -139,20 +124,6 @@ public class Gas extends Item {
         } else {
             checkTiles(levelGrid);
         }
-    }
-
-    /**
-     * Create ImageViews for the gas particles.
-     * @param xPos The x position of the gas.
-     * @param yPos The y position of the gas.
-     */
-    private void createGasSpreadImageView(int xPos, int yPos) {
-        ImageView gasSpreadImageView = new ImageView();
-        Image gasSpreadImage = new Image(GAS_SPREAD_TEXTURE_PATH);
-        gasSpreadImageView.setImage(gasSpreadImage);
-        gasSpreadImageView.setTranslateX(xPos * Tile.TILE_WIDTH);
-        gasSpreadImageView.setTranslateY(yPos * Tile.TILE_HEIGHT);
-        gasImageViews.add(gasSpreadImageView);
     }
 
     /**
@@ -179,23 +150,6 @@ public class Gas extends Item {
     public void checkIfRatsInGas(float deltaTime, ArrayList<Rat> rats) {
         for (Rat rat : rats) {
             setRatsBeingGassed(deltaTime, rat);
-        }
-    }
-
-    /**
-     * Gasses the rat being passed in.
-     * @param rat The rat to gas.
-     */
-    private void setRatsBeingGassed(float deltaTime, Rat rat) {
-        int ratX = (int) rat.getXPos();
-        int ratY = (int) rat.getYPos();
-        for (Pair<Integer, Integer> position : gasSpreadPositions) {
-            int gasX = position.getKey();
-            int gasY = position.getValue();
-            if (gasX == ratX && gasY == ratY && !expired) {
-                rat.poison(GAS_DAMAGE * deltaTime);
-                return;
-            }
         }
     }
 
@@ -227,27 +181,11 @@ public class Gas extends Item {
     }
 
     /**
-     * Get the position of the gas spread particles.
-     * @return Collection of all the positions of the gas particles.
-     */
-    public ArrayList<Pair<Integer, Integer>> getGasSpreadPositions() {
-        return gasSpreadPositions;
-    }
-
-    /**
      * Get whether the gas is spreading.
      * @return True if gas should spread.
      */
     public boolean isSpreadingGas() {
         return isSpreadingGas;
-    }
-
-    /**
-     * Set whether gas is spreading.
-     * @param isSpreadingGas Whether the gas is spreading or not.
-     */
-    public void setIsSpreadingGas(boolean isSpreadingGas){
-        this.isSpreadingGas = isSpreadingGas;
     }
 
     /**
@@ -263,10 +201,6 @@ public class Gas extends Item {
         // remove space at end
         positions.deleteCharAt(positions.length()-1);
 
-        /**
-         * To string which returns the string used for saving this item.
-         * @return The string required for saving this item.
-         */
         return "GAS " +
                 xPos + " " +
                 yPos + " " +
@@ -276,5 +210,51 @@ public class Gas extends Item {
                 currentRange + " " +
                 isSpreadingGas + " " +
                 positions;
+    }
+
+    /**
+     * Gasses the rat being passed in.
+     * @param rat The rat to gas.
+     */
+    private void setRatsBeingGassed(float deltaTime, Rat rat) {
+        int ratX = (int) rat.getXPos();
+        int ratY = (int) rat.getYPos();
+        for (Pair<Integer, Integer> position : gasSpreadPositions) {
+            int gasX = position.getKey();
+            int gasY = position.getValue();
+            if (gasX == ratX && gasY == ratY && !expired) {
+                rat.poison(GAS_DAMAGE * deltaTime);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Checks if gas from this item is already on a tile.
+     * @param x The x position to check.
+     * @param y The y position to check.
+     * @return True if there is no gas on the tile, otherwise true.
+     */
+    private boolean gasNotOnTile(int x, int y) {
+        for (Pair<Integer, Integer> positionsToCompare : gasSpreadPositions){
+            if (positionsToCompare.equals(new Pair<>(x, y))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Create ImageViews for the gas particles.
+     * @param xPos The x position of the gas.
+     * @param yPos The y position of the gas.
+     */
+    private void createGasSpreadImageView(int xPos, int yPos) {
+        ImageView gasSpreadImageView = new ImageView();
+        Image gasSpreadImage = new Image(GAS_SPREAD_TEXTURE_PATH);
+        gasSpreadImageView.setImage(gasSpreadImage);
+        gasSpreadImageView.setTranslateX(xPos * Tile.TILE_WIDTH);
+        gasSpreadImageView.setTranslateY(yPos * Tile.TILE_HEIGHT);
+        gasImageViews.add(gasSpreadImageView);
     }
 }

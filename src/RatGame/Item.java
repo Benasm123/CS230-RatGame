@@ -89,8 +89,8 @@ public abstract class Item {
     public abstract void steppedOn(Rat rat);
 
     /**
-     * Called every frame.
-     * @param deltaTime
+     * Called every frame to update item.
+     * @param deltaTime The time since last frame.
      */
     public abstract void update(float deltaTime);
 
@@ -116,14 +116,6 @@ public abstract class Item {
      */
     public ImageView getImageView() {
         return imageView;
-    }
-
-    /**
-     * Sets the image view.
-     * @param imageView The image view that you want to set to.
-     */
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
     }
 
     public HitBox getHitBox() {
@@ -167,7 +159,7 @@ public abstract class Item {
      * @param expired The value to set if the item is expired to.
      */
     public void setExpired(boolean expired) {
-        this.expired = true;
+        this.expired = expired;
     }
 
     /**

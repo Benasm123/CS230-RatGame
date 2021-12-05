@@ -21,14 +21,15 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	private int highestLevel;
 
 	/**
-	 * creates an instance of the profile with a name using setName method
-	 * @param name
+	 * creates an instance of the profile with a name.
+	 * @param name The name of the profile.
 	 */
 	public PlayerProfile(String name) {
 		setName(name);
 	}
 
 	/**
+     * Gets the name of the profile.
 	 * @return the name of a profile
 	 */
 	public String getName() {
@@ -37,14 +38,14 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 
 	/**
 	 * sets the name of the profile
-	 * @param name
+	 * @param name The name to set the profile to.
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 *
+	 * Gets the high score of the profile.
 	 * @return the score related to the profile
 	 */
 	public int getHighScore() {
@@ -52,27 +53,11 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	}
 
 	/**
-	 * set a new high score for the profile
-	 * @param score
-	 */
-	public void setHighScore(int score) {
-		highScore = score;
-	}
-
-	/**
-	 *
-	 * @return the highest level achieved by a profile
+	 * Get the highest level that the profile has achieved.
+	 * @return the highest level achieved by a profile.
 	 */
 	public int getHighestLevel() {
 		return highestLevel;
-	}
-
-	/**
-	 * set a new highest level achieved by the profile
-	 * @param level
-	 */
-	public void setHighestLevel(int level) {
-		highestLevel = level;
 	}
 
 	/**
@@ -108,13 +93,13 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 
 	/**
 	 * attempts to load the file saved the player
-	 * @param save
-	 */
-	public boolean load(String save) {
+     * @param save The name of the profile to save.
+     */
+	public void load(String save) {
 		try {
 		      File myObj = new File("src//Profiles//" + save);
               if (!myObj.exists()) {
-                  return false;
+                  return;
               }
 		      Scanner in = new Scanner(myObj);
 		      
@@ -129,22 +114,21 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 		      e.printStackTrace();
 		}
         MainMenu.setCurrentProfile(this);
-        return true;
-	}
+    }
 
 	/**
 	 * This method allows player profiles to be compared by score
 	 * uses the difference to decide if the profile goes up or down on the leaderboard
-	 * @param profile
-	 * @return the difference between the scores
+	 * @param profile The profile to compare to.
+	 * @return the difference between the scores.
 	 */
 	@Override
     public int compareTo(PlayerProfile profile) {
-        return (int) (profile.getHighScore() - this.highScore);
+        return profile.getHighScore() - this.highScore;
     }
 
 	/**
-	 *
+	 * Prints the name and high score of the profile.
 	 * @return player's name and score obtained as a string
 	 */
 	@Override
@@ -153,7 +137,7 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	}
 
     /**
-     * Updates the profiles highest level and high score and saves it.
+     * Updates the highest level and high score of the profile and saves it.
      * @param level The level number that has been cleared.
      * @param score The score achieved from the level.
      */
@@ -163,28 +147,30 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
         save();
     }
 
-	/**
-	 * attempts to create a file
-	 */
-	private void newFile() {
-		try {
-			new File("src/Profiles").mkdir();
-			File myObj = new File("src//Profiles//" + name);
-			if (myObj.exists()) {
-				deleteSave();
-			}
-			if (myObj.createNewFile()) {
-				System.out.println("File created: " + myObj.getName());
-				System.out.println("Absolute path: " + myObj.getAbsolutePath());
-			}
-			else {
-				System.out.println("File already exists.");
-				System.out.println("Absolute path: " + myObj.getAbsolutePath());
-			}
-		}
-		catch (IOException e) {
-			System.out.println("An error occurred.");
-			e.printStackTrace();
-		}
-	}
+    /**
+     * attempts to create a file
+     */
+    private void newFile() {
+        try {
+            if (new File("src/Profiles").mkdir()) {
+                System.out.println("Profiles folder created");
+            }
+
+            File myObj = new File("src//Profiles//" + name);
+            if (myObj.exists()) {
+                deleteSave();
+            }
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            }
+            else {
+                System.out.println("File already exists.");
+            }
+            System.out.println("Absolute path: " + myObj.getAbsolutePath());
+        }
+        catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
 }

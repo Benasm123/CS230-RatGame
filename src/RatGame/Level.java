@@ -452,6 +452,9 @@ public class Level {
         updateDeadRats(deltaTime);
     }
 
+    /**
+     * Updates the text of the score on the level.
+     */
     private void updateScoreText() {
         scoreText.setText("Score: " + score);
     }
@@ -996,7 +999,7 @@ public class Level {
      * @param itemToSpawn The information about the item to spawn.
      * @return The item created.
      */
-    public Item getItemFromSave(String[] itemToSpawn){
+    private Item getItemFromSave(String[] itemToSpawn){
         String itemType = itemToSpawn[0];
         int x = Integer.parseInt(itemToSpawn[1]);
         int y = Integer.parseInt(itemToSpawn[2]);
@@ -1316,6 +1319,10 @@ public class Level {
         itemsInInventory.get(type.getIndex()).add(item);
     }
 
+    /**
+     * Adds the item image to the level.
+     * @param item The item to add to the level.
+     */
     private void addItemToLevel(Item item){
         item.createHitBox();
         item.getImageView().setTranslateX(item.getXPos() * Tile.TILE_WIDTH);

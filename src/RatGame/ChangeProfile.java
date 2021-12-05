@@ -29,6 +29,8 @@ public class ChangeProfile {
     public void initialize(){
         String[] allProfiles = new File("src/Profiles").list();
 
+        assert allProfiles != null;
+
         for (String i : allProfiles){
             Button changeProfileButton = new Button(i);
             changeProfileButton.setPrefWidth(200);

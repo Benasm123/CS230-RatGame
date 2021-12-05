@@ -9,11 +9,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -24,7 +21,6 @@ import java.util.Objects;
 public class Settings {
 
     @FXML private Slider volSlider;
-    @FXML private Button playMusic;
     @FXML private Button fpsButton;
 
 
@@ -55,12 +51,12 @@ public class Settings {
         scene.setRoot(root);
     }
 
-    public void switchShowFPS(ActionEvent event) {
+    public void switchShowFPS() {
         MainMenu.setShowFPS(!MainMenu.isShowFPS());
         updateFPSText();
     }
 
-    public void play(ActionEvent event){
+    public void play(){
         playSound();
     }
 

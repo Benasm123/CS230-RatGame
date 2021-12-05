@@ -48,6 +48,10 @@ public class DeathRat extends Item {
         this.isSpawning = isSpawning;
     }
 
+    /**
+     * Sets isSpawning
+     * @param spawning the value you want to set isSpawning to.
+     */
     public void setSpawning(boolean spawning) {
         isSpawning = spawning;
     }
@@ -69,8 +73,8 @@ public class DeathRat extends Item {
     }
 
     /**
-     *
-     * @param rat
+     * Death rat does nothing when a rat steps on its item.
+     * @param rat The rat that steps on the item
      */
     @Override
     public void steppedOn(Rat rat) {
@@ -78,7 +82,6 @@ public class DeathRat extends Item {
     }
 
     /**
-     *
      * method which keeps rat stationary when spawning.
      * @param deltaTime The time since the last frame in seconds.
      */

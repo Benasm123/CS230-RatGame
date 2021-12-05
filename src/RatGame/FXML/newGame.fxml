@@ -22,7 +22,7 @@
          <font>
             <Font size="20.0" />
          </font></TextField>
-        <Button fx:id="createButton" mnemonicParsing="false" onAction="#newGame" text="Create" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+        <Button fx:id="createButton" mnemonicParsing="false" onAction="#createProfile" text="Create" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
       <TextFlow prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <children>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="NEW PROFILE" textAlignment="CENTER">

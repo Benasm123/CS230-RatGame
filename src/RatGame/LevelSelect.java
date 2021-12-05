@@ -27,11 +27,11 @@ public class LevelSelect {
     private static final String CSS_LEVEL_CLASS = "levelSelectButton";
 
     // Variables
-    Button selectedButton;
+    private Button selectedButton;
 
     // FXML variables.
-    @FXML VBox LevelButtons;
-    @FXML VBox leaderboardScreen;
+    @FXML private VBox LevelButtons;
+    @FXML private VBox leaderboardScreen;
 
     /**
      * Initializes the level select, getting all levels and showing them to the player.
@@ -81,6 +81,18 @@ public class LevelSelect {
     }
 
     /**
+     * Loads the main menu when and switches to it.
+     * @param event The event which triggered this action.
+     * @throws IOException If the FXML file is not found will throw an error.
+     */
+    public void switchToMainMenu(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = stage.getScene();
+        scene.setRoot(root);
+    }
+
+    /**
      * Highlights the selected level and shows the leaderboard for it.
      * @param event The event that triggered the action.
      */
@@ -102,18 +114,6 @@ public class LevelSelect {
             entryLabel.setFont(font);
             leaderboardScreen.getChildren().add(entryLabel);
         }
-    }
-
-    /**
-     * Loads the main menu when and switches to it.
-     * @param event The event which triggered this action.
-     * @throws IOException If the FXML file is not found will throw an error.
-     */
-    public void switchToMainMenu(ActionEvent event) throws IOException {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = stage.getScene();
-        scene.setRoot(root);
     }
 
 }

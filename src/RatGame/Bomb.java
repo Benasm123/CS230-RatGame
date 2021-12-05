@@ -23,7 +23,6 @@ public class Bomb extends Item {
     private static final Image BOMB_AT_1 = new Image("Assets/Bombcountdown/Bomb1.png");
     private static final Image BOMB_TEXTURE = new Image("Assets/Bomb.png");
 
-
     // Variables
     private float timeSincePlaced;
     private boolean isExploding;
@@ -69,7 +68,7 @@ public class Bomb extends Item {
         isExploding = false;
 
         int lastCheckedX = xPos;
-        int lastCheckedY = yPos;
+        int lastCheckedY;
 
         while (inBombRange(levelGrid,lastCheckedX,yPos)) {
             bombTiles.add(new Pair<>(lastCheckedX,yPos));
@@ -112,7 +111,7 @@ public class Bomb extends Item {
     /**
      * method inherited from the parent class that defines what happens when a particular rat steps on it
      * Not used by the bomb
-     * @param rat
+     * @param rat The rat that has stepped on the item.
      */
     @Override
     public void steppedOn(Rat rat) {
@@ -134,11 +133,25 @@ public class Bomb extends Item {
     }
 
     /**
+     * To string which returns the string used for saving this item.
+     * @return The string required for saving this item.
+     */
+    @Override
+    public String toString() {
+        return "BMB " +
+                xPos + " " +
+                yPos + " " +
+                expired + " " +
+                timeSincePlaced + " " +
+                isExploding;
+    }
+
+    /**
      * method which determines if a position is in the bomb's range
      * @param levelGrid the level layout
      * @param xPos x-position to check
      * @param yPos y-position to check
-     * @return
+     * @return True if the tile at the position is in the bomb range and is valid.
      */
     private boolean inBombRange(Tile[][] levelGrid, int xPos, int yPos) {
         return levelGrid[xPos][yPos].getType().isTraversable;
@@ -146,7 +159,7 @@ public class Bomb extends Item {
 
     /**
      * works with the delta time in update method to give a visual countdown of the bomb
-     * @param timeSincePlaced
+     * @param timeSincePlaced The time since the bomb has been placed.
      */
     private void bombTimerImageView(float timeSincePlaced) {
         if (timeSincePlaced > TIMER - 4 && timeSincePlaced <= TIMER - 3) {
@@ -161,19 +174,5 @@ public class Bomb extends Item {
         else if (timeSincePlaced > TIMER - 1 && timeSincePlaced <= TIMER) {
             getImageView().setImage(BOMB_AT_1);
         }
-    }
-
-    /**
-     * To string which returns the string used for saving this item.
-     * @return The string required for saving this item.
-     */
-    @Override
-    public String toString() {
-        return "BMB " +
-                xPos + " " +
-                yPos + " " +
-                expired + " " +
-                timeSincePlaced + " " +
-                isExploding;
     }
 }

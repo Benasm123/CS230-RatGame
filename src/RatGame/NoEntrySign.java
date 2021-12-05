@@ -2,11 +2,10 @@ package RatGame;
 
 import javafx.scene.image.Image;
 
-// Curly brackets need to be on same level as the statement, and you use both ways here.
 /**
  * This class allows for the creation of No Entry Sign items.
- * The no entry sign blocks a path. Forcing the rat to turn around. 
- * @author José.
+ * The no entry sign blocks a path. Forcing the rat to turn around.
+ * @author José Mendes
  */
 public class NoEntrySign extends Item {
 
@@ -18,7 +17,7 @@ public class NoEntrySign extends Item {
     private static final String BROKEN_SIGN_TEXTURE_PATH_START = "Assets/brokenstop/brokenstop";
     private static final String IMAGE_FILE_ENDING = ".png";
 
-    //Varible 
+    // Variable
 	private int hpLeft;
 
 	/**
@@ -49,6 +48,7 @@ public class NoEntrySign extends Item {
             updateImage();
         }
     }
+
     /**
      * Called when item is used. No entry sign doesn't do anything on activation.
      */
@@ -58,9 +58,9 @@ public class NoEntrySign extends Item {
     }
 
     /**
-     * Handles what happens when a rat steps on this item.
-     * No entry gign takes damage and updates the image accordingly.
-     * @param rat The rat that has stepped on this item.
+     * No entry sign takes damage and updates the image accordingly.
+     * Turns the rat around when stepped on.
+     * @param rat The rat which has stepped on the item.
      */
     @Override
     public void steppedOn(Rat rat) {
@@ -75,7 +75,7 @@ public class NoEntrySign extends Item {
     }
 
     /**
-     * No entry sign doesn't change with time.
+     * Does nothing every frame.
      * @param deltaTime The time since last frame.
      */
     @Override
@@ -95,8 +95,9 @@ public class NoEntrySign extends Item {
                 expired + " " +
                 hpLeft;
     }
+
     /**
-     * updates the image of the item to show damage
+     * updates the image of the item to show damage.
      */
     private void updateImage() {
         if (hpLeft > 0 && hpLeft < MAX_HP) {

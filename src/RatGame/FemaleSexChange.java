@@ -15,6 +15,9 @@ public class FemaleSexChange extends Item {
     // Image paths
     private static final String FEMALE_CHANGE_TEXTURE_PATH = "Assets/FemaleSexChange.png";
 
+    /**
+     * Constructor for female sex change.
+     */
     public FemaleSexChange() {
         type = ItemType.FEMALE_SEX_CHANGE;
         texture = new Image(FEMALE_CHANGE_TEXTURE_PATH);
@@ -36,7 +39,7 @@ public class FemaleSexChange extends Item {
     }
 
     /**
-     *
+     * Sex change item does nothing on use.
      */
     @Override
     public void use() {
@@ -59,8 +62,8 @@ public class FemaleSexChange extends Item {
     }
 
     /**
-     *
-     * @param deltaTime
+     * Update the item every frame, sex change doesn't do anything here.
+     * @param deltaTime The time since last frame
      */
     @Override
     public void update(float deltaTime) {

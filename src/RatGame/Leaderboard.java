@@ -16,7 +16,7 @@ public class Leaderboard {
 
     // Variables
     private final String levelName;
-    public ArrayList<Pair<String, Integer>> leaderboardStandings;
+    private final ArrayList<Pair<String, Integer>> leaderboardStandings;
 
     /**
      * Constructor creating and loading the leaderboard for the selected level.
@@ -72,7 +72,9 @@ public class Leaderboard {
      * Loads the leaderboard from the leaderboard save.
      */
     private void loadLeaderboard() {
-        new File("src/Leaderboards").mkdir();
+        if (new File("src/Leaderboards").mkdir()) {
+            System.out.println("Leaderboard folder created");
+        }
 
         File leaderboardFile = new File("src/Leaderboards/" + levelName);
 

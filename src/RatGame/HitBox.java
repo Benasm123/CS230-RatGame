@@ -54,15 +54,6 @@ public class HitBox {
     }
 
     /**
-     * Gets whether the hitbox is currently colliding with the other hitbox.
-     * @param other The other hitbox being checked for collisions with.
-     * @return Returns true if the hitboxes are currently colliding, else false.
-     */
-    public boolean isColliding(HitBox other) {
-        return collidingWith.contains(other);
-    }
-
-    /**
      * Sets the x and y positions of the hitbox.
      * @param x The new x positions to set the x position to.
      * @param y The new y positions to set the y position to.
@@ -70,21 +61,5 @@ public class HitBox {
     public void setPos (float x, float y) {
         this.xPos = x;
         this.yPos = y;
-    }
-
-    /**
-     * Gets the hitboxes y position.
-     * @return Returns the y position.
-     */
-    public float getyPos() {
-        return yPos;
-    }
-
-    /**
-     * Gets the hitboxes x position.
-     * @return Returns the x position.
-     */
-    public float getxPos() {
-        return xPos;
     }
 }

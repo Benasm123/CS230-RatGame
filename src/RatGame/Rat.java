@@ -61,7 +61,6 @@ public class Rat {
     private float birthTime;
     private float growUpTime;
     private boolean isDead;
-    private boolean isPoisoned;
     private float totalTimePoisoned;
 
     private int spawnNumber;
@@ -88,7 +87,6 @@ public class Rat {
         isPregnant = false;
         isGivingBirth = false;
         isDead = false;
-        isPoisoned = false;
 
         if (isBaby) {
             movementSpeedMultiplier = BABY_SPEED_MULTIPLIER;
@@ -120,44 +118,8 @@ public class Rat {
         imageView.setTranslateY(yPos * Tile.TILE_HEIGHT);
     }
 
-     /**
-     * @param levelGrid
-     * method checks the paths of the levelGrid to see which tiles are available for the rat to move on
-      * */
-    private void checkPaths(Tile[][] levelGrid) {
-        ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
-
-        int x = (int) xPos;
-        int y = (int) yPos;
-
-        if (levelGrid[x+1][y].getType().isTraversable && x + 1 != lastX) {
-            paths.add(new Pair<>(MOVEMENT_SPEED, 0));
-        }
-        if (levelGrid[x-1][y].getType().isTraversable && x - 1 != lastX) {
-            paths.add(new Pair<>(-MOVEMENT_SPEED, 0));
-        }
-        if (levelGrid[x][y+1].getType().isTraversable && y + 1 != lastY) {
-            paths.add(new Pair<>(0, MOVEMENT_SPEED));
-        }
-        if (levelGrid[x][y-1].getType().isTraversable && y - 1 != lastY) {
-            paths.add(new Pair<>(0, -MOVEMENT_SPEED));
-        }
-
-        Pair<Integer, Integer> direction;
-
-        if (paths.size() == 0) {
-            direction = new Pair<>((lastX - x) * MOVEMENT_SPEED, (lastY - y) * MOVEMENT_SPEED);
-        } else {
-            Random rand = new Random();
-            direction = paths.get(rand.nextInt(paths.size()));
-        }
-
-        xVel = direction.getKey() * movementSpeedMultiplier;
-        yVel = direction.getValue() * movementSpeedMultiplier;
-    }
-
     /**
-     *
+     * Gets the rats image view.
      * @return imageView which is just the image
      */
     public ImageView getImageView() {
@@ -165,10 +127,10 @@ public class Rat {
     }
 
     /**
-    * @param deltaTime
-    * @param levelGrid
-    * method controls the movement of a rat object
-    * */
+     * method controls the movement of a rat object
+     * @param deltaTime Time since last frame.
+     * @param levelGrid The level grid the rat is on.
+     */
     public void move(float deltaTime, Tile[][] levelGrid) {
         if (havingSex) {
             return;
@@ -236,10 +198,10 @@ public class Rat {
     }
 
     /**
-    * @param deltaTime
-    * @levelGrid
-    * provides update on the rats
-    * */
+     * Updates the rat every frame.
+     * @param deltaTime The time since the last frame
+     * @param levelGrid The level grid of the level the rat is currently on.
+     */
     public void update(float deltaTime, Tile[][] levelGrid) {
         if (totalTimePoisoned >= TIME_TILL_DIES_OF_POISON) {
             die();
@@ -263,17 +225,16 @@ public class Rat {
    }
 
     /**
-     * updates the Hitbox
+     * updates the rats hitbox.
      */
-   public void updateHitBox() {
+    public void updateHitBox() {
         this.hitBox.setPos(this.xPos + HITBOX_OFFSET, this.yPos + HITBOX_OFFSET);
    }
 
-   /**
-   * @rat
-   * sets rat sex to Male
-   * */
-   public void changeSexMale() {
+    /**
+     * Changes the sex of the rat to male.
+     */
+    public void changeSexMale() {
         type = RatType.MALE;
         if (!isBaby && !isSterile) {
             texture = new Image(MALE_TEXTURE_PATH);
@@ -284,10 +245,11 @@ public class Rat {
         }
 
    }
-   /**
-   * sets rat sex to Female
-   * */
-   public void changeSexFemale() {
+
+    /**
+     * Changes the sex of the rat to female.
+     */
+    public void changeSexFemale() {
         type = RatType.FEMALE;
         if (!isBaby && !isSterile) {
             texture = new Image(FEMALE_TEXTURE_PATH);
@@ -298,17 +260,17 @@ public class Rat {
         }
    }
 
-   /**
-   * return x coordinate of rat
-   * */
-   public float getXPos() {
+    /**
+    * return x coordinate of rat
+    * */
+    public float getXPos() {
         return xPos;
    }
 
-   /**
-   * return y coordinate of rat
-   * */
-   public float getYPos() {
+    /**
+    * return y coordinate of rat
+    * */
+    public float getYPos() {
         return yPos;
    }
 
@@ -343,162 +305,88 @@ public class Rat {
     }
 
     /**
-     * sets isSterile boolean to the parameter passed in
-     * @param sterile
-     */
-    public void setSterile(boolean sterile) {
-        isSterile = sterile;
-    }
-
-    /**
-     * sets isPregnant boolean to the parameter passed in
-     * @param pregnant
+     * sets isPregnant boolean to the parameter passed in.
+     * @param pregnant The value to set isPregnant to.
      */
     public void setPregnant(boolean pregnant) {
         isPregnant = pregnant;
     }
 
     /**
-     * sets isGivingBirth boolean to the parameter passed in
-     * @param givingBirth
+     * sets isGivingBirth boolean to the parameter passed in.
+     * @param givingBirth The value ot set isGivingBirth to.
      */
     public void setGivingBirth(boolean givingBirth) {
         isGivingBirth = givingBirth;
     }
 
     /**
-     * sets growUpTime variable to the parameter passed in
-     * @param growUpTime
+     * sets growUpTime variable to the parameter passed in.
+     * @param growUpTime The value ot set growUpTime to.
      */
     public void setGrowUpTime(float growUpTime) {
         this.growUpTime = growUpTime;
     }
 
     /**
-     * sets isDead boolean to the parameter passed in
-     * @param dead
+     * sets isDead boolean to the parameter passed in.
+     * @param dead The value to set isDead to.
      */
     public void setDead(boolean dead) {
         isDead = dead;
     }
 
     /**
-     * sets isPoisoned boolean to the parameter passed in
-     * @param poisoned
-     */
-    public void setPoisoned(boolean poisoned) {
-        isPoisoned = poisoned;
-    }
-
-    /**
-     * sets totalTimePoisoned variable to the parameter passed in
-     * @param totalTimePoisoned
+     * sets totalTimePoisoned variable to the parameter passed in.
+     * @param totalTimePoisoned The value to set totalTimePoisoned to.
      */
     public void setTotalTimePoisoned(float totalTimePoisoned) {
         this.totalTimePoisoned = totalTimePoisoned;
     }
 
     /**
-     * sets spawnNumber variable to the parameter passed in
-     * @param spawnNumber
+     * sets spawnNumber variable to the parameter passed in.
+     * @param spawnNumber The value ot set spawn number to.
      */
     public void setSpawnNumber(int spawnNumber) {
         this.spawnNumber = spawnNumber;
     }
 
     /**
-     * sets spawns variable to the parameter passed in
-     * @param spawns
+     * sets spawns variable to the parameter passed in.
+     * @param spawns The value to set spawns to.
      */
     public void setSpawns(int spawns) {
         this.spawns = spawns;
     }
 
     /**
-     * sets deathRatKills variable to the parameter passed in
-     * @param deathRatKills
+     * sets deathRatKills variable to the parameter passed in.
+     * @param deathRatKills The value to set the death rat kills to.
      */
     public void setDeathRatKills(int deathRatKills) {
         this.deathRatKills = deathRatKills;
     }
 
     /**
-     * sets lastX variable to the parameter passed in
-     * @param lastX
+     * sets lastX variable to the parameter passed in.
+     * @param lastX The value to set the last x coordinate to.
      */
     public void setLastX(int lastX) {
         this.lastX = lastX;
     }
 
     /**
-     * sets lastY variable to the parameter passed in
-     * @param lastY
+     * sets lastY variable to the parameter passed in.
+     * @param lastY The value to set the last y coordinate to.
      */
     public void setLastY(int lastY) {
         this.lastY = lastY;
     }
 
     /**
-    * @param deltaTime
-    * timer for pregnant rat to give birth
-    * */
-    private void timeToBirth(float deltaTime) {
-        if (isPregnant) {
-            texture = new Image(FEMALE_PREGNANT_TEXTURE_PATH);
-            imageView.setImage(texture);
-            birthTime += deltaTime;
-            if (birthTime >= TIME_TILL_BIRTH) {
-                isGivingBirth = true;
-                spawns += 1;
-                birthTime = 0.0f;
-                if (spawns==spawnNumber) {
-                    isPregnant=false;
-                    texture = new Image(FEMALE_TEXTURE_PATH);
-                    imageView.setImage(texture);
-                    spawns = 0;
-                }
-            }
-        }
-    }
-
-    /**
-    * @param deltaTime
-    * sets timer for a rat to become pregnant after having sex
-    * */
-    private void sex(float deltaTime) {
-        if (havingSex && type == RatType.FEMALE) {
-            sexTimer += deltaTime;
-            if (sexTimer >= TIME_TILL_STOP_SEX) {
-                Random rnd = new Random();
-                spawnNumber = rnd.nextInt(3) + 2;
-                havingSex = false;
-                isPregnant = true;
-                sexTimer = 0;
-            }
-        } else if (havingSex) {
-            sexTimer += deltaTime;
-            if (sexTimer >= TIME_TILL_STOP_SEX) {
-                havingSex = false;
-                sexTimer = 0;
-            }
-        }
-    }
-
-    /**
-    * prevents sterile rats from becoming pregnant
-    * */
-    private void sterile() {
-        if (isSterile && type == RatType.MALE) {
-            havingSex = false;
-            isPregnant = false;
-        } else if (isSterile && type == RatType.FEMALE) {
-            havingSex = false;
-        }
-    }
-
-    /**
-    * makes baby rat an adult after some time
-    * alters speed of rats to make them slower as adults
+    * makes baby rat an adult after some time.
+    * alters speed of rats to make them slower when they're adults.
     * */
     private void growUp() {
         isBaby = false;
@@ -519,39 +407,39 @@ public class Rat {
     }
 
     /**
-     *
-     * @return isGivingBirth boolean
+     * Get if the rat is giving birth.
+     * @return True if the rat is giving birth.
      */
     public boolean getIsGivingBirth() {
         return isGivingBirth;
     }
 
     /**
-     * sets the isGivingBirth boolean into the parameter passed in
+     * sets the isGivingBirth boolean into the parameter passed in.
      */
     public void setIsGivingBirth() {
         isGivingBirth = false;
     }
 
     /**
-     *
-     * @return isDead boolean
+     * Get if the rat is dead.
+     * @return True if the rat is dead.
      */
     public boolean getIsDead() {
         return isDead;
     }
 
     /**
-     * sets isDead boolean to true
+     * Sets the rat as dead.
      */
     public void die() {
         this.isDead = true;
     }
 
     /**
-    * @param otherRat
-    * determines the actions that happen once a rat steps on or is stepped on by another
-    * */
+     * Decides what happens when a rat steps on another rat.
+     * @param otherRat The rat being stepped on.
+     */
     public void steppedOn(Rat otherRat) {
         if (type == RatType.FEMALE && otherRat.type == RatType.MALE && !isBaby && !otherRat.isBaby) {
             if(!havingSex && !otherRat.havingSex && !isPregnant && !isSterile && !otherRat.isSterile) {
@@ -578,32 +466,16 @@ public class Rat {
     }
 
     /**
-     *
-     * @return isPoisoned boolean
-     */
-    public boolean getIsPoisoned() {
-        return isPoisoned;
-    }
-
-    /**
-     * sets isPoisoned boolean equal to the boolean passed in
-     * @param isPoisoned
-     */
-    public void setIsPoisoned(boolean isPoisoned) {
-        this.isPoisoned = isPoisoned;
-    }
-
-    /**
-     * increment the totalTimePoisoned to the float passed in
-     * @param amount
+     * increment the totalTimePoisoned to the float passed in.
+     * @param amount The amount of damage to poison the rat.
      */
     public void poison(float amount) {
         totalTimePoisoned += amount;
     }
 
     /**
-     *
-     * @return the scores
+     * Get the rats score, counting if they're pregnant.
+     * @return the score value of the rat.
      */
     public int getScore() {
         if (type == RatType.DEATH_RAT) {
@@ -620,7 +492,7 @@ public class Rat {
     }
 
     /**
-     * edits the x and y coordinate so the rat could turn around
+     * Turns the rat to move in the opposite direction.
      */
     public void turnAround() {
         if (xVel < 0 || yVel < 0) {
@@ -638,65 +510,135 @@ public class Rat {
     }
 
     /**
-     *
-     * @return xVel
+     * Gets the x velocity of the rat.
+     * @return The x velocity of the rat.
      */
     public float getXVel() {
         return xVel;
     }
 
     /**
-     *
-     * @return hitbox
+     * Gets the hitbox of the rat.
+     * @return The hitbox of the rat.
      */
     public HitBox getHitBox() {
         return hitBox;
     }
 
     /**
-     *
-     * @return yVel
-     */
-    public float getYVel() {
-        return yVel;
-    }
-
-    /**
-     * sets xVel variable equal to the float parameter passed in
-     * @param xVel
+     * sets xVel variable equal to the float parameter passed in.
+     * @param xVel The x velocity to set xVel to.
      */
     public void setXVel(float xVel) {
 		this.xVel = xVel;
 	}
 
     /**
-     * sets yVel variable equal to the float parameter passed in
-     * @param yVel
+     * sets yVel variable equal to the float parameter passed in.
+     * @param yVel The value to set yVel to.
      */
 	public void setYVel(float yVel) {
 		this.yVel = yVel;
 	}
 
     /**
-     * sets xPos variable equal to the float parameter passed in
-     * @param xPos
-     */
-	public void setXPos(float xPos) {
-        this.xPos = xPos;
-    }
-
-    /**
-     * sets yPos variable equal to the float parameter passed in
-     * @param yPos
-     */
-    public void setYPos(float yPos) {
-        this.yPos = yPos;
-    }
-
-    /**
-     * sets isSterile boolean to true
+     * sets isSterile boolean to true.
      */
     public void setIsSterile() {
         isSterile = true;
+    }
+
+    /**
+     * @param levelGrid
+     * method checks the paths of the levelGrid to see which tiles are available for the rat to move on
+     * */
+    private void checkPaths(Tile[][] levelGrid) {
+        ArrayList<Pair<Integer, Integer>> paths = new ArrayList<>();
+
+        int x = (int) xPos;
+        int y = (int) yPos;
+
+        if (levelGrid[x+1][y].getType().isTraversable && x + 1 != lastX) {
+            paths.add(new Pair<>(MOVEMENT_SPEED, 0));
+        }
+        if (levelGrid[x-1][y].getType().isTraversable && x - 1 != lastX) {
+            paths.add(new Pair<>(-MOVEMENT_SPEED, 0));
+        }
+        if (levelGrid[x][y+1].getType().isTraversable && y + 1 != lastY) {
+            paths.add(new Pair<>(0, MOVEMENT_SPEED));
+        }
+        if (levelGrid[x][y-1].getType().isTraversable && y - 1 != lastY) {
+            paths.add(new Pair<>(0, -MOVEMENT_SPEED));
+        }
+
+        Pair<Integer, Integer> direction;
+
+        if (paths.size() == 0) {
+            direction = new Pair<>((lastX - x) * MOVEMENT_SPEED, (lastY - y) * MOVEMENT_SPEED);
+        } else {
+            Random rand = new Random();
+            direction = paths.get(rand.nextInt(paths.size()));
+        }
+
+        xVel = direction.getKey() * movementSpeedMultiplier;
+        yVel = direction.getValue() * movementSpeedMultiplier;
+    }
+
+    /**
+     * Updates the time to get birth and set rat as giving birth if past timer.
+     * @param deltaTime The time since the last frame.
+     */
+    private void timeToBirth(float deltaTime) {
+        if (isPregnant) {
+            texture = new Image(FEMALE_PREGNANT_TEXTURE_PATH);
+            imageView.setImage(texture);
+            birthTime += deltaTime;
+            if (birthTime >= TIME_TILL_BIRTH) {
+                isGivingBirth = true;
+                spawns += 1;
+                birthTime = 0.0f;
+                if (spawns==spawnNumber) {
+                    isPregnant=false;
+                    texture = new Image(FEMALE_TEXTURE_PATH);
+                    imageView.setImage(texture);
+                    spawns = 0;
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks whether the rat is having sex and if it's finished.
+     * @param deltaTime The time since the last frame.
+     */
+    private void sex(float deltaTime) {
+        if (havingSex && type == RatType.FEMALE) {
+            sexTimer += deltaTime;
+            if (sexTimer >= TIME_TILL_STOP_SEX) {
+                Random rnd = new Random();
+                spawnNumber = rnd.nextInt(3) + 2;
+                havingSex = false;
+                isPregnant = true;
+                sexTimer = 0;
+            }
+        } else if (havingSex) {
+            sexTimer += deltaTime;
+            if (sexTimer >= TIME_TILL_STOP_SEX) {
+                havingSex = false;
+                sexTimer = 0;
+            }
+        }
+    }
+
+    /**
+     * prevents sterile rats from becoming pregnant.
+     * */
+    private void sterile() {
+        if (isSterile && type == RatType.MALE) {
+            havingSex = false;
+            isPregnant = false;
+        } else if (isSterile && type == RatType.FEMALE) {
+            havingSex = false;
+        }
     }
 }

@@ -16,24 +16,27 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * This class is the changeProfile class allows player to switch profiles.
+ * This class is the newProfile class allows player to create a new profiles.
  * @author José Mendes & Ahmed Almahari.
  */
 public class NewProfile {
+
+    // Constant
     private static final String[] ILLEGAL_CHARACTERS_IN_FILE_NAME = {"<", ">", ":", "\"", "/", "\\", "|", "?", "*", " ", ".", ","};
 
+    // FXML Variables
     @FXML
     public TextField username;
-
     @FXML
     public Button cancelButton;
-
     @FXML
     public Button createButton;
-
     @FXML
     public Text invalidNameText;
 
+    /**
+     * Initialize the new profile screen everytime its opened.
+     */
     public void initialize() {
         File profileFolder = new File("src/Profiles");
         if (profileFolder.exists()) {
@@ -50,7 +53,7 @@ public class NewProfile {
      * @param event The action event that triggered this method.
      * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
      */
-    public void newGame(ActionEvent event) throws IOException {
+    public void createProfile(ActionEvent event) throws IOException {
         if (username.getText().isEmpty() || username.getText().length() > 20) {
             invalidNameText.setVisible(true);
             return;
@@ -66,7 +69,7 @@ public class NewProfile {
         PlayerProfile player = new PlayerProfile(username.getText());
         player.save();
 
-        Parent root = null;
+        Parent root;
         root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();
@@ -78,8 +81,7 @@ public class NewProfile {
      * @param event The action event that triggered this method.
      * @throws IOException If the file that holds the information to the screen we want to go to doesn't exist will throw an error.
      */
-    public void switchToMainMenu(ActionEvent event) throws IOException
-    {
+    public void switchToMainMenu(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = stage.getScene();

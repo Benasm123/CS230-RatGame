@@ -62,7 +62,7 @@ public class Poison extends Item {
     }
 
     /**
-     *
+     * Poison does nothing on update.
      * @param deltaTime The time since the last frame in seconds.
      */
     @Override
