@@ -199,7 +199,9 @@ public class MainMenu {
                 loadProfile(profileName);
             } else {
                 String[] allProfiles = new File("src/Profiles").list();
-                assert allProfiles != null;
+                if (allProfiles == null || allProfiles.length == 0) {
+                    return;
+                }
                 loadProfile(allProfiles[0]);
             }
 
