@@ -1,4 +1,5 @@
 package RatGame;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 
 /**
  * this class controls the whole functionality of the rats
- * @author Oluwatimilehin Abajingin
+ * @author Oluwatimilehin Abajingin, Benas Montrimas
  * @version 1.0
  */
 public class Rat {
