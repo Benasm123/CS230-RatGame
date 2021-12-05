@@ -110,6 +110,5 @@ public class Leaderboard {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }

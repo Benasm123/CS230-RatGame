@@ -56,14 +56,6 @@ public class NoEntrySign extends Item {
     public void use() {
 
     }
-    /**
-     * updates the image of the item to show damage
-     */
-    private void updateImage() {
-        if (hpLeft > 0 && hpLeft < MAX_HP) {
-            getImageView().setImage(new Image(BROKEN_SIGN_TEXTURE_PATH_START + hpLeft + IMAGE_FILE_ENDING));
-        }
-    }
 
     /**
      * Handles what happens when a rat steps on this item.
@@ -102,5 +94,13 @@ public class NoEntrySign extends Item {
                 yPos + " " +
                 expired + " " +
                 hpLeft;
+    }
+    /**
+     * updates the image of the item to show damage
+     */
+    private void updateImage() {
+        if (hpLeft > 0 && hpLeft < MAX_HP) {
+            getImageView().setImage(new Image(BROKEN_SIGN_TEXTURE_PATH_START + hpLeft + IMAGE_FILE_ENDING));
+        }
     }
 }

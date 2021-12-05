@@ -76,31 +76,6 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 	}
 
 	/**
-	 * attempts to create a file
-	 */
-	private void newFile() {
-		try {
-			new File("src/Profiles").mkdir();
-			File myObj = new File("src//Profiles//" + name);
-			if (myObj.exists()) {
-				deleteSave();
-			}
-			if (myObj.createNewFile()) {
-				System.out.println("File created: " + myObj.getName());
-				System.out.println("Absolute path: " + myObj.getAbsolutePath());
-			}
-			else {
-				System.out.println("File already exists.");
-				System.out.println("Absolute path: " + myObj.getAbsolutePath());
-			}
-		}
-		catch (IOException e) {
-			System.out.println("An error occurred.");
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * attempts to save the profile progress to the file
 	 */
 	public void save() {
@@ -120,7 +95,6 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
 
 	/**
 	 * attempts to delete the file saved by the player
-	 * @param save
 	 */
 	public void deleteSave() {
 		File myObj = new File("src//Profiles//" + name);
@@ -188,4 +162,29 @@ public class PlayerProfile implements Comparable<PlayerProfile> {
         this.highScore = Math.max(this.highScore, score);
         save();
     }
+
+	/**
+	 * attempts to create a file
+	 */
+	private void newFile() {
+		try {
+			new File("src/Profiles").mkdir();
+			File myObj = new File("src//Profiles//" + name);
+			if (myObj.exists()) {
+				deleteSave();
+			}
+			if (myObj.createNewFile()) {
+				System.out.println("File created: " + myObj.getName());
+				System.out.println("Absolute path: " + myObj.getAbsolutePath());
+			}
+			else {
+				System.out.println("File already exists.");
+				System.out.println("Absolute path: " + myObj.getAbsolutePath());
+			}
+		}
+		catch (IOException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
+	}
 }
