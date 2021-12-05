@@ -23,7 +23,9 @@ public class Settings {
     @FXML private Slider volSlider;
     @FXML private Button fpsButton;
 
-
+    /**
+     * Initializes the settings screen everytime its loaded.
+     */
     public void initialize() {
         updateFPSText();
         volSlider.setMax(1);
@@ -32,10 +34,17 @@ public class Settings {
         volSlider.setValue(MainMenu.getVolume());
     }
 
+    /**
+     * Updates the music volume to the sliders value.
+     * @param event The event that triggered this action.
+     */
     private void updateVolume(MouseEvent event) {
         MainMenu.setVolume(volSlider.getValue());
     }
 
+    /**
+     * Updates the fps buttons text to show whether the fps is showing.
+     */
     public void updateFPSText() {
         if (MainMenu.isShowFPS()) {
             fpsButton.setText("Showing");
@@ -44,6 +53,11 @@ public class Settings {
         }
     }
 
+    /**
+     * Switch screens to the main menu screen.
+     * @param event the event that triggered this action.
+     * @throws IOException Throws an error if FXML file cannot be found.
+     */
     public void switchToMainMenu(ActionEvent event) throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("FXML/mainMenu.fxml")));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -51,17 +65,19 @@ public class Settings {
         scene.setRoot(root);
     }
 
+    /**
+     * Toggles if the fps is showing and updates the text on the button.
+     */
     public void switchShowFPS() {
         MainMenu.setShowFPS(!MainMenu.isShowFPS());
         updateFPSText();
     }
 
+    /**
+     * toggles if the music is playing on button press.
+     */
     public void play(){
-        playSound();
-    }
 
-
-    private void playSound(){
         if (Main.mediaPlayer.getVolume() == 0) {
             MainMenu.setVolume(1);
         } else {
