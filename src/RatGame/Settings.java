@@ -67,10 +67,11 @@ public class Settings {
 
     private void playSound(){
         if (Main.mediaPlayer.getVolume() == 0) {
-            Main.mediaPlayer.setVolume(MainMenu.getVolume());
+            MainMenu.setVolume(1);
         } else {
-            Main.mediaPlayer.setVolume(0);
+            MainMenu.setVolume(0);
         }
+        volSlider.setValue(MainMenu.getVolume());
     }
 
 
