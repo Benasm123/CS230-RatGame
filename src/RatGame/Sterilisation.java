@@ -94,7 +94,7 @@ public class Sterilisation extends Item {
 
     /**
      * method inherited from the parent class that defines what happens when a particular rat steps on it
-     * Not used by the bomb
+     * Not used by this item
      * @param rat
      */
     @Override
