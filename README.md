@@ -1,5 +1,5 @@
 # CS230-RatGame
-CS-230 Coursework. As part of the CS230 module (Software Developement) created with a team of 6.
+CS-230 Coursework. As part of the second year CS230 module (Software Developement) created with a team of 6.
 An implementation of the Rats! window game using Java and JavaFX.
 
 Tested on Java 11+
